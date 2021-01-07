@@ -165,14 +165,14 @@ interference = {
     8 : {4, 7, 10},
     9 : {10},
     10: {}
-         }
+}
 
 longPath = {
-            1 : [10, 9],
-            3 : [6],
-            5 : [7],
-            8 : [7]
-           }
+    1 : [10, 9],
+    3 : [6],
+    5 : [7],
+    8 : [7]
+}
 
 List1 = [1, 3, 5, 8]
 List2 = [2, 4, 6, 7, 9, 10]
@@ -215,13 +215,14 @@ def getInterferencePower(x):
         else:
             strenge = strenge + (powerList[i-1] * gainInter[i-1][x-1])
     return strenge
+
 # while True:
 for i in longPath:
     while longPath[i]:
         j = longPath[i][0]
     # for j in longPath[i]:
         if getInterferencePower(j) == 0:
-            power = SINR_min_w[j-1] * (N0 / gain[j-1])
+            power = (SINR_min_w[j-1] * N0) / gain[j-1]
         else:
             s = getInterferencePower(j)
             power = (SINR_min_w[j-1] * (N0 + s)) / gain[j-1]
@@ -307,8 +308,185 @@ print("cal sinr = {}".format(np.round(SINR_db,decimals=1)))
 print("cal powr = {}".format(np.round(w_to_dB(powerList))))
 # print(Th)
 # print(CQITable)
-rate = np.where(powerList > 1e-7, Th, 0)
+rate = np.where(powerList >= 1e-7, Th, 0)
 # print(rate)
 
 print("Data rate = {} Mb/s".format(rate.sum()/1000))
 print("Data rate = {} Mbps".format((rate.sum()/1000)*0.125))
+
+CUE = {
+    #1 -> D2D, 2->CUE
+    11 : {22},
+    12 : {11},
+    13 : {12, 23},
+    14 : {11},
+    15 : {14, 24},
+    21 : {12},
+    22 : {},
+    23 : {13},
+    24 : {14},
+    25 : {11}
+}
+D2D1 = [11,12,13,14,15]
+CUE1 = [21,22,23,24,25]
+
+d_d2d = np.random.randint(low=1,high=20,size=10) #D2D Tx - Rx distane
+d_d2dI = np.random.randint(low=1,high=100,size=(10,9)) #D2D TX - other D2D Rx distance
+# g_d2dR = np.random.rayleigh(1) #Rayleigh fading
+
+pathLoss = 128.1+37.6*np.log10(d_d2dR/1000)
+pathLossScalar = 10**(pathLoss/10)
+
+pathLossInter = 128.1+37.6*np.log10(d_d2dI/1000)
+pathLossIn = 10**(pathLossInter/10)
+
+gain = ((g_d2dR**2)/(pathLossScalar))
+gainInter = ((g_d2dR**2)/(pathLossIn))
+
+CSINR_min = np.zeros(5)
+DSINR_min = np.zeros(5)
+# CQITable = np.random.randint(low=1,high=15,size=10)
+Bneed_Rate = np.random.randint(low=100,high=18336,size=10)
+BCQITable,Th1 = Rate_CQI_mapping(Bneed_Rate)
+# CQITable = np.ones(10)
+for i in range(0,5):
+    DSINR_min[i] = np.asarray(CQI_SINR_mapping(BCQITable[i]))
+for i in range(0,5):
+    CSINR_min[i] = np.asarray(CQI_SINR_mapping(BCQITable[i+5]))
+
+CSINR_min_w = db_to_w(CSINR_min)
+DSINR_min_w = db_to_w(DSINR_min)
+
+CS = CSINR_min_w + w_to_dB(13)
+
+CUEpowerList = np.zeros(5)
+D2DpowerList = np.zeros(5)
+
+for i in range(0,5):
+    # power = (CSINR_min_w[i] * N0) / gain[i+5]
+    power = (CS[i] * N0) / gain[i+5]
+    if power < 1e-7:
+        power = 1e-7
+    if power > 0.2:
+        power = 0.2
+    CUEpowerList[i] = power
+
+def getInterferencePow(x):
+    strenge = 0
+    for i in CUE[x]:
+        if i >= 10 and i < 20:
+            j = i-10
+        if i > 20:
+            j = i -20
+        if  i < x:
+            if i >= 10 and i < 20:
+                g = i-10
+                strenge = strenge + (D2DpowerList[g-1] * gainInter[g-1][j-2])
+            elif i >20:
+                g = i-20
+                strenge = strenge + (CUEpowerList[g-1] * gainInter[g-1+5][j-2+5])
+        elif i > x:
+            if i >= 10 and i < 20:
+                g = i-10
+                strenge = strenge + (D2DpowerList[g-1] * gainInter[g-1+5][j-1])
+            elif i >20:
+                g = i-20
+                strenge = strenge + (CUEpowerList[g-1] * gainInter[g-1+5][j-1])
+    return strenge
+
+No = list()
+n = list()
+for i in range(0,5):
+    uu = -np.sort(-Bneed_Rate[:5])
+    No.append(uu[i])
+    result = np.where(Bneed_Rate == uu[i])
+    n.append((result[0][0]+1))
+
+
+for i in n:
+    x = i+10
+    s = getInterferencePow(x)
+    power = (DSINR_min_w[i-1] * (N0 + s)) / gain[i-1]
+    if power < 1e-7:
+        power = 1e-7
+    if power > 0.2:
+        power = 0.2
+    for j in range(11,16):
+        xx = x+10
+        if x in CUE[j]:
+            if x >= 10 and x < 20 :
+                g = x-10
+                h = j-10
+                current_power = ((D2DpowerList[h-1] * gain[h-1]) / DSINR_min_w[h-1]) - N0/gain[g-1]
+            # elif x > 20:
+            #     g = x-20
+            #     h = j-20
+            #     current_power = ((CUEpowerList[h-1] * gain[h-1+5]) / CSINR_min_w[h-1]) - N0/gain[g-1]
+            if current_power > power:
+                power = current_power
+            elif current_power < power:
+                power = 0
+                print("{} fail".format(i))
+                break
+        if xx in CUE[j]:
+            if xx >= 10 and xx < 20 :
+                g = xx-10
+                h = j-10
+                current_power = ((D2DpowerList[h-1] * gain[h-1]) / DSINR_min_w[h-1]) - N0/gain[g-1]
+            elif xx > 20:
+                g = xx-20
+                h = j-10
+                current_power = ((CUEpowerList[g-1] * gain[g-1+5]) / CSINR_min_w[g-1]) - N0/gain[h-1]
+            if current_power > power:
+                power = current_power
+            elif current_power < power:
+                power = 0
+                print("{} fail".format(i))
+                break
+    D2DpowerList[i-1] = power
+
+
+def getS1NR(x,s):
+    if x > 20:
+        n = x - 20
+        SINR = (CUEpowerList[n-1] * gain[n-1+5]) / (N0 + s)
+    else:
+        n = x - 10
+        SINR = (D2DpowerList[n-1] * gain[n-1+5]) / (N0 + s)
+    return SINR
+
+Bsinr = []
+S1NR_db = []
+for i in CUE:
+    s = getS1NR(i, getInterferencePow(i))
+    Bsinr.append(s)
+    # x = 10*np.log10(s*1000)
+    x = w_to_dB(s)
+    # print(x)
+    S1NR_db.append(x)
+
+S1NR_min = np.concatenate((DSINR_min,CSINR_min))
+
+for x,y in zip(S1NR_db,S1NR_min):
+    if x < y:
+        print("{} < {}".format(x,y))
+        
+print("Dmin sinr = {}".format(DSINR_min))
+print("Dcal sinr = {}".format(np.round(S1NR_db[:5],decimals=1)))
+print()
+print("Cmin sinr = {}".format(CSINR_min))
+print("Ccal sinr = {}".format(np.round(S1NR_db[5:],decimals=1)))
+print()
+print("Ccal powr = {}".format(np.round(w_to_dB(CUEpowerList))))
+print("Dcal powr = {}".format(np.round(w_to_dB(D2DpowerList))))
+# print(Th1)
+# print(CQITable)
+PL = np.concatenate((D2DpowerList,CUEpowerList))
+# print(PL)
+Rate = np.where(PL >= 1e-7, Th1, 0)
+# print(Rate)
+
+Throughput1 = rate.sum() + Rate.sum()
+
+print("Data rate = {} Mb/s".format(Throughput1/1000))
+print("Data rate = {} Mbps".format((Throughput1/1000)*0.125))
