@@ -9,11 +9,11 @@ def genrator():
         config = json.load(f)
         f.close()
 
-    numCUE = config["numCUE"]                                                   #CUE的數量
-    numD2D = config["numD2D"]                                                   #D2D的數量
-    maxReciver = config["maxReciver"]                                     #D2D Rx的最大數量
-    radius = config["radius"]                                                   #Cell半徑(m)
-    d2dDistance = config["d2dDistance"]                                         #D2D最長距離
+    numCUE = config["numCUE"]                                           #CUE的數量
+    numD2D = config["numD2D"]                                           #D2D的數量
+    maxReciver = config["maxReciver"]                                   #D2D Rx的最大數量
+    radius = config["radius"]                                           #Cell半徑(m)
+    d2dDistance = config["d2dDistance"]                                 #D2D最長距離
 
     numD2DReciver = np.random.randint(low=1, high=maxReciver+1, size=numD2D) #根據參數隨機生成D2D Rx數量 
     dis_C2BS = np.zeros((numCUE))                                       #一維陣列, CUE - BS的距離
@@ -42,9 +42,6 @@ def genrator():
         c_x = np.append(c_x, xt)
         c_y = np.append(c_y, yt)
 
-        # xt = np.delete(xt, 0)                                           #清空暫存的座標
-        # yt = np.delete(yt, 0)
-
 #############################################生成D2D Tx位置####################################################
     d_x = 2*radius*np.random.rand(1,numD2D)-radius                      #隨機生成D2D Tx的x座標
     d_y = 2*radius*np.random.rand(1,numD2D)-radius                      #隨機生成D2D Tx的y座標
@@ -63,9 +60,6 @@ def genrator():
         yt = np.delete(yt, index2)
         d_x = np.append(d_x, xt)
         d_y = np.append(d_y, yt)
-
-        # xt = np.delete(xt, 0)
-        # yt = np.delete(yt, 0)
 
 #############################################生成D2D Rx位置####################################################
     r_x = np.zeros((numD2D, max(numD2DReciver)))
