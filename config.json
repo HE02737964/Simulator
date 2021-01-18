@@ -1,0 +1,11 @@
+{
+    "radius" : 500,
+	"Pc" : 0.25,
+	"bw" : 160e3,
+	"N_dBm" : -174,
+	"numCUE" : 30,
+	"numD2D" : 100,
+	"numRB" : 25,
+	"maxReciver" : 4,
+	"d2dDistance" : 30
+}

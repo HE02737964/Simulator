@@ -3,8 +3,8 @@ import random
 import json
 
 N_db = -174
-N0 = 10**(N_db / 10)
-N0 = N0 * 5e6
+N0 = (10**(N_db/10)) / 1000
+N0 = N0 * 20e6
 
 def w_to_dB(w):
     return 10*np.log10(w/0.001)
@@ -426,7 +426,7 @@ for i in n:
                 power = current_power
             elif current_power < power:
                 power = 0
-                print("{} fail".format(i))
+                print("{} fail".format(i))  
                 break
         if xx in CUE[j]:
             if xx >= 10 and xx < 20 :
@@ -481,10 +481,12 @@ print("Ccal powr = {}".format(np.round(w_to_dB(CUEpowerList))))
 print("Dcal powr = {}".format(np.round(w_to_dB(D2DpowerList))))
 # print(Th1)
 # print(CQITable)
-PL = np.concatenate((D2DpowerList,CUEpowerList))
+
 # print(PL)
-Rate = np.where(PL >= 1e-7, Th1, 0)
-# print(Rate)
+D = np.round(w_to_dB(D2DpowerList))
+Rate = np.where(D >= -40, Th1, 0)
+print(powerList)
+print(Rate)
 
 Throughput1 = rate.sum() + Rate.sum()
 

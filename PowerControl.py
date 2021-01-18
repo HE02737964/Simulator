@@ -3,14 +3,14 @@ import random
 import json
 
 N_db = -174
-N0 = 10**(N_db / 10)
+N0 = (10**(N_db/10)) *10**(-3)
 N0 = N0 * 20e6
 
 def w_to_dB(w):
     return 10*np.log10(w*1000)
 
 def db_to_w(db):
-    return 10**(db/10)
+    return 10**(db/10) / 1000
 
 def TBS():
     with open('Throughput.json') as json_file:
