@@ -4,7 +4,7 @@ import json
 
 N_db = -174
 N0 = (10**(N_db/10)) / 1000
-N0 = N0 * 20e6
+N0 = N0 * 180e3
 
 def w_to_dB(w):
     return 10*np.log10(w/0.001)

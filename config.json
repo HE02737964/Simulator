@@ -3,9 +3,9 @@
 	"Pc" : 0.25,
 	"bw" : 160e3,
 	"N_dBm" : -174,
-	"numCUE" : 30,
-	"numD2D" : 100,
-	"numRB" : 25,
-	"maxReciver" : 4,
+	"numCUE" : 5,
+	"numD2D" : 6,
+	"numRB" : 4,
+	"maxReciver" : 3,
 	"d2dDistance" : 30
 }
