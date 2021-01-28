@@ -26,7 +26,7 @@ class Genrator():
         self.dis_D = np.zeros((self.numD2D, self.maxReciver))                                   #二維陣列, D2D Tx - RX的距離
         self.dis_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver))                    #三維陣列, CUE - D2D所有RX的距離
         self.dis_D2C = np.zeros((self.numD2D, self.numCUE))                                     #二維陣列, D2D Tx - CUE的距離
-        self.dis_BS2D = np.zeros((1, self.numD2D, self.maxReciver))                             #三維陣列, BS - D2D所有RX的距離
+        self.dis_BS2D = np.zeros((self.numD2D, self.maxReciver))                             #三維陣列, BS - D2D所有RX的距離
         self.dis_DiDj = np.zeros((self.numD2D, self.numD2D, self.maxReciver))                   #三維陣列, D2D Tx i - D2D RX j的距離
         self.dis_D2BS = np.zeros((self.numD2D))                                                 #一維陣列, D2D Tx - BS的距離    
 
@@ -107,7 +107,7 @@ class Genrator():
 
         for d2d in range(self.numD2D):
             for rx in range(self.numD2DReciver[d2d]):
-                self.dis_BS2D[0][d2d][rx] = np.sqrt( (self.r_x[d2d][rx])**2 + (self.r_y[d2d][rx])**2 ) / 1000
+                self.dis_BS2D[d2d][rx] = np.sqrt( (self.r_x[d2d][rx])**2 + (self.r_y[d2d][rx])**2 ) / 1000
 
         for i in range(self.numD2D):
             for j in range(self.numD2D):
@@ -167,6 +167,12 @@ class Genrator():
                     plt.plot(xx, yy, color="#888888", zorder = 999, linewidth=1)
         axes.legend(loc="upper right")
         plt.show()
+
+    def get_position(self):
+        return self.c_x, self.c_y, self.d_x, self.d_y, self.r_x, self.r_y
+
+    def get_numD2DReciver(self):
+        return self.numD2DReciver
 
 if __name__ == '__main__':
     model = Genrator()

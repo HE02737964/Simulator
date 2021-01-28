@@ -1,11 +1,21 @@
 {
     "radius" : 500,
-	"Pc" : 0.25,
+	"Pmax" : 199.52623149688787,
 	"bw" : 160e3,
 	"N_dBm" : -174,
 	"numCUE" : 5,
 	"numD2D" : 6,
-	"numRB" : 4,
+	"numRB" : 2,
 	"maxReciver" : 3,
-	"d2dDistance" : 30
+	"d2dDistance" : 30,
+	
+	"totalBeam" : 8,
+	"scheduleBeam" : 3,
+	
+	"firPs" : 39810.71705534969,
+	"secPs" : 20,
+	"preO" : 50,
+	"preD" : 50,
+	"dataMax" : 18336,
+	"dataMin" : 100
 }
