@@ -14,6 +14,11 @@ class Genrator():
         self.maxReciver = config["maxReciver"]                                                  #D2D Rx的最大數量
         self.radius = config["radius"]                                                          #Cell半徑(m)
         self.d2dDistance = config["d2dDistance"]                                                #D2D最長距離
+        self.directCUE = config["directCUE"]
+        self.omnidirectCUE = 100 - self.directCUE
+        self.directD2D = config["directD2D"]
+        self.omnidirectD2D = 100 - self.directD2D
+        
         self.c_x = np.zeros(self.numCUE)                                                        #CUE的x座標
         self.c_y = np.zeros(self.numCUE)                                                        #CUE的y座標
         self.d_x = np.zeros(self.numD2D)                                                        #D2D Tx的x座標
@@ -26,7 +31,7 @@ class Genrator():
         self.dis_D = np.zeros((self.numD2D, self.maxReciver))                                   #二維陣列, D2D Tx - RX的距離
         self.dis_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver))                    #三維陣列, CUE - D2D所有RX的距離
         self.dis_D2C = np.zeros((self.numD2D, self.numCUE))                                     #二維陣列, D2D Tx - CUE的距離
-        self.dis_BS2D = np.zeros((self.numD2D, self.maxReciver))                             #三維陣列, BS - D2D所有RX的距離
+        self.dis_BS2D = np.zeros((self.numD2D, self.maxReciver))                                #二維陣列, BS - D2D所有RX的距離
         self.dis_DiDj = np.zeros((self.numD2D, self.numD2D, self.maxReciver))                   #三維陣列, D2D Tx i - D2D RX j的距離
         self.dis_D2BS = np.zeros((self.numD2D))                                                 #一維陣列, D2D Tx - BS的距離    
 
@@ -173,6 +178,20 @@ class Genrator():
 
     def get_numD2DReciver(self):
         return self.numD2DReciver
+
+    def get_ue_signal_type(self):
+        cueIndex = np.arange(self.numCUE)
+        directCUE = np.random.choice(cueIndex, size=int(self.numCUE * (self.directCUE/100)),replace=False)
+        directCUE = np.sort(directCUE)
+        omnidirectCUE = np.setdiff1d(cueIndex, directCUE)
+        
+        d2dIndex = np.arange(self.numD2D)
+        directD2D = np.random.choice(d2dIndex, size=int(self.numD2D * (self.directD2D/100)),replace=False)
+        directD2D = np.sort(directD2D)
+        omnidirectD2D = np.setdiff1d(d2dIndex, directD2D)
+
+        return directCUE, omnidirectCUE, directD2D, omnidirectD2D
+        
 
 if __name__ == '__main__':
     model = Genrator()

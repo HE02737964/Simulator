@@ -1,9 +1,13 @@
 {
-    "radius" : 500,
+	"radius" : 500,
+	"directCUE" : 50,
+	"directD2D" : 50,
+	"perScheduleCUE" : 60,
+	"CQILevel" : 3,
 	"Pmax" : 199.52623149688787,
 	"bw" : 160e3,
 	"N_dBm" : -174,
-	"numCUE" : 5,
+	"numCUE" : 10,
 	"numD2D" : 6,
 	"numRB" : 3,
 	"maxReciver" : 3,
@@ -17,5 +21,6 @@
 	"preO" : 50,
 	"preD" : 50,
 	"dataUEMax" : 712,
-	"dataUEMin" : 1
+	"dataUEMin" : 1,
+	"sinrBS" : 5
 }

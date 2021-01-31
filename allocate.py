@@ -4,11 +4,6 @@ import tools
 import json
 import numpy as np
 
-x = scenario.Genrator()
-dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver = x.genrator()
-# x.draw_model()
-c_x, c_y, d_x, d_y, r_x, r_y = x.get_position()
-
 class Allocate():
     def __init__(self, dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver):
         with open("config.json", "r") as f:
@@ -22,12 +17,15 @@ class Allocate():
         self.numCUE = config["numCUE"]
         self.numD2D = config["numD2D"]
         self.numRB = config["numRB"]
+        self.perScheduleCUE = config["perScheduleCUE"]
+        self.CQILevel = config["CQILevel"]
         self.maxReciver = config["maxReciver"]
         self.radius = config["radius"]
         self.totalBeam = config["totalBeam"]
         self.scheduleBeam = config["scheduleBeam"]
         self.firPb = config["firPb"]
         self.secPb = config["secPb"]
+        self.sinrBS = config["sinrBS"]
         self.dataUEMax = config["dataUEMax"]
         self.dataUEMin = config["dataUEMin"]
 
@@ -37,8 +35,7 @@ class Allocate():
         self.schedule = np.zeros((self.totalBeam, 4))
         x = channel.Channel(dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver)
         self.g_b, self.g_d = x.cell_downlink()
-
-        self.scheduleUE = np.full(self.numCUE, -1)
+        self.g_c, self.g_d = x.cell_uplink()
     
     def alloc_downlink(self, time, c_x, c_y):
         #Get beam sector position
@@ -61,6 +58,7 @@ class Allocate():
         
         
         #
+        scheduleUE = np.full(self.numCUE, -1)
         self.selectBeam = np.full(self.totalBeam, -1)
         self.selectBeam[time % self.totalBeam] = 0
         candicate = np.where(self.selectBeam < 0)[0]
@@ -73,16 +71,16 @@ class Allocate():
                 sectorEnd = (self.schedule[beam][2], self.schedule[beam][3])
                 if not self.isInsideSector(sectorStart, (c_x[cue], c_y[cue])) and self.isInsideSector(sectorEnd, (c_x[cue], c_y[cue])):
                     if np.where(beamCandicate == beam)[0] > 0:
-                        self.scheduleUE[cue] = np.where(beamCandicate == beam)[0]
+                        scheduleUE[cue] = np.where(beamCandicate == beam)[0]
                     else:
-                        self.scheduleUE[cue] = np.where(beamCandicate == beam)[0]
+                        scheduleUE[cue] = np.where(beamCandicate == beam)[0]
         
-        candicateUE = np.where(self.scheduleUE >= 0)[0]
-        ueData = np.random.randint(low=self.dataUEMin, high=self.dataUEMax, size=len(self.scheduleUE))
-        ueMinSINR_dB = np.zeros(len(self.scheduleUE))
-        ueMinCQI = np.zeros(len(self.scheduleUE))
-        ueMinTbs = np.zeros(len(self.scheduleUE))
-        for i in range(len(self.scheduleUE)):
+        candicateUE = np.where(scheduleUE >= 0)[0]
+        ueData = np.random.randint(low=self.dataUEMin, high=self.dataUEMax, size=len(scheduleUE))
+        ueMinSINR_dB = np.zeros(len(scheduleUE))
+        ueMinCQI = np.zeros(len(scheduleUE))
+        ueMinTbs = np.zeros(len(scheduleUE))
+        for i in range(len(scheduleUE)):
             tbs = self.tool.perRB_TBS_mapping(1, ueData[i])
             cqi = self.convert.TBS_CQI_mapping(tbs)
             sinr = self.convert.CQI_SINR_mapping(cqi)
@@ -97,13 +95,13 @@ class Allocate():
         rbStatus = np.zeros(self.numRB)
         for index in candicateUE:
             for rb in range(self.numRB):
-                if self.scheduleUE[index] == 0:
+                if scheduleUE[index] == 0:
                     snr = self.calculate_SNR(self.firPb, self.g_b[index][rb], self.N0)
                     snr_db = self.convert.mW_to_dB(snr)
                     ueSNR[index][rb] = snr
                     ueSNR_db_rb[index][rb] = snr_db
 
-                elif self.scheduleUE[index] == 1 or self.scheduleUE[index] == 2:
+                elif scheduleUE[index] == 1 or scheduleUE[index] == 2:
                     snr = self.calculate_SNR(self.secPb, self.g_b[index][rb], self.N0)
                     snr_db = self.convert.mW_to_dB(snr)
                     ueSNR[index][rb] = snr
@@ -125,31 +123,80 @@ class Allocate():
                 if assignRB[i][j] == 1:
                     ueSNR_db[i] = ueSNR_db_rb[i][j]
 
-        self.scheduleUE = np.full(self.numCUE, -1)
-    
     def isInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0
 
-    def alloc_uplink(self, c_x, c_y):
+    def alloc_uplink(self, c_x, c_y, directCUE, omnidirectCUE):
+        cueIndex = np.arange(self.numCUE)
+        candicateUE = np.sort(np.random.choice(cueIndex, size=int(self.numCUE * (self.perScheduleCUE/100)), replace=False))
         
+        ueData = np.random.randint(low=self.dataUEMin, high=self.dataUEMax, size=len(candicateUE))
+        bsMinSINR_dB = np.zeros(len(candicateUE))
+        bsMinCQI = np.zeros(len(candicateUE))
+        bsMinTbs = np.zeros(len(candicateUE))
+        upperCqi = 0
+
+        bsSNR_db = np.zeros(self.numCUE)
+        powerUE_rb = np.zeros((self.numCUE, self.numRB))
+        powerUE = np.zeros(self.numCUE)
+        
+        for i in range(len(candicateUE)):
+            tbs = self.tool.perRB_TBS_mapping(1, ueData[i])
+            cqi = self.convert.TBS_CQI_mapping(tbs)
+            sinr = self.convert.CQI_SINR_mapping(cqi)
+            if cqi >= 12:
+                upperCqi = 15
+            else:
+                upperCqi = cqi + self.CQILevel
+            upperSinr = self.convert.CQI_SINR_mapping(upperCqi)
+            bsMinCQI[i] = cqi
+            bsMinSINR_dB[i] = sinr
+            bsSNR_db[candicateUE[i]] = upperSinr
+            for rb in range(self.numRB):
+                power = self.SNR_to_Power(upperSinr, self.g_c[candicateUE[i]][rb])
+                power_db = self.convert.mW_to_dB(power)
+                if power_db > 23:
+                    power_db = 23
+                if power_db < -40:
+                    power_db = -40
+                powerUE_rb[candicateUE[i]][rb] = power_db
+        
+        assignRB = np.zeros((self.numCUE, self.numRB))
+        rbStatus = np.zeros(self.numRB)
+        sortPower = powerUE_rb.argsort(axis=1)
+
+        for ue in candicateUE:
+            i = 0
+            while i < self.numRB:
+                if rbStatus[sortPower[ue][i]] == 0:
+                    rbStatus[sortPower[ue][i]] = 1
+                    assignRB[ue][sortPower[ue][i]] = 1
+                    break
+                else:
+                    i += 1
+        
+        for i in range(self.numCUE):
+            for j in range(self.numRB):
+                if assignRB[i][j] == 1:
+                    powerUE[i] = powerUE_rb[i][j]
 
     def calculate_SNR(self, uePower, gain, N0):
         return (uePower * gain) / N0
         #基地台打Power , CUE可以算SNR然後得到CQI可得TBS Index
+    
+    def SNR_to_Power(self, snr, gain):
+        snr_mw = self.convert.dB_to_mW(snr)
+        return (snr * self.N0) / gain
 
-
-                
-
-# u = scenario.Genrator()
-# dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver = u.genrator()
-# x = channel.Channel(dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver)
+x = scenario.Genrator()
+dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver = x.genrator()
+directCUE, omnidirectCUE, directD2D, omnidirectD2D = x.get_ue_signal_type()
+c_x, c_y, d_x, d_y, r_x, r_y = x.get_position()
 allocate = Allocate(dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver)
+
+
+for i in range(8):
+    # allocate.alloc_downlink(i, c_x, c_y)
+    allocate.alloc_uplink(c_x, c_y, directCUE, omnidirectCUE)
 # allocate.alloc_downlink(0, c_x, c_y)
 # x.draw_model()
-# numbeam = 8
-# for i in range(100):
-#     print("{} time with {} beam".format(i, i%numbeam+1))
-for i in range(8):
-    allocate.alloc_downlink(i, c_x, c_y)
-# allocate.alloc_downlink(0, c_x, c_y)
-x.draw_model()
