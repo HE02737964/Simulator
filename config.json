@@ -1,26 +1,28 @@
 {
 	"radius" : 500,
+	"numCUE" : 4,
+	"numD2D" : 6,
+	"numRB" : 8,
+	"maxReciver" : 3,
+	"d2dDistance" : 30,
 	"directCUE" : 50,
 	"directD2D" : 50,
+	"perUeRb" : 2,
+
 	"perScheduleCUE" : 60,
 	"CQILevel" : 3,
 	"Pmax" : 199.52623149688787,
 	"bw" : 160e3,
 	"N_dBm" : -174,
-	"numCUE" : 10,
-	"numD2D" : 6,
-	"numRB" : 3,
-	"maxReciver" : 3,
-	"d2dDistance" : 30,
+	
 	
 	"totalBeam" : 8,
-	"scheduleBeam" : 3,
+	"numScheduleBeam" : 3,
 	
 	"firPb" : 39810.71705534969,
 	"secPb" : 20,
 	"preO" : 50,
 	"preD" : 50,
 	"dataUEMax" : 712,
-	"dataUEMin" : 1,
-	"sinrBS" : 5
+	"dataUEMin" : 1
 }

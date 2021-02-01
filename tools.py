@@ -4,11 +4,11 @@ import json
 class Convert:
     def mW_to_dB(self, mW):
         dB = 10*np.log10(mW)
-        return np.round(dB, decimals=0)
+        return np.round(dB, decimals=1)
     
     def dB_to_mW(self, dB):
         mW = 10**(dB/10)
-        return np.round(mW, decimals=0)
+        return mW
     
     def CQI_SINR_mapping(slef, CQI):
         if CQI == 1:
@@ -106,7 +106,7 @@ class Convert:
             CQI = 5
         elif tbs == 9 or tbs == 10 or tbs == 11:
             CQI = np.random.randint(low=5, high=7)
-        elif tbs == 12 or tbs == 3:
+        elif tbs == 12 or tbs == 13:
             CQI = 8
         elif tbs == 14:
             CQI = 9
@@ -123,6 +123,10 @@ class Convert:
         elif tbs == 25 or tbs == 26:
             CQI = 15
         return CQI
+
+    def SNR_to_Power(self, snr, gain, N0):
+        snr_mw = self.dB_to_mW(snr)
+        return ((snr_mw * N0) / gain)
 
 class Tool:
     def TBS(self):
@@ -150,6 +154,12 @@ class Tool:
                 break
         return int(tbs_index)
 
-    def tbs_rb__throughput(self, index, rb):
-        tbs = self.TBS()
-        throughput = tbs[str(index)]
+    # def tbs_rb__throughput(self, index, rb):
+    #     tbs = self.TBS()
+    #     throughput = tbs[str(index)]
+
+    def isInsideSector(self, u, v):
+        return -u[0]*v[1] + u[1]*v[0] > 0
+
+    def calculate_SNR(self, uePower, gain, N0):
+        return (uePower * gain) / N0

@@ -14,17 +14,17 @@ class Genrator():
         self.maxReciver = config["maxReciver"]                                                  #D2D Rx的最大數量
         self.radius = config["radius"]                                                          #Cell半徑(m)
         self.d2dDistance = config["d2dDistance"]                                                #D2D最長距離
-        self.directCUE = config["directCUE"]
-        self.omnidirectCUE = 100 - self.directCUE
-        self.directD2D = config["directD2D"]
-        self.omnidirectD2D = 100 - self.directD2D
-        
+        self.directCUE = config["directCUE"]                                                    #指向性天線CUE所佔的比例
+        self.omnidirectCUE = 100 - self.directCUE                                               #全向性天線CUE所佔的比例
+        self.directD2D = config["directD2D"]                                                    #指向性天線D2D所佔的比例
+        self.omnidirectD2D = 100 - self.directD2D                                               #全向性天線D2D所佔的比例
+
         self.c_x = np.zeros(self.numCUE)                                                        #CUE的x座標
         self.c_y = np.zeros(self.numCUE)                                                        #CUE的y座標
         self.d_x = np.zeros(self.numD2D)                                                        #D2D Tx的x座標
         self.d_y = np.zeros(self.numD2D)                                                        #二維陣列, D2D Rx的x座標
         self.r_x = np.zeros((self.numD2D, self.maxReciver))                                     #D2D Rx的x座標
-        self.r_y = np.zeros((self.numD2D, self.maxReciver))
+        self.r_y = np.zeros((self.numD2D, self.maxReciver))                                     #D2D Rx的y座標
 
         self.numD2DReciver = np.random.randint(low=1, high=self.maxReciver+1, size=self.numD2D) #根據參數隨機生成D2D Rx數量 
         self.dis_C2BS = np.zeros((self.numCUE))                                                 #一維陣列, CUE - BS的距離
@@ -93,8 +93,10 @@ class Genrator():
                         self.r_x[i][reciver] = rx
                         self.r_y[i][reciver] = ry
                         break
+        return self.c_x, self.c_y, self.d_x, self.d_y, self.r_x, self.r_y
 
 ###########################################計算各裝置間的距離##################################################
+    def distance(self):
         self.dis_C2BS = np.sqrt( (self.c_x**2 + self.c_y**2) ) / 1000
 
         for tx in range(self.numD2D):
@@ -121,7 +123,7 @@ class Genrator():
 
         self.dis_D2BS = np.sqrt( (self.d_x**2 + self.d_y**2) ) / 1000
 
-        return self.dis_C2BS, self.dis_D, self.dis_C2D, self.dis_D2C, self.dis_BS2D, self.dis_DiDj, self.dis_D2BS, self.numD2DReciver
+        return self.dis_C2BS, self.dis_D, self.dis_C2D, self.dis_D2C, self.dis_BS2D, self.dis_DiDj, self.dis_D2BS
 
 ###############################################系統環境圖######################################################
     def draw_model(self):
@@ -173,9 +175,6 @@ class Genrator():
         axes.legend(loc="upper right")
         plt.show()
 
-    def get_position(self):
-        return self.c_x, self.c_y, self.d_x, self.d_y, self.r_x, self.r_y
-
     def get_numD2DReciver(self):
         return self.numD2DReciver
 
@@ -195,5 +194,6 @@ class Genrator():
 
 if __name__ == '__main__':
     model = Genrator()
-    dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver = model.genrator()
+    c_x, c_y, d_x, d_y, r_x, r_y = model.genrator()
+    dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS = model.distance()
     model.draw_model()
