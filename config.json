@@ -1,8 +1,8 @@
 {
 	"radius" : 500,
-	"numCUE" : 4,
-	"numD2D" : 6,
-	"numRB" : 8,
+	"numCUE" : 25,
+	"numD2D" : 75,
+	"numRB" : 25,
 	"maxReciver" : 3,
 	"d2dDistance" : 30,
 	"directCUE" : 50,

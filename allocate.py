@@ -119,7 +119,7 @@ class Allocate():
             i = 0                                           #RB索引
             perUeRb = self.perUeRb                          #UE能分配到多少RB
             while i < self.numRB:
-                while perUeRb > 0:
+                while perUeRb > 0 and i < self.numRB:
                     if rbStatus[sortSNR[ue][i]] == 0:
                         rbStatus[sortSNR[ue][i]] = 1
                         assignRB[ue][sortSNR[ue][i]] = 1
@@ -182,7 +182,7 @@ class Allocate():
             i = 0                                           #RB索引
             perUeRb = self.perUeRb                          #UE能分配多少RB
             while i < self.numRB:
-                while perUeRb > 0:
+                while perUeRb > 0 and i < self.numRB:
                     if rbStatus[sortPower[ue][i]] == 0:
                         rbStatus[sortPower[ue][i]] = 1
                         assignRB[ue][sortPower[ue][i]] = 1
