@@ -161,5 +161,32 @@ class Tool:
     def isInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0
 
+    def azimuthAngle(self, x1, y1, x2, y2):
+        angle = 0.0
+        dx = x2 - x1
+        dy = y2 - y1
+        if x2 == x1:
+            angle = np.pi / 2.0
+            if y2 == y1 :
+                angle = 0.0
+            elif y2 < y1 :
+                angle = 3.0 * np.pi / 2.0
+        elif x2 > x1 and y2 > y1:
+            angle = np.arctan(dx / dy)
+        elif x2 > x1 and y2 < y1 :
+            angle = np.pi / 2 + np.arctan(-dy / dx)
+        elif x2 < x1 and y2 < y1 :
+            angle = np.pi + np.arctan(dx / dy)
+        elif x2 < x1 and y2 > y1 :
+            angle = 3.0 * np.pi / 2.0 + np.arctan(dy / -dx)
+        return (angle * 180 / np.pi)
+
+    def GetCross(self, p1, p2, p):
+        return (p2[0] - p1[0]) * (p[1] - p1[1]) - (p[0] - p1[0]) * (p2[1] - p1[1])
+
+    def IsPointInMatrix(self, p1, p2, p3, p4, p):
+        isPointIn = self.GetCross(p1, p2, p) * self.GetCross(p3, p4, p) >= 0 and self.GetCross(p2, p3, p) * self.GetCross(p4, p1, p) >= 0
+        return isPointIn
+
     def calculate_SNR(self, uePower, gain, N0):
         return (uePower * gain) / N0

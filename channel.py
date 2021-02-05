@@ -24,22 +24,22 @@ class Channel():
         self.numRB = config['numRB']
 
         #Uplink transmit gain
-        self.gain_C2BS = np.zeros((self.numCUE, self.numRB))                        #二維陣列, CUE - BS在每個RB上的Gain
-        self.gain_D_up = np.zeros((self.numD2D, self.maxReciver, self.numRB))       #三維陣列, D2D Tx - RX在uplink每個RB上的Gain
+        self.gain_C2BS = np.zeros((self.numCUE, self.numRB))                                    #二維陣列, CUE - BS在每個RB上的Gain
+        self.gain_D_up = np.zeros((self.numD2D, self.maxReciver, self.numRB))                   #三維陣列, D2D Tx - RX在uplink每個RB上的Gain
 
         #Uplink interference gain
-        self.gain_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver))       #四維陣列, CUE - D2D所有RX在每個RB上的Gain
-        self.gain_D2BS = np.zeros((self.numD2D))                                    #三維陣列, D2D Tx - BS在每個RB上的Gain
-        self.gain_DiDj_up = np.zeros((self.numD2D, self.numD2D, self.maxReciver))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain
+        self.gain_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver, self.numRB))       #四維陣列, CUE - D2D所有RX在每個RB上的Gain
+        self.gain_D2BS = np.zeros((self.numD2D, self.numRB))                                    #二維陣列, D2D Tx - BS在每個RB上的Gain
+        self.gain_DiDj_up = np.zeros((self.numD2D, self.numD2D, self.maxReciver, self.numRB))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain
 
         #Downlink transmit gain
-        self.gain_BS2C = np.zeros((self.numCUE, self.numRB))                        #二維陣列, BS - CUE在每個RB上的Gain
-        self.gain_D_dw = np.zeros((self.numD2D, self.numRB, self.maxReciver))       #三維陣列, D2D Tx - RX在downlink每個RB上的Gain
+        self.gain_BS2C = np.zeros((self.numCUE, self.numRB))                                    #二維陣列, BS - CUE在每個RB上的Gain
+        self.gain_D_dw = np.zeros((self.numD2D, self.numRB, self.maxReciver, self.numRB))       #三維陣列, D2D Tx - RX在downlink每個RB上的Gain
 
         #Downlink interference gain
-        self.gain_BS2D = np.zeros((1, self.numD2D, self.maxReciver))                #四維陣列, BS - D2D所有RX在每個RB上的Gain
-        self.gain_D2C = np.zeros((self.numD2D, self.numCUE))                        #三維陣列, D2D Tx - CUE在每個RB上的Gain
-        self.gain_DiDj_dw = np.zeros((self.numD2D, self.numD2D, self.maxReciver))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain 
+        self.gain_BS2D = np.zeros((self.numD2D, self.maxReciver, self.numRB))                   #二維陣列, BS - D2D所有RX在每個RB上的Gain
+        self.gain_D2C = np.zeros((self.numD2D, self.numCUE, self.numRB))                        #三維陣列, D2D Tx - CUE在每個RB上的Gain
+        self.gain_DiDj_dw = np.zeros((self.numD2D, self.numD2D, self.maxReciver, self.numRB))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain 
         
 ###################################Channel Gain of Uplink in cell system####################################
     def cell_uplink(self):
@@ -131,4 +131,8 @@ if __name__ == '__main__':
     numD2DReciver = model.get_numD2DReciver()
 
     Gain = Channel(dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver)
-    g_b, g_d = Gain.cell_uplink()
+    g_c2b, g_d = Gain.cell_uplink()
+    g_b2c, g_d = Gain.cell_downlink()
+    g_c2d, g_d2b, g_dij = Gain.inte_uplink()
+    g_b2d, g_d2c, g_dij = Gain.inte_downlink()
+    

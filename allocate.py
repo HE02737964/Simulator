@@ -36,7 +36,7 @@ class Allocate():
         self.schedule = np.zeros((self.totalBeam, 4))               #波束範圍座標(此處假設為扇形的兩端點座標，所以有4個點)
 
 #############################################Uplink CUE排程##################################################
-    def alloc_uplink(self, c_x, c_y, g_b, g_d):
+    def alloc_uplink(self, c_x, c_y, g_c, g_d):
         cueIndex = np.arange(self.numCUE)                                               #CUE索引
         candicateUE = np.sort(np.random.choice(cueIndex, size=int(self.numCUE * (self.perScheduleCUE/100)), replace=False))     #根據比例隨機挑選要傳資料的CUE
         
