@@ -195,7 +195,7 @@ class Allocate():
                     minSNR = ueSNR_db_rb[i][j]
                     ueSNR_db[i] = ueSNR_db_rb[i][j]
         
-        return beamCandicate, candicateUE, ueMinSINR_dB, ueSNR_db, self.firPb, assignRB 
+        return beamCandicate, candicateUE, ueMinSINR_dB, ueSNR_db, self.firPb, assignRB, self.schedule
 
 if __name__ == '__main__':
     x = scenario.Genrator()
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     # allocate.alloc_uplink(c_x, c_y, g_c, g_d, directCUE, omnidirectCUE)
 
     for i in range(8):
-        beamCandicate, candicateUE, ueMinSINR_dB, ueSNR_db, firPb, assignRB  = allocate.alloc_downlink(i, c_x, c_y, g_b, g_d)
+        beamCandicate, candicateUE, ueMinSINR_dB, ueSNR_db, firPb, assignRB, beamSector  = allocate.alloc_downlink(i, c_x, c_y, g_b, g_d)
         candicateUE, bsMinSINR_dB, bsSNR_db, powerUE, assignRB = allocate.alloc_uplink(c_x, c_y, g_c, g_d)
 
     # x.draw_model()
