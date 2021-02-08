@@ -35,15 +35,15 @@ class Method():
 #####################################Uplink interference measurement########################################
     def inte_measure_uplink(self, dis_C2BS, dis_C2D, dis_D, dis_D2BS, dis_DiDj, numD2DReciver, candicateUE, directCUE, omnidirectCUE, directD2D, omnidirectD2D):
         #CUE對D2D的干擾
-        i_d2d_rx = []                                                       #三維陣列,表示D2D Tx中的Rx被CUE干擾(1=有,0=無)
-        i_d2d_up = []                     #二維陣列,表示D2D被CUE干擾(1=有,0=無)
-        i_d2b_up = []
+        i_d2d_rx = []                                               #Dict,每個D2D Rx包含被哪些CUE和D2D Tx干擾
+        i_d2d_up = []                                               #Dict,每個D2D被哪些CUE和D2D Tx干擾
+        i_d2b_up = []                                               #List,BS被哪些D2D Tx干擾
 
         for tx in range(self.numD2D):
             t = []
             for rx in range(numD2DReciver[tx]):
                 r = {}
-                r_cue = {'cue':[]}
+                r_cue = {'cue':[]}                                  #每個rx被哪些CUE干擾
                 for cue in candicateUE:
                     #以CUE為圓心，BS為半徑，判斷D2D Rx是否在圓形範圍裡
                     if cue in omnidirectCUE and dis_C2BS[cue] >= dis_C2D[cue][tx][rx]:
@@ -72,14 +72,15 @@ class Method():
             r_d2d = []
             for rx in range(numD2DReciver[tx]):
                 r = {}
-                r_dij = {'d2d':[]}
+                r_cue = {'d2d':[]}
                 for d2d in range(self.numD2D):
                     longDisReciver = max(dis_D[tx])
+                    #以D2D Tx為圓心，最遠的Rx為半徑，判斷BS是否在圓形範圍裡
                     if d2d in omnidirectD2D and max(dis_D[d2d]) >= dis_D2BS[d2d] and d2d not in i_d2b_up:
                         i_d2b_up.append(d2d)
-                    #以D2D Tx為圓心，Rx最遠為半徑，判斷BS和其他D2D Rx是否在圓形範圍裡
+                    #以D2D Tx為圓心，最遠的Rx為半徑，判斷BS和其他D2D Rx是否在圓形範圍裡
                     if d2d in omnidirectD2D and max(dis_D[d2d]) >= dis_DiDj[d2d][tx][rx] and d2d != tx:
-                        r_dij['d2d'].append(d2d)
+                        r_cue['d2d'].append(d2d)
                         if d2d not in r_d2d:
                             r_d2d.append(d2d)
                     #以D2D Tx和他所有的D2D Rx兩點,判斷其他D2D Rx是否在矩形範圍裡
@@ -97,17 +98,18 @@ class Method():
                             p3 = (self.tx_pos[0][d2d] + deltaX, self.tx_pos[1][d2d] + deltaY)
                             p4 = (self.tx_pos[0][d2d] - deltaX, self.tx_pos[1][d2d] - deltaY)
                             #判斷D2D Rx(p點)是否在矩形的4個頂點(p1,p2,p3,p4)內
-                            if self.tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in r_dij['d2d']:
-                                r_dij['d2d'].append(d2d)
+                            if self.tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in r_cue['d2d']:
+                                r_cue['d2d'].append(d2d)
                                 if d2d not in r_d2d:
                                     r_d2d.append(d2d)
-                i_d2d_rx[tx][rx].update(r_dij)
+                i_d2d_rx[tx][rx].update(r_cue)
             # i_d2d_up.append(r_d2d)
             
         i_d2d_rx = np.asarray(i_d2d_rx, dtype=object)
-        print(i_d2d_rx) #incorrect
+        # print(i_d2d_rx) #incorrect
         # print(i_d2d_up) #incorrect
         print(i_d2b_up) #correct
+        print(self.tx_pos)
 ####################################Downlink interference measurement#######################################
     def inte_measure_downlink(self, dis_D, dis_D2C, numD2DReciver, candicateUE, beamCandicate, beamSector, directCUE, omnidirectCUE, directD2D, omnidirectD2D):
         i_d2d_rx = [] #interfernece tx to each rx
