@@ -72,23 +72,21 @@ class Method():
             r_d2d = []
             for rx in range(numD2DReciver[tx]):
                 r = {}
-                r_cue = {'d2d':[]}
+                r_dij = {'d2d':[]}
                 for d2d in range(self.numD2D):
-                    longDisReciver = max(dis_D[tx])
                     #以D2D Tx為圓心，最遠的Rx為半徑，判斷BS是否在圓形範圍裡
                     if d2d in omnidirectD2D and max(dis_D[d2d]) >= dis_D2BS[d2d] and d2d not in i_d2b_up:
                         i_d2b_up.append(d2d)
-                    #以D2D Tx為圓心，最遠的Rx為半徑，判斷BS和其他D2D Rx是否在圓形範圍裡
+                    #以D2D Tx為圓心，最遠的Rx為半徑，判斷其他D2D Rx是否在圓形範圍裡
                     if d2d in omnidirectD2D and max(dis_D[d2d]) >= dis_DiDj[d2d][tx][rx] and d2d != tx:
-                        r_cue['d2d'].append(d2d)
-                        if d2d not in r_d2d:
-                            r_d2d.append(d2d)
+                        r_dij['d2d'].append(d2d)
                     #以D2D Tx和他所有的D2D Rx兩點,判斷其他D2D Rx是否在矩形範圍裡
                     elif d2d in directD2D and d2d != tx:
                         #D2D Tx(干擾端)的每一個Rx
                         for d_rx in range(numD2DReciver[d2d]):
                             #先求出Tx與Rx的方位角
-                            p = (self.rx_pos[0][tx][rx], self.rx_pos[1][tx][rx])
+                            p_rx = (self.rx_pos[0][tx][rx], self.rx_pos[1][tx][rx])
+                            p_bs = (0, 0)
                             azimuth = self.tool.azimuthAngle(self.tx_pos[0][d2d], self.tx_pos[1][d2d], self.rx_pos[0][d2d][d_rx], self.rx_pos[1][d2d][d_rx])
                             #利用方位角與距離求出偏移量,即可得到矩形的4個頂點
                             deltaX = np.round(self.beamWide * np.cos(azimuth-90))
@@ -98,18 +96,27 @@ class Method():
                             p3 = (self.tx_pos[0][d2d] + deltaX, self.tx_pos[1][d2d] + deltaY)
                             p4 = (self.tx_pos[0][d2d] - deltaX, self.tx_pos[1][d2d] - deltaY)
                             #判斷D2D Rx(p點)是否在矩形的4個頂點(p1,p2,p3,p4)內
-                            if self.tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in r_cue['d2d']:
-                                r_cue['d2d'].append(d2d)
-                                if d2d not in r_d2d:
-                                    r_d2d.append(d2d)
-                i_d2d_rx[tx][rx].update(r_cue)
-            # i_d2d_up.append(r_d2d)
-            
-        i_d2d_rx = np.asarray(i_d2d_rx, dtype=object)
-        # print(i_d2d_rx) #incorrect
-        # print(i_d2d_up) #incorrect
-        print(i_d2b_up) #correct
-        print(self.tx_pos)
+                            if self.tool.IsPointInMatrix(p1, p2, p3, p4, p_rx) and d2d not in r_dij['d2d']:
+                                r_dij['d2d'].append(d2d)
+                            if self.tool.IsPointInMatrix(p1, p2, p3, p4, p_bs) and d2d not in i_d2b_up:
+                                i_d2b_up.append(d2d)
+                                sorted(i_d2b_up)
+                i_d2d_rx[tx][rx].update(r_dij)
+        for tx in i_d2d_rx:
+            i = {'cue':[], 'd2d':[]}
+            for rx in tx:
+                for inte in rx['cue']:
+                    if inte not in i['cue']:
+                        i['cue'].append(inte)
+                for inte in rx['d2d']:
+                    if inte not in i['d2d']:
+                        i['d2d'].append(inte)
+            i_d2d_up.append(i)
+        # i_d2d_rx = np.asarray(i_d2d_rx, dtype=object)
+        # i_d2d_up = np.asarray(i_d2d_up, dtype=object)
+        # i_d2b_up = np.sort(np.asarray(i_d2b_up, dtype=object))
+        return i_d2d_rx, i_d2d_up, i_d2b_up
+
 ####################################Downlink interference measurement#######################################
     def inte_measure_downlink(self, dis_D, dis_D2C, numD2DReciver, candicateUE, beamCandicate, beamSector, directCUE, omnidirectCUE, directD2D, omnidirectD2D):
         i_d2d_rx = [] #interfernece tx to each rx
@@ -164,6 +171,11 @@ class Method():
                             #判斷D2D Rx(p點)是否在矩形的4個頂點(p1,p2,p3,p4)內
                             if self.tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in r_dij['d2d']:
                                 r_dij['d2d'].append(d2d)
+                            for cue in range(self.numCUE):
+                                p_cue = (self.cue_pos[0][cue], self.cue_pos[1][cue])
+                                if self.tool.IsPointInMatrix(p1, p2, p3, p4, p_cue) and d2d not in i_d2c_dw[cue]:
+                                    i_d2c_dw[cue].append(d2d)
+                                    sorted(i_d2c_dw[cue])
                 i_d2d_rx[tx][rx].update(r_dij)
 
         for tx in i_d2d_rx:
@@ -176,13 +188,34 @@ class Method():
                     if inte not in i['d2d']:
                         i['d2d'].append(inte)
             i_d2d_dw.append(i)
+        # i_d2d_rx = np.asarray(i_d2d_rx, dtype=object)
+        # i_d2d_dw = np.asarray(i_d2d_dw, dtype=object)
+        return i_d2d_rx, i_d2d_dw, i_d2c_dw
 
-        i_d2d_rx = np.asarray(i_d2d_rx, dtype=object)
-        i_d2d_dw = np.asarray(i_d2d_dw, dtype=object)
+    def find_root_d2d_uplink(self, i_d2d_rx, i_d2d, i_d2b, time, S, data):
+        i_len = np.zeros(self.numD2D)
+        for tx in range(self.numD2D):
+            i_len[tx] = len(i_d2d[tx]['cue']) + len(i_d2d[tx]['d2d']) + 1
 
-        # print(i_d2d_rx)
-        # print(i_d2c_dw)
-        # print(i_d2d_dw)
+        i_len = np.ones(self.numD2D)
+        priority = (data / i_len) * (time / S)
+        priority = time / S
+        sort_priority = (-priority).argsort()
+
+        root_d2d = []
+        for d2d in sort_priority:
+            flag = True
+            if not i_d2d[d2d]['cue'] and d2d not in i_d2b: #CUE not interfernece D2D and D2D not interference BS
+                if not (set(i_d2d[d2d]['d2d']) & set(root_d2d)): #the root list any element not interference d2d
+                    for root in root_d2d:
+                        if d2d in i_d2d[root]['d2d']: #D2D interference root list element
+                            flag = False
+                    if flag:
+                        root_d2d.append(d2d)
+        for i in root_d2d:
+            S[i] += 1
+            
+        return root_d2d, S
 
 if __name__ == '__main__':
     scena = scenario.Genrator()
@@ -197,12 +230,21 @@ if __name__ == '__main__':
     g_c2b, g_d = gain.cell_uplink()
     g_b2c, g_d = gain.cell_downlink()
 
-    candicateUE, bsMinSINR_dB, bsSNR_db, powerUE, assignRB = alloc.alloc_uplink(c_x, c_y, g_c2b, g_d)
+    # candicateUE, bsMinSINR_dB, bsSNR_db, powerUE, assignRB = alloc.alloc_uplink(c_x, c_y, g_c2b, g_d)
     beamCandicate, candicateUE, ueMinSINR_dB, ueSNR_db, firPb, assignRB, beamSector = alloc.alloc_downlink(0, c_x, c_y, g_b2c, g_d)
 
     interference = Method(c_x, c_y, d_x, d_y, r_x, r_y)
 
-    interference.inte_measure_uplink(dis_C2BS, dis_C2D, dis_D, dis_D2BS, dis_DiDj, numD2DReciver, candicateUE, directCUE, omnidirectCUE, directD2D, omnidirectD2D)
+    # i_d2d_rx, i_d2d_up, i_d2b_up = interference.inte_measure_uplink(dis_C2BS, dis_C2D, dis_D, dis_D2BS, dis_DiDj, numD2DReciver, candicateUE, directCUE, omnidirectCUE, directD2D, omnidirectD2D)
     interference.inte_measure_downlink(dis_D, dis_D2C, numD2DReciver, candicateUE, beamCandicate, beamSector, directCUE, omnidirectCUE, directD2D, omnidirectD2D)
 
-    scena.draw_model()
+    S = np.ones(10)
+    data = np.ones(10)
+    for i in range(1,100):
+        candicateUE, bsMinSINR_dB, bsSNR_db, powerUE, assignRB = alloc.alloc_uplink(c_x, c_y, g_c2b, g_d)
+        i_d2d_rx, i_d2d_up, i_d2b_up = interference.inte_measure_uplink(dis_C2BS, dis_C2D, dis_D, dis_D2BS, dis_DiDj, numD2DReciver, candicateUE, directCUE, omnidirectCUE, directD2D, omnidirectD2D)
+        data = np.random.randint(low=1, high=712, size=10)
+        root, S = interference.find_root_d2d_uplink(i_d2d_rx, i_d2d_up, i_d2b_up, i, S, data)
+        print(S)
+        print(sorted(root))
+    # scena.draw_model()

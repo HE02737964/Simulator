@@ -1,12 +1,12 @@
 {
 	"radius" : 500,
-	"numCUE" : 4,
+	"numCUE" : 25,
 	"numD2D" : 10,
 	"numRB" : 2,
 	"maxReciver" : 3,
-	"d2dDistance" : 300,
+	"d2dDistance" : 30,
 	"directCUE" : 50,
-	"directD2D" : 0,
+	"directD2D" : 50,
 	"perUeRb" : 1,
 
 	"perScheduleCUE" : 50,
@@ -27,7 +27,7 @@
 	"dataCUEMin" : 1,
 	"dataD2DMax" : 712,
 	"dataD2DMin" : 1,
-	"beamWide" : 250,
+	"beamWide" : 50,
 
 	"ThresInter" : 1
 }
