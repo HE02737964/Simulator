@@ -74,23 +74,23 @@ class Convert:
         elif sinr >= 22.7:
             return 15
     
-    def CQI_MCS_mapping(self, CQI):
-        Qm = 0
-        if CQI >= 1 and CQI <=6:
-            Qm = 2
-        elif CQI >= 7 and CQI <= 9:
-            Qm = 4
-        elif CQI >= 10 and CQI <= 15:
-            Qm = 6
-        return Qm
+    # def CQI_MCS_mapping(self, CQI):
+    #     Qm = 0
+    #     if CQI >= 1 and CQI <=6:
+    #         Qm = 2
+    #     elif CQI >= 7 and CQI <= 9:
+    #         Qm = 4
+    #     elif CQI >= 10 and CQI <= 15:
+    #         Qm = 6
+    #     return Qm
 
-    def MCS_TBS_mapping(self, MCS):
-        if MCS == 2:
-            return np.random.randint(0,9)
-        elif MCS == 4:
-            return np.random.randint(9,15)
-        elif MCS == 6:
-            return np.random.randint(15,26)
+    # def MCS_TBS_mapping(self, MCS):
+    #     if MCS == 2:
+    #         return np.random.randint(0,9)
+    #     elif MCS == 4:
+    #         return np.random.randint(9,15)
+    #     elif MCS == 6:
+    #         return np.random.randint(15,26)
     
     def TBS_CQI_mapping(self, tbs):
         CQI = 0
@@ -135,13 +135,17 @@ class Tool:
             f.close()
         return tbs
 
-    def Throughput(self, index, data):
-        tbs = self.TBS()
-        rb = 0
-        for throughput in tbs[str(index)]:
-            if data > throughput:
-                rb += 1
-        return rb+1
+    # def Throughput(self, index, data):
+    #     tbs = self.TBS()
+    #     rb = 0
+    #     for throughput in tbs[str(index)]:
+    #         if data > throughput:
+    #             rb += 1
+    #     return rb+1
+
+    # def throughput_to_tbs(self, numRB, data):
+    #     tbs = self.TBS()
+
     
     def perRB_TBS_mapping(self, numRB, data):
         tbs = self.TBS()
@@ -190,3 +194,6 @@ class Tool:
 
     def calculate_SNR(self, uePower, gain, N0):
         return (uePower * gain) / N0
+
+    def Calculate_SINR(self, power, gain, N0, interference):
+        return (power * gain) / (N0 + interference)

@@ -34,7 +34,7 @@ class Channel():
 
         #Downlink transmit gain
         self.gain_BS2C = np.zeros((self.numCUE, self.numRB))                                    #二維陣列, BS - CUE在每個RB上的Gain
-        self.gain_D_dw = np.zeros((self.numD2D, self.numRB, self.maxReciver, self.numRB))       #三維陣列, D2D Tx - RX在downlink每個RB上的Gain
+        self.gain_D_dw = np.zeros((self.numD2D, self.maxReciver, self.numRB))       #三維陣列, D2D Tx - RX在downlink每個RB上的Gain
 
         #Downlink interference gain
         self.gain_BS2D = np.zeros((self.numD2D, self.maxReciver, self.numRB))                   #二維陣列, BS - D2D所有RX在每個RB上的Gain

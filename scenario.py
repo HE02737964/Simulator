@@ -28,12 +28,13 @@ class Genrator():
 
         self.numD2DReciver = np.random.randint(low=1, high=self.maxReciver+1, size=self.numD2D) #根據參數隨機生成D2D Rx數量 
         self.dis_C2BS = np.zeros((self.numCUE))                                                 #一維陣列, CUE - BS的距離
+        self.dis_D2BS = np.zeros((self.numD2D))                                                 #一維陣列, D2D Tx - BS的距離
         self.dis_D = np.zeros((self.numD2D, self.maxReciver))                                   #二維陣列, D2D Tx - RX的距離
-        self.dis_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver))                    #三維陣列, CUE - D2D所有RX的距離
-        self.dis_D2C = np.zeros((self.numD2D, self.numCUE))                                     #二維陣列, D2D Tx - CUE的距離
         self.dis_BS2D = np.zeros((self.numD2D, self.maxReciver))                                #二維陣列, BS - D2D所有RX的距離
+        self.dis_D2C = np.zeros((self.numD2D, self.numCUE))                                     #二維陣列, D2D Tx - CUE的距離
+        self.dis_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver))                    #三維陣列, CUE - D2D所有RX的距離
         self.dis_DiDj = np.zeros((self.numD2D, self.numD2D, self.maxReciver))                   #三維陣列, D2D Tx i - D2D RX j的距離
-        self.dis_D2BS = np.zeros((self.numD2D))                                                 #一維陣列, D2D Tx - BS的距離    
+            
 
 #############################################生成CUE位置######################################################
     def genrator(self):
