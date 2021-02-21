@@ -74,24 +74,6 @@ class Convert:
         elif sinr >= 22.7:
             return 15
     
-    # def CQI_MCS_mapping(self, CQI):
-    #     Qm = 0
-    #     if CQI >= 1 and CQI <=6:
-    #         Qm = 2
-    #     elif CQI >= 7 and CQI <= 9:
-    #         Qm = 4
-    #     elif CQI >= 10 and CQI <= 15:
-    #         Qm = 6
-    #     return Qm
-
-    # def MCS_TBS_mapping(self, MCS):
-    #     if MCS == 2:
-    #         return np.random.randint(0,9)
-    #     elif MCS == 4:
-    #         return np.random.randint(9,15)
-    #     elif MCS == 6:
-    #         return np.random.randint(15,26)
-    
     def TBS_CQI_mapping(self, tbs):
         CQI = 0
         if tbs ==0 or tbs == 1:
@@ -125,8 +107,7 @@ class Convert:
         return CQI
 
     def SNR_to_Power(self, snr, gain, N0):
-        snr_mw = self.dB_to_mW(snr)
-        return ((snr_mw * N0) / gain)
+        return ((snr * N0) / gain)
 
 class Tool:
     def TBS(self):
@@ -134,36 +115,47 @@ class Tool:
             tbs = json.load(f)
             f.close()
         return tbs
-
-    # def Throughput(self, index, data):
-    #     tbs = self.TBS()
-    #     rb = 0
-    #     for throughput in tbs[str(index)]:
-    #         if data > throughput:
-    #             rb += 1
-    #     return rb+1
-
-    # def throughput_to_tbs(self, numRB, data):
-    #     tbs = self.TBS()
-
     
-    def perRB_TBS_mapping(self, numRB, data):
+    def RB_TBS_mapping(self, numRB, data):
         tbs = self.TBS()
-        tbs_index = 0
+        tbsIndex = 0
         for index in tbs:
             if index == '26A':
                 break
             if tbs[index][numRB-1] >= data:
-                tbs_index = index
+                tbsIndex = index
                 break
-        return int(tbs_index)
+        return int(tbsIndex)
 
-    # def tbs_rb__throughput(self, index, rb):
-    #     tbs = self.TBS()
-    #     throughput = tbs[str(index)]
+    def data_tbs_mapping(self, data, numRB):
+        tbs = self.TBS()
+        tbsIndex = 0
+        for rb in range(numRB):     #用較少RB,較高的TBS index
+            for index in tbs:
+                if index == "26A":
+                    break
+                if tbs[index][rb] >= data:
+                    return int(index), rb+1
+        # for index in tbs:         #用較多RB,較低的TBS index
+        #     if index == "26A":
+        #         break
+        #     for rb in range(numRB):
+        #         if tbs[index][rb] >= data:
+        #             return int(index), rb+1
 
-    def isInsideSector(self, u, v):
+    def IsInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0
+
+    def GetRectanglePoint(self, tx, rx, beamWide):
+        azimuth = self.azimuthAngle(tx[0], tx[1], rx[0], rx[1])
+        #利用方位角與距離求出偏移量,即可得到矩形的4個頂點
+        deltaX = np.round(beamWide * np.cos(azimuth-90))
+        deltaY = np.round(beamWide * np.sin(azimuth-90))
+        p1 = (rx[0] - deltaX, rx[1] - deltaY)
+        p2 = (rx[0] + deltaX, rx[1] + deltaY)
+        p3 = (tx[0] + deltaX, tx[1] + deltaY)
+        p4 = (tx[0] - deltaX, tx[1] - deltaY)
+        return p1, p2, p3, p4
 
     def azimuthAngle(self, x1, y1, x2, y2):
         angle = 0.0
@@ -190,6 +182,13 @@ class Tool:
 
     def IsPointInMatrix(self, p1, p2, p3, p4, p):
         isPointIn = self.GetCross(p1, p2, p) * self.GetCross(p3, p4, p) >= 0 and self.GetCross(p2, p3, p) * self.GetCross(p4, p1, p) >= 0
+        return isPointIn
+
+    def IsPointInSector(self, beamPoint, ue_point):
+        #判斷點有沒有在波束的涵蓋範圍內
+        sectorStart = (beamPoint[0], beamPoint[1])  #扇形波束的起始座標
+        sectorEnd = (beamPoint[2], beamPoint[3])    #扇形波束的結束座標
+        isPointIn = not self.IsInsideSector(sectorStart, ue_point) and self.IsInsideSector(sectorEnd, ue_point)
         return isPointIn
 
     def calculate_SNR(self, uePower, gain, N0):

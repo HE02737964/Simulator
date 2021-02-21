@@ -1,138 +1,57 @@
 import numpy as np
-import json
-import scenario
 
 class Channel():
-###############################################初始化########################################################
-    def __init__(self, dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver):
-        with open("config.json", "r") as f:
-            config = json.load(f)
-            f.close()
-
-        self.dis_C2BS = dis_C2BS
-        self.dis_D = dis_D
-        self.dis_C2D = dis_C2D
-        self.dis_D2C = dis_D2C
-        self.dis_BS2D = dis_BS2D
-        self.dis_DiDj = dis_DiDj
-        self.dis_D2BS = dis_D2BS
+    def __init__(self, numRB, numD2DReciver):
+        self.numRB = numRB
         self.numD2DReciver = numD2DReciver
 
-        self.numCUE = config['numCUE']
-        self.numD2D = config['numD2D']
-        self.maxReciver = config['maxReciver']
-        self.numRB = config['numRB']
+    def pathLossScale(self, distance):
+        pathLoss = 128.1 + 37.6 * np.log10(distance)        #計算 Tx - Rx的path loss
+        pathLossScale = 10**(pathLoss/10)                   #將path loss轉為linear scale
+        return pathLossScale
 
-        #Uplink transmit gain
-        self.gain_C2BS = np.zeros((self.numCUE, self.numRB))                                    #二維陣列, CUE - BS在每個RB上的Gain
-        self.gain_D_up = np.zeros((self.numD2D, self.maxReciver, self.numRB))                   #三維陣列, D2D Tx - RX在uplink每個RB上的Gain
-
-        #Uplink interference gain
-        self.gain_C2D = np.zeros((self.numCUE, self.numD2D, self.maxReciver, self.numRB))       #四維陣列, CUE - D2D所有RX在每個RB上的Gain
-        self.gain_D2BS = np.zeros((self.numD2D, self.numRB))                                    #二維陣列, D2D Tx - BS在每個RB上的Gain
-        self.gain_DiDj_up = np.zeros((self.numD2D, self.numD2D, self.maxReciver, self.numRB))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain
-
-        #Downlink transmit gain
-        self.gain_BS2C = np.zeros((self.numCUE, self.numRB))                                    #二維陣列, BS - CUE在每個RB上的Gain
-        self.gain_D_dw = np.zeros((self.numD2D, self.maxReciver, self.numRB))       #三維陣列, D2D Tx - RX在downlink每個RB上的Gain
-
-        #Downlink interference gain
-        self.gain_BS2D = np.zeros((self.numD2D, self.maxReciver, self.numRB))                   #二維陣列, BS - D2D所有RX在每個RB上的Gain
-        self.gain_D2C = np.zeros((self.numD2D, self.numCUE, self.numRB))                        #三維陣列, D2D Tx - CUE在每個RB上的Gain
-        self.gain_DiDj_dw = np.zeros((self.numD2D, self.numD2D, self.maxReciver, self.numRB))   #四維陣列, D2D Tx i - D2D RX j在downlink每個RB上的Gain 
+    def gainTx2BS(self, distance):
+        gain = np.zeros((len(distance), self.numRB))        #二維陣列, Tx - BS在每個RB上的Gain
         
-###################################Channel Gain of Uplink in cell system####################################
-    def cell_uplink(self):
-        pathLoss_cue = 128.1 + 37.6 * np.log10(self.dis_C2BS)                                   #計算CUE - BS的path loss
-        pathLossScale_cue = 10**(pathLoss_cue/10)                                               #將path loss轉為linear scale
+        pathLossScale = self.pathLossScale(distance)
+        fading = np.random.rayleigh(1, [len(distance), self.numRB]) #Rayleigh fading
+
+        gain = (fading**2) / pathLossScale[: , None]        #[: , None]轉變矩陣形狀(原始：NxK矩陣 / 1xN矩陣)
+        return gain
+
+    def gainTx2UE(self, distance):
+        gain = np.zeros((len(distance), len(distance[0]), self.numRB))          #三維陣列, D2D Tx - CUE在每個RB上的Gain
         
-        pathLoss_d2d = 128.1 + 37.6 * np.log10(self.dis_D)                                      #計算D2D Tx - D2D Rx的path loss
-        pathLossScale_d2d = 10**(pathLoss_d2d/10)                                               #將path loss轉為linear scale
+        pathLossScale = self.pathLossScale(distance)
+        fading = np.random.rayleigh(1, [len(distance), len(distance[0]), self.numRB])
 
-        fading_cue = np.random.rayleigh(1, [self.numCUE, self.numRB])                           #Rayleigh fading
-        fading_d2d = np.random.rayleigh(1, [self.numD2D, self.maxReciver, self.numRB])
+        gain = (fading**2) / pathLossScale[:, :, None]
+        return gain
 
-        self.gain_C2BS = (fading_cue**2) / pathLossScale_cue[: , None]                          #[: , None]轉變矩陣形狀(原始：NxK矩陣 / 1xN矩陣)
-        # self.gain_D_up = (fading_d2d**2) / pathLossScale_d2d[:, :, None]                      #下面那行解決numpy的除0錯誤
-        self.gain_D_up = np.divide((fading_d2d**2), pathLossScale_d2d[:, :, None], out=np.zeros_like(fading_d2d), where=pathLossScale_d2d[:,:,None] !=0)
+    def gainD2DRx(self, distance):
+        gain = np.zeros((len(distance), max(self.numD2DReciver), self.numRB))   #三維陣列, D2D Tx - RX在每個RB上的Gain
+
+        pathLossScale = self.pathLossScale(distance)
+        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver), self.numRB])
+
+        # gain = (fading**2) / pathLossScale[:, :, None]                        #下面那行解決numpy的除0錯誤
+        gain = np.divide((fading**2), pathLossScale[:, :, None], out=np.zeros_like(fading), where=pathLossScale[:,:,None] !=0)
+        return gain
+
+    def gainBS2Rx(self, distance):
+        gain = np.zeros((len(distance), max(self.numD2DReciver), self.numRB))   #二維陣列, BS - D2D所有RX在每個RB上的Gain
+
+        pathLossScale = self.pathLossScale(distance)
+        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver), self.numRB])
         
-        return self.gain_C2BS, self.gain_D_up
+        gain = np.divide((fading**2), pathLossScale[:, :, None], out=np.zeros_like(fading), where=pathLossScale[:, :, None] !=0)
+        return gain
 
-###################################Channel Gain of Downlink in cell system##################################
-    def cell_downlink(self):
-        pathLoss_bs = 128.1 + 37.6 * np.log10(self.dis_C2BS)                                    #計算BS - CUE的path loss
-        pathLossScale_bs = 10**(pathLoss_bs/10)                                                 #將path loss轉為linear scale
-        
-        pathLoss_d2d = 128.1 + 37.6 * np.log10(self.dis_D)                                      #計算D2D Tx - D2D Rx的path loss
-        pathLossScale_d2d = 10**(pathLoss_d2d/10)                                               #將path loss轉為linear scale
+    def gainTx2D2DRx(self, distance):
+        gain = np.zeros((len(distance), len(distance[0]), max(self.numD2DReciver), self.numRB))     #四維陣列, CUE - D2D所有RX在每個RB上的Gain
 
-        fading_bs = np.random.rayleigh(1, [self.numCUE, self.numRB])                            #Rayleigh fading
-        fading_d2d = np.random.rayleigh(1, [self.numD2D, self.maxReciver, self.numRB])
+        pathLossScale = self.pathLossScale(distance)
+        fading = np.random.rayleigh(1, [len(distance), len(distance[0]), max(self.numD2DReciver), self.numRB])
 
-        self.gain_BS2C = (fading_bs**2) / pathLossScale_bs[: , None]                            #[: , None]轉變矩陣形狀(原始：NxK矩陣 / 1xN矩陣)
-        # self.gain_D_dw = (fading_d2d**2) / pathLossScale_d2d[:, :, None]                      #下面那行解決numpy的除0錯誤
-        self.gain_D_dw = np.divide((fading_d2d**2), pathLossScale_d2d[:, :, None], out=np.zeros_like(fading_d2d), where=pathLossScale_d2d[:,:,None] !=0)
-
-        return self.gain_BS2C, self.gain_D_dw
-
-###################################Channel Gain of Uplink in interference###################################
-    def inte_uplink(self):
-        pathLoss_c2d = 128.1 + 37.6 * np.log10(self.dis_C2D)                                    #計算CUE - D2D Rx的path loss
-        pathLossScale_c2d = 10**(pathLoss_c2d/10)                                               #將path loss轉為linear scale
-
-        pathLoss_d2bs = 128.1 + 37.6 * np.log10(self.dis_D2BS)                                  #計算D2D Tx - BS的path loss
-        pathLossScale_d2bs = 10**(pathLoss_d2bs/10)                                             #將path loss轉為linear scale
-
-        pathLoss_didj = 128.1 + 37.6 * np.log10(self.dis_DiDj)                                  #計算D2D Tx - 其他D2D Rx的path loss
-        pathLossScale_didj = 10**(pathLoss_didj/10)                                             #將path loss轉為linear scale
-        
-        fading_c2d = np.random.rayleigh(1, [self.numCUE, self.numD2D, self.maxReciver, self.numRB]) #Rayleigh fading
-        fading_d2bs = np.random.rayleigh(1, [self.numD2D, self.numRB])
-        fading_didj = np.random.rayleigh(1, [self.numD2D, self.numD2D, self.maxReciver, self.numRB])
-
-        self.gain_C2D = np.divide((fading_c2d**2), pathLossScale_c2d[: ,:, :, None], out=np.zeros_like(fading_c2d), where=pathLossScale_c2d[: ,:, :, None] !=0)
-        self.gain_D2BS = (fading_d2bs**2) / pathLossScale_d2bs[:, None]
-        self.gain_DiDj_up = np.divide((fading_didj**2), pathLossScale_didj[: ,:, :, None], out=np.zeros_like(fading_didj), where=pathLossScale_didj[: ,:, :, None] !=0)
-
-        return self.gain_C2D, self.gain_D2BS, self.gain_DiDj_up
-
-##################################Channel Gain of Downlink in interference##################################
-    def inte_downlink(self):
-        pathLoss_bs2d = 128.1 + 37.6 * np.log10(self.dis_BS2D)                                  #計算BS - D2D Rx的path loss
-        pathLossScale_bs2d = 10**(pathLoss_bs2d/10)                                             #將path loss轉為linear scale
-
-        pathLoss_d2c = 128.1 + 37.6 * np.log10(self.dis_D2C)                                    #計算D2D Tx - CUE的path loss
-        pathLossScale_d2c = 10**(pathLoss_d2c/10)                                               #將path loss轉為linear scale
-
-        pathLoss_didj = 128.1 + 37.6 * np.log10(self.dis_DiDj)                                  #計算D2D Tx - 其他D2D Rx的path loss
-        pathLossScale_didj = 10**(pathLoss_didj/10)                                             #將path loss轉為linear scale
-        
-        fading_bs2d = np.random.rayleigh(1, [self.numD2D, self.maxReciver, self.numRB]) #Rayleigh fading
-        fading_d2c = np.random.rayleigh(1, [self.numD2D, self.numCUE, self.numRB])
-        fading_didj = np.random.rayleigh(1, [self.numD2D, self.numD2D, self.maxReciver, self.numRB])
-
-        self.gain_BS2D = np.divide((fading_bs2d**2), pathLossScale_bs2d[:, :, None], out=np.zeros_like(fading_bs2d), where=pathLossScale_bs2d[:, :, None] !=0)
-        self.gain_D2C = (fading_d2c**2) / pathLossScale_d2c[:, :, None]
-        self.gain_DiDj_dw = np.divide((fading_didj**2), pathLossScale_didj[: ,:, :, None], out=np.zeros_like(fading_didj), where=pathLossScale_didj[: ,:, :, None] !=0)
-
-        # for tx in range(self.numD2D):                                                         #常規寫法
-        #     for rxNum in range(self.numD2D):
-        #         for rx in range(self.numD2DReciver[rxNum]):
-        #             for rb in range(self.numRB):
-        #                 self.gain_DiDj_dw[tx][rxNum][rx][rb] = (fading_didj[tx][rxNum][rx][rb]**2) / pathLossScale_didj[tx][rxNum][rx]
-
-        return self.gain_BS2D, self.gain_D2C, self.gain_DiDj_dw
-
-if __name__ == '__main__':
-    model = scenario.Genrator()
-
-    c_x, c_y, d_x, d_y, r_x, r_y = model.genrator()
-    dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS = model.distance()
-    numD2DReciver = model.get_numD2DReciver()
-
-    Gain = Channel(dis_C2BS, dis_D, dis_C2D, dis_D2C, dis_BS2D, dis_DiDj, dis_D2BS, numD2DReciver)
-    g_c2b, g_d = Gain.cell_uplink()
-    g_b2c, g_d = Gain.cell_downlink()
-    g_c2d, g_d2b, g_dij = Gain.inte_uplink()
-    g_b2d, g_d2c, g_dij = Gain.inte_downlink()
-    
+        gain = np.divide((fading**2), pathLossScale[: ,:, :, None], out=np.zeros_like(fading), where=pathLossScale[: ,:, :, None] !=0)
+        return gain
