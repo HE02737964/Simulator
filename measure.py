@@ -14,7 +14,7 @@ def UplinkCUE(numCUE, numD2D, beamWide, dis_c2b, dis_c2d, ue_point, rx_point, nu
             r_cue = {'cue':[]}      #每個rx被哪些CUE干擾
             for cue in candicate:
                 #以CUE為圓心，BS為半徑，判斷D2D Rx是否在圓形範圍裡
-                if cue in omnidirectCUE and dis_c2b[cue] >= dis_c2d[cue][d2d][rx]:
+                if cue in omnidirectCUE and dis_c2b[cue][0] >= dis_c2d[cue][d2d][rx]:
                     r_cue['cue'].append(cue)
                 #以CUE和BS兩點,判斷D2D Rx是否在矩形範圍裡
                 elif cue in directCUE:
@@ -59,12 +59,34 @@ def Cell_in_OmniD2D(numCell, numD2D, dis_d2d, dis_d2c, candicate, omnidirectD2D)
                 if d2d in omnidirectD2D and max(dis_d2d[d2d]) >= dis_d2c[d2d][cell] and d2d not in r_c and cell in candicate:
                     r_c.append(d2d)
             else:
-                if d2d in omnidirectD2D and max(dis_d2d[d2d]) >= dis_d2c[d2d] and d2d not in r_c:
+                if d2d in omnidirectD2D and max(dis_d2d[d2d]) >= dis_d2c[d2d][cell] and d2d not in r_c:
                     r_c.append(d2d)
         i_d2c.append(r_c)
     return i_d2c
 
-def FromD2DInterference(numCell, numD2D, beamWide, dis_d2d, dis_dij, numD2DReciver, i_d2d_rx, i_d2c, ue_point, tx_point, rx_point, directD2D, omnidirectD2D, candicate):
+def Cell_in_DirectD2D(numCell, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate, i_d2c, directD2D, beamWide):
+    tool = tools.Tool()
+    for d2d in range(numD2D):       #對別人造成干擾的D2D
+        #以d2d Tx和他所有的D2D Rx兩點,判斷其他D2D Rx是否在矩形範圍裡
+        if d2d in directD2D:
+            #d2d Tx(干擾端)的每一個Rx
+            for d2d_rx in range(numD2DReciver[d2d]):
+                p1,p2,p3,p4 = tool.GetRectanglePoint(tx_point[d2d], rx_point[d2d][d2d_rx], beamWide)
+                #判斷cell UE有無被D2D干擾
+                for cell in range(numCell):
+                    if numCell == 1:
+                        p = (0, 0)
+                        if tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in i_d2c[cell]:
+                            i_d2c[cell].append(d2d)
+                            i_d2c[cell].sort()
+                    else:
+                        p = (ue_point[cell][0], ue_point[cell][1])
+                        if tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in i_d2c[cell] and cell in candicate:
+                            i_d2c[cell].append(d2d)
+                            i_d2c[cell].sort()
+    return i_d2c
+
+def BetweenD2D(numD2D, beamWide, dis_d2d, dis_dij, numD2DReciver, i_d2d_rx, tx_point, rx_point, directD2D, omnidirectD2D):
     tool = tools.Tool()
     for tx in range(numD2D):
         r_d2d = []
@@ -75,7 +97,7 @@ def FromD2DInterference(numCell, numD2D, beamWide, dis_d2d, dis_dij, numD2DReciv
                 #以d2d Tx為圓心，其最遠的Rx為半徑，判斷其他D2D Rx是否在圓形範圍裡
                 if d2d in omnidirectD2D and max(dis_d2d[d2d]) >= dis_dij[d2d][tx][rx] and d2d != tx:
                     r_dij['d2d'].append(d2d)
-                    sorted(r_dij['d2d'])
+                    r_dij['d2d'].sort()
                 #以d2d Tx和他所有的D2D Rx兩點,判斷其他D2D Rx是否在矩形範圍裡
                 elif d2d in directD2D and d2d != tx:
                     #d2d Tx(干擾端)的每一個Rx
@@ -85,21 +107,11 @@ def FromD2DInterference(numCell, numD2D, beamWide, dis_d2d, dis_dij, numD2DReciv
                         #判斷D2D Rx(p點)是否在矩形的4個頂點(p1,p2,p3,p4)內
                         if tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in r_dij['d2d']:
                             r_dij['d2d'].append(d2d)
-                            sorted(r_dij['d2d'])
-                        
-                        #判斷cell UE有無被D2D干擾
-                        for cell in range(numCell):
-                            if numCell == 1:
-                                p = (0, 0)
-                                if tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in i_d2c[cell - 1]:
-                                    i_d2c[cell].append(d2d)
-                                    sorted(i_d2c[cell - 1])
-                            else:
-                                p = (ue_point[cell][0], ue_point[cell][1])
-                                if tool.IsPointInMatrix(p1, p2, p3, p4, p) and d2d not in i_d2c[cell] and cell in candicate:
-                                    i_d2c[cell].append(d2d)
-                                    sorted(i_d2c[cell])
+                            r_dij['d2d'].sort()
             i_d2d_rx[tx][rx].update(r_dij)
+    return i_d2d_rx
+
+def InterferenceD2D(i_d2d_rx):
     i_d2d = []
     for tx in i_d2d_rx:
         i = {'cue':[], 'd2d':[]}
@@ -111,4 +123,4 @@ def FromD2DInterference(numCell, numD2D, beamWide, dis_d2d, dis_dij, numD2DReciv
                 if inte not in i['d2d']:
                     i['d2d'].append(inte)
         i_d2d.append(i)
-    return i_d2d, i_d2d_rx, i_d2c
+    return i_d2d

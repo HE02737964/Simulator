@@ -33,7 +33,7 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, dataMin, dataMax, P
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         SINR[i] = upperSinr
         for rb in range(numRB):
-            power = convert.SNR_to_Power(upperSinr, g_c2b[i][rb], N0)
+            power = convert.SNR_to_Power(upperSinr, g_c2b[i][0][rb], N0)
             if power > Pmax:
                 power = Pmax
             if power < Pmin:
@@ -70,7 +70,7 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, dataMin, dataMax, P
         SINR[ue] = 0
         power_prb[ue] = 0
     
-    return candicate, minSINR, powerList, assignmentUE
+    return candicate, minSINR, powerList, assignmentUE, data
 
 def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, dataMin, dataMax, Pmax, Pmin, cqiLevel):
     tool = tools.Tool()
@@ -103,7 +103,7 @@ def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, dataMin, dataMax, Pmax, 
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         SINR[i] = upperSinr
         for rb in range(numRB):
-            power = convert.SNR_to_Power(upperSinr, g_c2b[i][rb], N0)
+            power = convert.SNR_to_Power(upperSinr, g_c2b[i][0][rb], N0)
             if power > Pmax:
                 power = Pmax
             if power < Pmin:
@@ -140,7 +140,7 @@ def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, dataMin, dataMax, Pmax, 
         SINR[ue] = 0
         power_prb[ue] = 0
 
-    return candicate, minSINR, powerList, assignmentUE
+    return candicate, minSINR, powerList, assignmentUE, data
 
 def getSectorPoint(radius, totalBeam):
     #得到所有波束的扇形座標

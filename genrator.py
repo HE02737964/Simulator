@@ -48,19 +48,13 @@ class Genrator():
                         break
         point = np.dstack([x,y])
         return point
-
-    def distanceTx2BS(self, tx_point):
-        dis_Tx2BS = np.zeros((len(tx_point)))
-        for i in range(len(tx_point)):
-            dis_Tx2BS[i] = np.sqrt( (tx_point[i][0]**2 + tx_point[i][1]**2) ) / 1000
-        return dis_Tx2BS
     
-    def distanceTx2UE(self, tx_point, rx_point):
-        dis_Tx2Rx = np.zeros((len(tx_point), len(rx_point)))
+    def distanceTx2Cell(self, tx_point, rx_point):
+        dis_Tx2Cell = np.zeros((len(tx_point), len(rx_point)))
         for tx in range(len(tx_point)):
             for rx in range(len(rx_point)):
-                dis_Tx2Rx[tx][rx] = np.sqrt( (tx_point[tx][0] - rx_point[rx][0])**2 + (tx_point[tx][1] - rx_point[rx][1])**2 ) / 1000
-        return dis_Tx2Rx
+                dis_Tx2Cell[tx][rx] = np.sqrt( (tx_point[tx][0] - rx_point[rx][0])**2 + (tx_point[tx][1] - rx_point[rx][1])**2 ) / 1000
+        return dis_Tx2Cell
 
     def distanceD2DRx(self, tx_point, rx_point, numD2DReciver):
         dis_Tx2Rx = np.zeros((len(tx_point), max(numD2DReciver)))
