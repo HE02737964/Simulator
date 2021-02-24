@@ -1,0 +1,125 @@
+import numpy as np
+
+def find_d2d_root(numCell, numD2D, i_d2d, i_d2c, time, scheduleTimes, data):
+    i_len = np.zeros(numD2D)
+    for tx in range(numD2D):
+        i_len[tx] = len(i_d2d[tx]['cue']) + len(i_d2d[tx]['d2d']) + 1 #干擾鄰居的數量
+
+    priority = (data / i_len) * (time / scheduleTimes)
+    sort_priority = (-priority).argsort()
+
+    root_d2d = []
+    for d2d in sort_priority:
+        flag = True
+        if not i_d2d[d2d]['cue']: 
+            for cell in range(numCell):
+                if d2d in i_d2c[cell]:
+                    flag = False
+            if not (set(i_d2d[d2d]['d2d']) & set(root_d2d)): #the root list any element not interference d2d
+                for root in root_d2d:
+                    if d2d in i_d2d[root]['d2d']: #D2D interference root list element
+                        flag = False
+                if flag:
+                    root_d2d.append(d2d)
+    for i in root_d2d:
+        scheduleTimes[i] += 1
+
+    return root_d2d, scheduleTimes
+
+def create_interference_graph(numCell, numD2D, i_d2d, i_d2c):
+    graph = [[] for i in range(numD2D)]
+    candidate, other  = not_interference_cell(numCell, numD2D, i_d2d, i_d2c)
+    
+    for d2d in candidate:
+        for i in i_d2d[d2d]['d2d']:
+            if i in candidate:
+                graph[d2d].append(i)
+    return graph, candidate, other
+
+def find_longest_path(root, chooseList, graph, i_d2d):
+    longestPath = []
+    for i in root:
+        vis = [False] * len(graph)
+        if not vis[i]:
+            path = []
+            endPoint = root.copy()
+            endPoint.remove(i)
+            longestPath = dfs(i, graph, endPoint, chooseList, vis, path, longestPath)
+    path = len(longestPath)
+    i = 0
+    while i < path:
+        if longestPath[i] == longestPath[i-1]:
+            del longestPath[i]
+        i += 1
+        path = len(longestPath)
+    
+    header = -1
+    pathIndexList = []
+    for i in range(len(longestPath)):
+        if header != longestPath[i][0]:
+            header = longestPath[i][0]
+            pathMax = len(longestPath[i]) 
+            pathIndexList.append(pathMax)
+        else:
+            if len(longestPath[i]) >= pathMax:
+                pathMax = len(longestPath[i])
+                pathIndexList[-1:] = [len(longestPath[i])]
+
+    sameLength = []
+    pathLength = -1
+    for i in range(len(longestPath)):
+        if header != longestPath[i][0]: 
+            header = longestPath[i][0]
+            pathLength = pathIndexList.pop(0)
+        if header == longestPath[i][0]:
+            if len(longestPath[i]) == pathLength:
+                sameLength.append(longestPath[i])
+    
+    sol = []
+    for i in range(len(sameLength)):
+        if header != sameLength[i][0]: 
+            header = sameLength[i][0]
+            minInte = 9999
+            sol.append(sameLength[i])
+
+        if header == sameLength[i][0]:
+            if len(i_d2d[sameLength[i][-1]]['d2d']) < minInte:
+                minInte = len(i_d2d[sameLength[i][-1]]['d2d'])
+                sol[-1:] = [sameLength[i]]
+    
+    sol_longestPath = {}
+    for i in sol:
+        sol_longestPath[i[0]] = i[1:]
+    
+    return sol_longestPath
+
+def not_interference_cell(numCell, numD2D, i_d2d, i_d2c):
+    noCell = []
+    inCell = []
+    for d2d in range(numD2D):
+        flag = True
+        if not i_d2d[d2d]['cue']: #CUE not interfernece D2D and D2D not interference BS
+            for cell in range(numCell):
+                if d2d in i_d2c[cell]:
+                    flag = False
+            if flag:
+                noCell.append(d2d)
+    inCell = np.setdiff1d(np.arange(numD2D), np.asarray(noCell))
+    return noCell, inCell
+
+def dfs(node, graph, endPoint, chooseList, vis, path, longestPath):
+    vis[node] = True
+    if node in endPoint or node not in chooseList:
+        p = path.copy()
+        longestPath.append(p)
+    else:
+        path.append(node)
+        for i in graph[node]:
+            if not vis[i]:
+                self.dfs(i, graph, endPoint, chooseList, vis, path, longestPath)
+        p = path.copy()
+        longestPath.append(p)
+        path.pop()
+        vis[node] = False
+
+    return longestPath

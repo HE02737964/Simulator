@@ -119,8 +119,10 @@ def InterferenceD2D(i_d2d_rx):
             for inte in rx['cue']:
                 if inte not in i['cue']:
                     i['cue'].append(inte)
+                    i['cue'].sort()
             for inte in rx['d2d']:
                 if inte not in i['d2d']:
                     i['d2d'].append(inte)
+                    i['d2d'].sort()
         i_d2d.append(i)
     return i_d2d

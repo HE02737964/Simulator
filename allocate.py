@@ -1,11 +1,10 @@
 import numpy as np
 import tools
 
-def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, dataMin, dataMax, Pmax, Pmin, cqiLevel):
+def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, cqiLevel):
     tool = tools.Tool()
     convert = tools.Convert()
     candicate = np.sort(np.random.choice(range(0,numCUE), size=int(numCUE * (perScheduleCUE/100)), replace=False))     #根據比例隨機挑選要傳資料的CUE
-    data = np.random.randint(low=dataMin, high=dataMax, size=numCUE)
     
     minSINR = np.zeros(numCUE)
     minCQI = np.zeros(numCUE)
@@ -72,10 +71,9 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, dataMin, dataMax, P
     
     return candicate, minSINR, powerList, assignmentUE, data
 
-def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, dataMin, dataMax, Pmax, Pmin, cqiLevel):
+def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, data, Pmax, Pmin, cqiLevel):
     tool = tools.Tool()
     convert = tools.Convert()
-    data = np.random.randint(low=dataMin, high=dataMax, size=numCUE)
     
     minSINR = np.zeros(numCUE)
     minCQI = np.zeros(numCUE)

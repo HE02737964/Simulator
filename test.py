@@ -6,6 +6,7 @@ import draw
 import channel
 import allocate
 import measure
+import proposed
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -26,6 +27,8 @@ N0 = N0 * bw            #1個RB的熱噪聲，單位mW
 bw = config["bw"]
 dataCUEMax = config["dataCUEMax"]
 dataCUEMin = config["dataCUEMin"]
+dataD2DMax = config["dataD2DMax"]
+dataD2DMin = config["dataD2DMin"]
 Pmax = config["Pmax"]
 Pmin = config["Pmin"]
 cqiLevel = config["cqiLevel"]
@@ -52,6 +55,9 @@ directCUE, omnidirectCUE = g.ueSignalType(numCUE, directCUE)
 directD2D, omnidirectD2D = g.ueSignalType(numD2D, directD2D)
 
 sectorPoint = allocate.getSectorPoint(500, 8)
+scheduleTimes_ul = np.zeros(numD2D)
+scheduleTimes_dl = np.zeros(numD2D)
+
 for i in range(0,1):
     gain_c2b = c.gainTx2Cell(dist_c2b)
     gain_d2b = c.gainTx2Cell(dist_d2b)
@@ -64,8 +70,13 @@ for i in range(0,1):
     beamPoint = allocate.selectBeamSector(sectorPoint, i, 3)
     candicate = allocate.allSectorCUE(beamPoint, ue_point)
 
-    candicate_ul, minSINR_ul, powerList_ul, assignmentUE_ul, data_ul = allocate.cellAllocateUl(numCUE, numRB, perScheduleCUE, gain_c2b, N0, dataCUEMin, dataCUEMax, Pmax, Pmin, cqiLevel)
-    candicate_dl, minSINR_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, dataCUEMin, dataCUEMax, Pmax, Pmin, cqiLevel)
+    data_cue_ul = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
+    data_cue_dl = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
+    data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
+    data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
+
+    candicate_ul, minSINR_ul, powerList_ul, assignmentUE_ul, data_ul = allocate.cellAllocateUl(numCUE, numRB, perScheduleCUE, gain_c2b, N0, data_cue_ul, Pmax, Pmin, cqiLevel)
+    candicate_dl, minSINR_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
     
     i_d2d_rx_ul = measure.UplinkCUE(numCUE, numD2D, beamWide, dist_c2b, dist_c2d, ue_point, rx_point, numD2DReciver, candicate, directCUE, omnidirectCUE)
     i_d2d_rx_dl = measure.DownlinkBS(numD2D, rx_point, numD2DReciver, beamPoint)
@@ -82,14 +93,27 @@ for i in range(0,1):
     i_d2d_ul = measure.InterferenceD2D(i_d2d_rx_ul)
     i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
 
-#     print(omnidirectCUE)
-#     print(omnidirectD2D)
-#     # print(i_d2d_ul)
-#     print(ue_point)
-#     print()
-#     print(tx_point)
-#     print()
-#     print(rx_point)
+    root_ul, scheduleTimes_ul = proposed.find_d2d_root(1, numD2D, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
+    root_dl, scheduleTimes_dl = proposed.find_d2d_root(numCUE, numD2D, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
+
+    graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
+    graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
+    
+    # print(root_ul)
+    # print(scheduleTimes_ul)
+    # print()
+    # print(root_dl)
+    # print(scheduleTimes_dl)
+    # print()
+
+    # print(omnidirectCUE)
+    # print(omnidirectD2D)
+    # print(i_d2d_ul)
+    # print(ue_point)
+    # print()
+    # print(tx_point)
+    # print()
+    # print(rx_point)
     
     # print()
     # print(i_d2d_dl)

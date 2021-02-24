@@ -129,19 +129,18 @@ class Tool:
 
     def data_tbs_mapping(self, data, numRB):
         tbs = self.TBS()
-        tbsIndex = 0
-        for rb in range(numRB):     #用較少RB,較高的TBS index
-            for index in tbs:
-                if index == "26A":
-                    break
-                if tbs[index][rb] >= data:
-                    return int(index), rb+1
-        # for index in tbs:         #用較多RB,較低的TBS index
-        #     if index == "26A":
-        #         break
-        #     for rb in range(numRB):
+        # for rb in range(numRB):     #用較少RB,較高的TBS index
+        #     for index in tbs:
+        #         if index == "26A":
+        #             break
         #         if tbs[index][rb] >= data:
         #             return int(index), rb+1
+        for index in tbs:         #用較多RB,較低的TBS index
+            if index == "26A":
+                break
+            for rb in range(numRB):
+                if tbs[index][rb] >= data:
+                    return int(index), rb+1
 
     def IsInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0
