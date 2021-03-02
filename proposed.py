@@ -37,61 +37,51 @@ def create_interference_graph(numCell, numD2D, i_d2d, i_d2c):
     return graph, candidate, other
 
 def find_longest_path(root, chooseList, graph, i_d2d):
-    longestPath = []
-    for i in root:
+    longestPathList = []
+    endPoint = root.copy()
+    for node in root:
+        longestPath = []
         vis = [False] * len(graph)
-        if not vis[i]:
+        print(endPoint)
+        if not vis[node]:
             path = []
-            endPoint = root.copy()
-            endPoint.remove(i)
-            longestPath = dfs(i, graph, endPoint, chooseList, vis, path, longestPath)
-    path = len(longestPath)
-    i = 0
-    while i < path:
-        if longestPath[i] == longestPath[i-1]:
-            del longestPath[i]
-        i += 1
-        path = len(longestPath)
-    
-    header = -1
-    pathIndexList = []
-    for i in range(len(longestPath)):
-        if header != longestPath[i][0]:
-            header = longestPath[i][0]
-            pathMax = len(longestPath[i]) 
-            pathIndexList.append(pathMax)
-        else:
-            if len(longestPath[i]) >= pathMax:
-                pathMax = len(longestPath[i])
-                pathIndexList[-1:] = [len(longestPath[i])]
+            deleteNode = node
+            endPoint.remove(node)
+            longestPath = dfs(node, graph, endPoint, chooseList, vis, path, longestPath)
 
-    sameLength = []
-    pathLength = -1
-    for i in range(len(longestPath)):
-        if header != longestPath[i][0]: 
-            header = longestPath[i][0]
-            pathLength = pathIndexList.pop(0)
-        if header == longestPath[i][0]:
+        #找出最長path是多長
+        pathLength = -1
+        for i in range(len(longestPath)):
+            if len(longestPath[i]) >= pathLength:
+                pathLength = len(longestPath[i])
+
+        #先選出最長的path(可能有多個)
+        sameLength = []
+        for i in range(len(longestPath)):
             if len(longestPath[i]) == pathLength:
                 sameLength.append(longestPath[i])
-    
-    sol = []
-    for i in range(len(sameLength)):
-        if header != sameLength[i][0]: 
-            header = sameLength[i][0]
-            minInte = 9999
-            sol.append(sameLength[i])
-
-        if header == sameLength[i][0]:
-            if len(i_d2d[sameLength[i][-1]]['d2d']) < minInte:
+        
+        #path中最後一個node被干擾最少的優先
+        numMinInte = 1000
+        sol = []
+        for i in range(len(sameLength)):
+            if len(i_d2d[sameLength[i][-1]]['d2d']) < numMinInte:
                 minInte = len(i_d2d[sameLength[i][-1]]['d2d'])
                 sol[-1:] = [sameLength[i]]
-    
-    sol_longestPath = {}
-    for i in sol:
-        sol_longestPath[i[0]] = i[1:]
-    
-    return sol_longestPath
+        
+        for candicate in sol[0]:
+            if candicate not in endPoint:
+                endPoint.append(candicate)
+        endPoint.sort()
+
+        sol_longestPathDict = {}
+        for i in sol:
+            sol_longestPathDict[i[0]] = i[1:]
+        longestPathList.append(sol_longestPathDict)
+    print(i_d2d)
+    print(root)
+    print(longestPathList)
+    return longestPathList
 
 def not_interference_cell(numCell, numD2D, i_d2d, i_d2c):
     noCell = []
@@ -116,7 +106,7 @@ def dfs(node, graph, endPoint, chooseList, vis, path, longestPath):
         path.append(node)
         for i in graph[node]:
             if not vis[i]:
-                self.dfs(i, graph, endPoint, chooseList, vis, path, longestPath)
+                dfs(i, graph, endPoint, chooseList, vis, path, longestPath)
         p = path.copy()
         longestPath.append(p)
         path.pop()

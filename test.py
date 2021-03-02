@@ -98,7 +98,8 @@ for i in range(0,1):
 
     graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
     graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
-    
+
+    longestPath_ul = proposed.find_longest_path(root_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
     # print(root_ul)
     # print(scheduleTimes_ul)
     # print()
