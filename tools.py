@@ -116,7 +116,7 @@ class Tool:
             f.close()
         return tbs
     
-    def RB_TBS_mapping(self, numRB, data):
+    def RB_TBS_mapping(self, data, numRB):
         tbs = self.TBS()
         tbsIndex = 0
         for index in tbs:
@@ -129,18 +129,26 @@ class Tool:
 
     def data_tbs_mapping(self, data, numRB):
         tbs = self.TBS()
-        # for rb in range(numRB):     #用較少RB,較高的TBS index
-        #     for index in tbs:
-        #         if index == "26A":
-        #             break
-        #         if tbs[index][rb] >= data:
-        #             return int(index), rb+1
-        for index in tbs:         #用較多RB,較低的TBS index
-            if index == "26A":
-                break
-            for rb in range(numRB):
+        for rb in range(numRB):     #用較少RB,較高的TBS index
+            for index in tbs:
+                if index == "26A":
+                    break
                 if tbs[index][rb] >= data:
                     return int(index), rb+1
+        # for index in tbs:         #用較多RB,較低的TBS index
+        #     if index == "26A":
+        #         break
+        #     for rb in range(numRB):
+        #         if tbs[index][rb] >= data:
+        #             return int(index), rb+1
+
+    def data_sinr_mapping(self, data, numRB):
+        convert = Convert()
+        tbs = self.RB_TBS_mapping(data, numRB)
+        cqi = convert.TBS_CQI_mapping(tbs)
+        sinr_dB = convert.CQI_SINR_mapping(cqi)
+        sinr = convert.dB_to_mW(sinr_dB)
+        return sinr
 
     def IsInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0

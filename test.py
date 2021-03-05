@@ -75,9 +75,9 @@ for i in range(0,1):
     data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
     data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
 
-    candicate_ul, minSINR_ul, powerList_ul, assignmentUE_ul, data_ul = allocate.cellAllocateUl(numCUE, numRB, perScheduleCUE, gain_c2b, N0, data_cue_ul, Pmax, Pmin, cqiLevel)
-    candicate_dl, minSINR_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
-    
+    candicate_ul, minCUEsinr_ul, powerList_ul, assignmentUE_ul, data_ul = allocate.cellAllocateUl(numCUE, numRB, perScheduleCUE, gain_c2b, N0, data_cue_ul, Pmax, Pmin, cqiLevel)
+    candicate_dl, minCUEsinr_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
+
     i_d2d_rx_ul = measure.UplinkCUE(numCUE, numD2D, beamWide, dist_c2b, dist_c2d, ue_point, rx_point, numD2DReciver, candicate, directCUE, omnidirectCUE)
     i_d2d_rx_dl = measure.DownlinkBS(numD2D, rx_point, numD2DReciver, beamPoint)
     
@@ -93,20 +93,24 @@ for i in range(0,1):
     i_d2d_ul = measure.InterferenceD2D(i_d2d_rx_ul)
     i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
 
-    root_ul, scheduleTimes_ul = proposed.find_d2d_root(1, numD2D, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
-    root_dl, scheduleTimes_dl = proposed.find_d2d_root(numCUE, numD2D, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
+    root_ul, scheduleTimes_ul, assignmentD2D_ul, minD2Dsinr_ul, powerListD2D_ul = proposed.find_d2d_root(1, numD2D, numRB, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
+    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
 
     graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
     graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
 
     longestPath_ul = proposed.find_longest_path(root_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
+
+    proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
+
     # print(root_ul)
     # print(scheduleTimes_ul)
     # print()
     # print(root_dl)
     # print(scheduleTimes_dl)
     # print()
-
+    print(longestPath_ul)
+    print(i_d2d_ul)
     # print(omnidirectCUE)
     # print(omnidirectD2D)
     # print(i_d2d_ul)

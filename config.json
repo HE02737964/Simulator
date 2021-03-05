@@ -2,8 +2,8 @@
 	"radius" : 500,
 	"numCUE" : 3,
 	"numD2D" : 10,
-	"numRB" : 2,
-	"maxReciver" : 3,
+	"numRB" : 25,
+	"maxReciver" : 1,
 	"d2dDistance" : 300,
 	"directCUE" : 50,
 	"directD2D" : 50,
@@ -23,7 +23,7 @@
 
 	"dataCUEMax" : 1000,
 	"dataCUEMin" : 1,
-	"dataD2DMax" : 712,
+	"dataD2DMax" : 18336,
 	"dataD2DMin" : 1,
 	"beamWide" : 50,
 
