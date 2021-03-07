@@ -86,10 +86,15 @@ def Cell_in_DirectD2D(numCell, numD2D, ue_point, tx_point, rx_point, numD2DReciv
                             i_d2c[cell].sort()
     return i_d2c
 
-def BetweenD2D(numD2D, beamWide, dis_d2d, dis_dij, numD2DReciver, i_d2d_rx, tx_point, rx_point, directD2D, omnidirectD2D):
+def BetweenD2D(numD2D, numRB, data, N0, beamWide, dis_d2d, dis_dij, g_d2d, numD2DReciver, i_d2d_rx, tx_point, rx_point, directD2D, omnidirectD2D):
     tool = tools.Tool()
+    Pmax = 199.52623149688787
+    minSINR = np.zeros(numD2D)
+    nStartD2D = []
     for tx in range(numD2D):
         r_d2d = []
+        minSINR[tx] = tool.data_sinr_mapping(data[tx], numRB)
+        D2Dsinr = np.zeros((numD2DReciver[tx], numRB))
         for rx in range(numD2DReciver[tx]):
             r = {}
             r_dij = {'d2d':[]}
@@ -109,7 +114,15 @@ def BetweenD2D(numD2D, beamWide, dis_d2d, dis_dij, numD2DReciver, i_d2d_rx, tx_p
                             r_dij['d2d'].append(d2d)
                             r_dij['d2d'].sort()
             i_d2d_rx[tx][rx].update(r_dij)
-    return i_d2d_rx
+
+            for rb in range(numRB):
+                D2Dsinr[rx][rb] = (Pmax * g_d2d[tx][rx][rb]) / N0
+        if np.min(D2Dsinr) < minSINR[tx]:
+            nStartD2D.append(tx)
+            print('tx',tx)
+            print(10*np.log10(minSINR[tx]))
+            print('min sinr',10*np.log10(np.min(D2Dsinr)))
+    return i_d2d_rx, nStartD2D
 
 def InterferenceD2D(i_d2d_rx):
     i_d2d = []

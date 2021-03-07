@@ -87,14 +87,14 @@ for i in range(0,1):
     i_d2c_ul = measure.Cell_in_DirectD2D(1, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate, i_d2c_ul, directD2D, beamWide)
     i_d2c_dl = measure.Cell_in_DirectD2D(numCUE, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate, i_d2c_dl, directD2D, beamWide)
     
-    i_d2d_rx_ul = measure.BetweenD2D(numD2D, beamWide, dist_d2d, dist_dij, numD2DReciver, i_d2d_rx_ul, tx_point, rx_point, directD2D, omnidirectD2D)
-    i_d2d_rx_dl = measure.BetweenD2D(numD2D, beamWide, dist_d2d, dist_dij, numD2DReciver, i_d2d_rx_dl, tx_point, rx_point, directD2D, omnidirectD2D)
+    i_d2d_rx_ul, nStartD2D_ul = measure.BetweenD2D(numD2D, numRB, data_d2d_ul, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_ul, tx_point, rx_point, directD2D, omnidirectD2D)
+    i_d2d_rx_dl, nStartD2D_dl = measure.BetweenD2D(numD2D, numRB, data_d2d_dl, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_dl, tx_point, rx_point, directD2D, omnidirectD2D)
     
     i_d2d_ul = measure.InterferenceD2D(i_d2d_rx_ul)
     i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
 
-    root_ul, scheduleTimes_ul, assignmentD2D_ul, minD2Dsinr_ul, powerListD2D_ul = proposed.find_d2d_root(1, numD2D, numRB, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
-    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
+    root_ul, scheduleTimes_ul, assignmentD2D_ul, minD2Dsinr_ul, powerListD2D_ul = proposed.find_d2d_root(1, numD2D, numRB, nStartD2D_ul, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
+    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, nStartD2D_ul, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
 
     graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
     graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
@@ -109,8 +109,9 @@ for i in range(0,1):
     # print(root_dl)
     # print(scheduleTimes_dl)
     # print()
-    print(longestPath_ul)
-    print(i_d2d_ul)
+    # print(longestPath_ul)
+    # print(i_d2d_ul)
+    # print(i_d2c_ul)
     # print(omnidirectCUE)
     # print(omnidirectD2D)
     # print(i_d2d_ul)

@@ -1,7 +1,7 @@
 import numpy as np
 import tools
 
-def find_d2d_root(numCell, numD2D, numRB, i_d2d, i_d2c, time, scheduleTimes, data):
+def find_d2d_root(numCell, numD2D, numRB, nStartD2D, i_d2d, i_d2c, time, scheduleTimes, data):
     tool = tools.Tool()
     i_len = np.zeros(numD2D)
     for tx in range(numD2D):
@@ -13,6 +13,8 @@ def find_d2d_root(numCell, numD2D, numRB, i_d2d, i_d2c, time, scheduleTimes, dat
     root_d2d = []
     for d2d in sort_priority:
         flag = True
+        if d2d in nStartD2D: #D2D用最大power仍不滿足最小SINR,該round無法啟動
+            flag = False
         if not i_d2d[d2d]['cue']: 
             for cell in range(numCell):
                 if d2d in i_d2c[cell]:
