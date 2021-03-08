@@ -99,10 +99,13 @@ for i in range(0,1):
     graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
     graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
 
-    longestPath_ul = proposed.find_longest_path(root_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
+    longestPath_ul = proposed.find_longest_path(root_ul,nStartD2D_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
 
     proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
-
+    print(longestPath_ul)
+    print(root_ul)
+    print(nStartD2D_ul)
+    print(i_d2d_ul)
     # print(root_ul)
     # print(scheduleTimes_ul)
     # print()

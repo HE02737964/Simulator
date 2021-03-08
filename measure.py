@@ -119,9 +119,6 @@ def BetweenD2D(numD2D, numRB, data, N0, beamWide, dis_d2d, dis_dij, g_d2d, numD2
                 D2Dsinr[rx][rb] = (Pmax * g_d2d[tx][rx][rb]) / N0
         if np.min(D2Dsinr) < minSINR[tx]:
             nStartD2D.append(tx)
-            print('tx',tx)
-            print(10*np.log10(minSINR[tx]))
-            print('min sinr',10*np.log10(np.min(D2Dsinr)))
     return i_d2d_rx, nStartD2D
 
 def InterferenceD2D(i_d2d_rx):

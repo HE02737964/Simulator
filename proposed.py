@@ -1,6 +1,6 @@
 import numpy as np
 import tools
-
+np.seterr(divide = 'ignore') 
 def find_d2d_root(numCell, numD2D, numRB, nStartD2D, i_d2d, i_d2c, time, scheduleTimes, data):
     tool = tools.Tool()
     i_len = np.zeros(numD2D)
@@ -48,9 +48,9 @@ def create_interference_graph(numCell, numD2D, i_d2d, i_d2c):
                 graph[d2d].append(i)
     return graph, candidate, other
 
-def find_longest_path(root, chooseList, graph, i_d2d):
+def find_longest_path(root, nStart, chooseList, graph, i_d2d):
     longestPathList = []
-    endPoint = root.copy()
+    endPoint = root + nStart
     for node in root:
         longestPath = []
         vis = [False] * len(graph)
@@ -92,13 +92,15 @@ def find_longest_path(root, chooseList, graph, i_d2d):
     return longestPathList
 
 def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath, d2d_min_sinr, powerList, assignmentD2D, numD2DReciver):
-    targetList = root.copy()
+    targetList = root.copy()    #不能讓SINR低於所需最小值的D2D List
     longest = longestPath.copy()
+    print(longest)
     for path in longest:
         for key in path:
             if path[key]:
                 point = len(path[key]) - 1
                 while  point >= 0:
+                    flag = True
                     lastNode = path[key][point]
                     d2d_power_rx = np.zeros((numD2DReciver[lastNode], numRB))
                     for rx in range(numD2DReciver[lastNode]):
@@ -111,7 +113,9 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
                                 d2d_power_rx[rx][rb] = 0.0001
                             if d2d_power_rx[rx][rb] > 199.52623149688787:
                                 d2d_power_rx[rx][rb] = 199.52623149688787
-                    # powerList[lastNode] = max(powerList[lastNode], np.max(d2d_power_rx))
+                                flag = False
+                                # print(lastNode,'power not enough')
+                    powerList[lastNode] = max(powerList[lastNode], np.max(d2d_power_rx))
                     for d2d in targetList:
                         for rx in range(numD2DReciver[d2d]):
                             for rb in range(numRB):
@@ -120,34 +124,43 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
                                     interference = interference + (powerList[i] * g_dij[i][d2d][rx][rb])
                                 sinr = (powerList[d2d] * g_d2d[d2d][rx][rb]) / (N0 + interference)
                                 if sinr < d2d_min_sinr[d2d]:
-                                    powerList[lastNode] = 0
-                                    print(path[key])
-                                    print(lastNode)
-                                    path[key].remove(lastNode)
-                                    point = len(path[key]) - 1
-                    point = point - 1
-    print(10*np.log10(powerList))
-    print(10*np.log10(d2d_min_sinr))
+                                    print(sinr,'<',d2d_min_sinr[d2d])
+                                    print(d2d,'sinr','not enough')
+                                    flag = False
+                    if flag:
+                        targetList.append(lastNode)
+                        point = point - 1
+                    else:
+                        removeNode = path[key][len(path[key])-1]
+                        powerList[lastNode] = 0
+                        powerList[removeNode] = 0
+                        path[key].remove(removeNode)
+                        if removeNode in targetList:
+                            targetList.remove(removeNode)
+                        point = len(path[key]) - 1
+    xx = np.zeros(10)
+    x = np.zeros(10)
     for tx in range(10):
-        sin = 1000
-        power = 0
+        minSinr = 100000000000
+        minS = 100000000000
         for rx in range(numD2DReciver[tx]):
             for rb in range(numRB):
                 interference = 0
                 for i in i_d2d_rx[tx][rx]['d2d']:
                     interference = interference + (powerList[i] * g_dij[i][tx][rx][rb])
+                snr = sinr = (powerList[tx] * g_d2d[tx][rx][rb]) / (N0)
                 sinr = (powerList[tx] * g_d2d[tx][rx][rb]) / (N0 + interference)
-                power1 = (d2d_min_sinr[tx] * N0) / g_d2d[tx][rx][rb]
-                if sinr < sin:
-                    sin = sinr
-                if power1 > power:
-                    power = power1
-                    
-        if power > 199.52623149688787:
-            print(10*np.log10(sin))
-            print(np.min(g_d2d[tx]))
-            print(tx,'power',10*np.log10(power))
-
+                if sinr < minSinr:
+                    minSinr = sinr
+                if snr < minS:
+                    minS = snr
+        xx[tx] = minSinr
+        x[tx] = minS
+    print('power:',10*np.log10(powerList))
+    print('minSi:',10*np.log10(d2d_min_sinr))
+    print('calsn:',np.around(10*np.log10(x),1))
+    print('calsi:',np.around(10*np.log10(xx),1))
+    
 def not_interference_cell(numCell, numD2D, i_d2d, i_d2c):
     noCell = []
     inCell = []
