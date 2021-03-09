@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import genrator
 
-def deawCell(radius, ue_point, tx_point, rx_point, numD2DReciver):
+def drawCell(radius, ue_point, tx_point, rx_point, numD2DReciver):
     numCUE = len(ue_point)
     numD2D = len(tx_point)
 

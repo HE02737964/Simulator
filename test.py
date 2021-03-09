@@ -102,10 +102,7 @@ for i in range(0,1):
     longestPath_ul = proposed.find_longest_path(root_ul,nStartD2D_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
 
     proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
-    print(longestPath_ul)
-    print(root_ul)
-    print(nStartD2D_ul)
-    print(i_d2d_ul)
+    print(powerListD2D_ul)
     # print(root_ul)
     # print(scheduleTimes_ul)
     # print()

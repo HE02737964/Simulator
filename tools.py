@@ -111,7 +111,7 @@ class Convert:
 
 class Tool:
     def TBS(self):
-        with open("Throughput.json", "r") as f:
+        with open("TBSTable.json", "r") as f:
             tbs = json.load(f)
             f.close()
         return tbs

@@ -12,20 +12,15 @@
 	"cqiLevel" : 3,
 	"Pmax" : 199.52623149688787,
 	"Pmin" : 0.0001,
-	"bw" : 160e3,
+	"bw" : 180e3,
 	"N_dBm" : -174,
 	
 	"totalBeam" : 8,
 	"numScheduleBeam" : 3,
-	
-	"preO" : 50,
-	"preD" : 50,
 
 	"dataCUEMax" : 1000,
 	"dataCUEMin" : 1,
 	"dataD2DMax" : 18336,
 	"dataD2DMin" : 1,
-	"beamWide" : 50,
-
-	"ThresInter" : 1
+	"beamWide" : 50
 }
