@@ -14,35 +14,43 @@ class Channel():
         gain = np.zeros((len(distance), len(distance[0]), self.numRB))      #三維陣列, D2D Tx - CUE在每個RB上的Gain
         
         pathLossScale = self.pathLossScale(distance)
-        fading = np.random.rayleigh(1, [len(distance), len(distance[0]), self.numRB]) #Rayleigh fading
-
-        gain = (fading**2) / pathLossScale[:, :, None]      #[:, :, None]轉變矩陣形狀(原始：NxK矩陣 / 1xN矩陣)
+        
+        fading = np.random.rayleigh(1, [len(distance), len(distance[0])])   #全部RB的rayleigh fading相同
+        for tx in range(len(distance)):
+            for rx in range(len(distance[0])):
+                gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
         return gain
 
     def gainD2DRx(self, distance):
         gain = np.zeros((len(distance), max(self.numD2DReciver), self.numRB))   #三維陣列, D2D Tx - RX在每個RB上的Gain
 
         pathLossScale = self.pathLossScale(distance)
-        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver), self.numRB])
 
-        # gain = (fading**2) / pathLossScale[:, :, None]                        #下面那行解決numpy的除0錯誤
-        gain = np.divide((fading**2), pathLossScale[:, :, None], out=np.zeros_like(fading), where=pathLossScale[:,:,None] !=0)
+        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver)])
+        for tx in range(len(distance)):
+            for rx in range(self.numD2DReciver[tx]):
+                gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
         return gain
 
     def gainBS2Rx(self, distance):
         gain = np.zeros((len(distance), max(self.numD2DReciver), self.numRB))   #二維陣列, BS - D2D所有RX在每個RB上的Gain
 
         pathLossScale = self.pathLossScale(distance)
-        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver), self.numRB])
         
-        gain = np.divide((fading**2), pathLossScale[:, :, None], out=np.zeros_like(fading), where=pathLossScale[:, :, None] !=0)
+        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver)])
+        for tx in range(len(distance)):
+            for rx in range(self.numD2DReciver[tx]):
+                gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
         return gain
 
     def gainTx2D2DRx(self, distance):
-        gain = np.zeros((len(distance), len(distance[0]), max(self.numD2DReciver), self.numRB))     #四維陣列, CUE - D2D所有RX在每個RB上的Gain
+        gain = np.zeros((len(distance), len(distance[0]), max(self.numD2DReciver), self.numRB))     #四維陣列, TX - D2D所有RX在每個RB上的Gain
 
         pathLossScale = self.pathLossScale(distance)
-        fading = np.random.rayleigh(1, [len(distance), len(distance[0]), max(self.numD2DReciver), self.numRB])
-
-        gain = np.divide((fading**2), pathLossScale[: ,:, :, None], out=np.zeros_like(fading), where=pathLossScale[: ,:, :, None] !=0)
+        
+        fading = np.random.rayleigh(1, [len(distance), len(distance[0]), max(self.numD2DReciver)])
+        for i in range(len(distance)):
+            for tx in range(len(distance[0])):
+                for rx in range(self.numD2DReciver[tx]):
+                    gain[i][tx][rx] = (fading[i][tx][rx]**2) / pathLossScale[i][tx][rx]
         return gain
