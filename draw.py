@@ -2,15 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import genrator
 
-def drawCell(radius, ue_point, tx_point, rx_point, numD2DReciver):
-    numCUE = len(ue_point)
-    numD2D = len(tx_point)
+def drawCell(**parameter):
+    numCUE = len(parameter['ue_point'])
+    numD2D = len(parameter['tx_point'])
 
     x0 = 0
     y0 = 0
     theta = np.arange(0, 2*np.pi, 0.01)
-    x1 = x0 + radius * np.cos(theta)
-    y1 = y0 + radius * np.sin(theta)
+    x1 = x0 + parameter['radius'] * np.cos(theta)
+    y1 = y0 + parameter['radius'] * np.sin(theta)
 
     fig = plt.figure()
     axes = fig.add_subplot(111)
@@ -25,16 +25,16 @@ def drawCell(radius, ue_point, tx_point, rx_point, numD2DReciver):
     plotted = 0
     for i in range(numCUE):
         if plotted == 0:
-            plt.scatter(ue_point[i][0], ue_point[i][1], color="#FF00FF", zorder=1000, s=6, label="CUE")
+            plt.scatter(parameter['ue_point'][i][0], parameter['ue_point'][i][1], color="#FF00FF", zorder=1000, s=6, label="CUE")
             plotted = 1
         else:
-            plt.scatter(ue_point[i][0], ue_point[i][1], color="#FF00FF", zorder=1000, s=6)
+            plt.scatter(parameter['ue_point'][i][0], parameter['ue_point'][i][1], color="#FF00FF", zorder=1000, s=6)
 
     #Draw D2D
     plotted = 0
     for i in range(numD2D):
-        for j in range(numD2DReciver[i]):
-            t,r = (tx_point[i][0], tx_point[i][1]), (rx_point[i][j][0], rx_point[i][j][1])
+        for j in range(parameter['numD2DReciver'][i]):
+            t,r = (parameter['tx_point'][i][0], parameter['tx_point'][i][1]), (parameter['rx_point'][i][j][0],parameter['rx_point'][i][j][1])
 
             p1 = np.asarray(t)  
             p2 = np.asarray(r)

@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import json
 import genrator
 import draw
@@ -11,36 +10,42 @@ import proposed
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-radius = config["radius"]
-numCUE = config["numCUE"]
-numD2D = config["numD2D"]
-numRB = config["numRB"]
 maxReciver = config["maxReciver"]
 d2dDistance = config["d2dDistance"]
 directCUE = config["directCUE"]
 directD2D = config["directD2D"]
-perScheduleCUE = config["perScheduleCUE"]
 N_dBm = config["N_dBm"]
 bw = config["bw"]
 N0 = (10**(N_dBm / 10)) #1Hz的熱噪聲，單位mW
 N0 = N0 * bw            #1個RB的熱噪聲，單位mW
-bw = config["bw"]
 dataCUEMax = config["dataCUEMax"]
 dataCUEMin = config["dataCUEMin"]
 dataD2DMax = config["dataD2DMax"]
 dataD2DMin = config["dataD2DMin"]
-Pmax = config["Pmax"]
-Pmin = config["Pmin"]
-cqiLevel = config["cqiLevel"]
-beamWide = config["beamWide"]
 
-numD2DReciver = np.random.randint(low=1, high=maxReciver+1, size=numD2D)
+initial = {
+    'radius' : config["radius"],
+    'numCUE' : config["numCUE"],
+    'numD2D' : config["numD2D"],
+    'numRB' : config["numRB"],
+    'perScheduleCUE' : config["perScheduleCUE"],
+    'N0' : N0,
+    'Pmax' : config["Pmax"],
+    'Pmin' : config["Pmin"],
+    'cqiLevel' : config["cqiLevel"],
+    'beamWide' : config["beamWide"],
+    'totalBeam' : config["totalBeam"],
+    'numScheduleBeam' : config["numScheduleBeam"]
+}
+
+numD2DReciver = np.random.randint(low=1, high=maxReciver+1, size=initial['numD2D'])
+
+g = genrator.Genrator(initial['radius'])
+c = channel.Channel(initial['numRB'], numD2DReciver)
+
 bs_point = [[0,0]]
-
-g = genrator.Genrator(radius)
-c = channel.Channel(numRB, numD2DReciver)
-ue_point = g.generateTxPoint(numCUE)
-tx_point = g.generateTxPoint(numD2D)
+ue_point = g.generateTxPoint(initial['numCUE'])
+tx_point = g.generateTxPoint(initial['numD2D'])
 rx_point = g.generateRxPoint(tx_point, d2dDistance, numD2DReciver)
 
 dist_c2b = g.distanceTx2Cell(ue_point, bs_point)
@@ -51,77 +56,105 @@ dist_b2d = g.distanceBS2Rx(rx_point, numD2DReciver)
 dist_c2d = g.distanceTx2D2DRx(ue_point, rx_point, numD2DReciver)
 dist_dij = g.distanceTx2D2DRx(tx_point, rx_point, numD2DReciver)
 
-directCUE, omnidirectCUE = g.ueSignalType(numCUE, directCUE)
-directD2D, omnidirectD2D = g.ueSignalType(numD2D, directD2D)
+directCUE, omnidirectCUE = g.ueSignalType(initial['numCUE'], directCUE)
+directD2D, omnidirectD2D = g.ueSignalType(initial['numD2D'], directD2D)
 
-sectorPoint = allocate.getSectorPoint(500, 8)
-scheduleTimes_ul = np.zeros(numD2D)
-scheduleTimes_dl = np.zeros(numD2D)
+sectorPoint = allocate.getSectorPoint(initial['radius'], initial['totalBeam'])
+scheduleTimes_ul = np.zeros(initial['numD2D'])
+scheduleTimes_dl = np.zeros(initial['numD2D'])
 
-for i in range(0,1):
-    gain_c2b = c.gainTx2Cell(dist_c2b)
-    gain_d2b = c.gainTx2Cell(dist_d2b)
-    gain_d2c = c.gainTx2Cell(dist_d2c)
-    gain_d2d = c.gainD2DRx(dist_d2d)
-    gain_b2d = c.gainBS2Rx(dist_b2d)
-    gain_c2d = c.gainTx2D2DRx(dist_c2d)
-    gain_dij = c.gainTx2D2DRx(dist_dij)
+environment = {
+    'numD2DReciver' : numD2DReciver,
 
-    beamPoint = allocate.selectBeamSector(sectorPoint, i, 3)
-    candicate = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
+    'bs_point' : bs_point,
+    'ue_point' : ue_point,
+    'tx_point' : tx_point,
+    'rx_point' : rx_point,
 
-    data_cue_ul = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
-    data_cue_dl = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
-    data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
-    data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
+    'd_c2b' : dist_c2b,
+    'd_d2b' : dist_d2b,
+    'd_d2c' : dist_d2c,
+    'd_d2d' : dist_d2d,
+    'd_b2d' : dist_b2d,
+    'd_c2d' : dist_c2d,
+    'd_dij' : dist_dij,
 
-    sys_parameter_ul = {
-        'radius' : radius,
-        'numCUE' : numCUE,
-        'numD2D' : numD2D,
-        'numRB' : numRB,
-        'perScheduleCUE' : perScheduleCUE,
-        'N0' : N0,
-        'Pmax' : Pmax,
-        'Pmin' : Pmin,
-        'cqiLevel' : cqiLevel,
-        'beamWide' : beamWide,
+    'directCUE' : directCUE,
+    'omnidirectCUE' : omnidirectCUE,
+    'directD2D' : directD2D,
+    'omnidirectD2D' : omnidirectD2D,
 
-        'g_c2b' : gain_c2b,
-        'g_d2b' : gain_d2b,
-        'g_d2c' : gain_d2c,
-        'g_d2d' : gain_d2d,
-        'g_b2d' : gain_b2d,
-        'g_c2d' : gain_c2d,
-        'g_dij' : gain_dij,
+    'scheduleTimes' : scheduleTimes_ul
+}
 
-        'beamPoint' : beamPoint,
-        'candicate' : candicate,
-
-        'data_cue_ul' : data_cue_ul,
-        'data_d2d_ul' : data_d2d_ul
+for currentTime in range(0,1):
+    gain = {
+        'g_c2b' : c.gainTx2Cell(dist_c2b),
+        'g_d2b' : c.gainTx2Cell(dist_d2b),
+        'g_d2c' : c.gainTx2Cell(dist_d2c),
+        'g_d2d' : c.gainD2DRx(dist_d2d),
+        'g_b2d' : c.gainBS2Rx(dist_b2d),
+        'g_c2d' : c.gainTx2D2DRx(dist_c2d),
+        'g_dij' : c.gainTx2D2DRx(dist_dij)
     }
 
+    beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])
+    inSectorCUE = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
+
+    data_cue_ul = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=initial['numCUE'])
+    data_cue_dl = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=initial['numCUE'])
+    data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=initial['numD2D'])
+    data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=initial['numD2D'])
+
+    uplink = {
+        'numCellRx' : config["numBS"],
+
+        'data_cue' : data_cue_ul,
+        'data_d2d' : data_d2d_ul,
+
+        'currentTime' : currentTime
+    }
+
+    sys_parameter_ul = {**initial, **environment, **gain, **uplink}
     sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
-    i_d2d_rx_ul = measure.UplinkCUE(numCUE, numD2D, beamWide, dist_c2b, dist_c2d, ue_point, rx_point, numD2DReciver, candicate_ul, directCUE, omnidirectCUE)
-    i_d2c_ul = measure.Cell_in_OmniD2D(1, numD2D, dist_d2d, dist_d2b, candicate_ul, omnidirectD2D)
-    i_d2c_ul = measure.Cell_in_DirectD2D(1, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate_ul, i_d2c_ul, directD2D, beamWide)
-    i_d2d_rx_ul, nStartD2D_ul = measure.BetweenD2D(numD2D, numRB, data_d2d_ul, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_ul, tx_point, rx_point, directD2D, omnidirectD2D)
-    i_d2d_ul = measure.InterferenceD2D(i_d2d_rx_ul)
-    root_ul, scheduleTimes_ul, assignmentD2D_ul, minD2Dsinr_ul, powerListD2D_ul = proposed.find_d2d_root(1, numD2D, numRB, nStartD2D_ul, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
-    graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
-    longestPath_ul = proposed.find_longest_path(root_ul,nStartD2D_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
-    powerListD2D_ul, assignmentD2D_ul = proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
+    sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
+    sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
+    sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
+    sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
+    sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
+    sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
+    sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
 
+    print(sys_parameter_ul['longestPathList'])
 
+    downlink = {
+        'numCellRx' : config["numCUE"],
 
+        'beamPoint' : beamPoint,
+        'inSectorCUE' : inSectorCUE,
 
+        'data_cue' : data_cue_dl,
+        'data_d2d' : data_d2d_dl,
 
-    candicate_dl, minCUEsinr_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
-    i_d2d_rx_dl = measure.DownlinkBS(numD2D, rx_point, numD2DReciver, beamPoint)
-    i_d2c_dl = measure.Cell_in_OmniD2D(numCUE, numD2D, dist_d2d, dist_d2c, candicate_ul, omnidirectD2D)
-    i_d2c_dl = measure.Cell_in_DirectD2D(numCUE, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate_dl, i_d2c_dl, directD2D, beamWide)
-    i_d2d_rx_dl, nStartD2D_dl = measure.BetweenD2D(numD2D, numRB, data_d2d_dl, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_dl, tx_point, rx_point, directD2D, omnidirectD2D)
-    i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
-    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, nStartD2D_ul, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
-    graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
+        'currentTime' : currentTime
+    }
+
+    sys_parameter_dl = {**initial, **environment, **gain, **downlink}
+
+    sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
+    sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
+    sys_parameter_dl = proposed.find_d2d_root(**sys_parameter_dl)
+    sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
+    sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
+    sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
+
+    print(sys_parameter_dl['longestPathList'])
+
+    draw.drawCell(**{**initial, **environment})
