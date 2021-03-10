@@ -68,67 +68,60 @@ for i in range(0,1):
     gain_dij = c.gainTx2D2DRx(dist_dij)
 
     beamPoint = allocate.selectBeamSector(sectorPoint, i, 3)
-    candicate = allocate.allSectorCUE(beamPoint, ue_point)
+    candicate = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
 
     data_cue_ul = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
     data_cue_dl = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=numCUE)
     data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
     data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=numD2D)
 
-    candicate_ul, minCUEsinr_ul, powerList_ul, assignmentUE_ul, data_ul = allocate.cellAllocateUl(numCUE, numRB, perScheduleCUE, gain_c2b, N0, data_cue_ul, Pmax, Pmin, cqiLevel)
-    candicate_dl, minCUEsinr_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
+    sys_parameter_ul = {
+        'radius' : radius,
+        'numCUE' : numCUE,
+        'numD2D' : numD2D,
+        'numRB' : numRB,
+        'perScheduleCUE' : perScheduleCUE,
+        'N0' : N0,
+        'Pmax' : Pmax,
+        'Pmin' : Pmin,
+        'cqiLevel' : cqiLevel,
+        'beamWide' : beamWide,
 
-    i_d2d_rx_ul = measure.UplinkCUE(numCUE, numD2D, beamWide, dist_c2b, dist_c2d, ue_point, rx_point, numD2DReciver, candicate, directCUE, omnidirectCUE)
-    i_d2d_rx_dl = measure.DownlinkBS(numD2D, rx_point, numD2DReciver, beamPoint)
-    
-    i_d2c_ul = measure.Cell_in_OmniD2D(1, numD2D, dist_d2d, dist_d2b, candicate, omnidirectD2D)
-    i_d2c_dl = measure.Cell_in_OmniD2D(numCUE, numD2D, dist_d2d, dist_d2c, candicate, omnidirectD2D)
-    
-    i_d2c_ul = measure.Cell_in_DirectD2D(1, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate, i_d2c_ul, directD2D, beamWide)
-    i_d2c_dl = measure.Cell_in_DirectD2D(numCUE, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate, i_d2c_dl, directD2D, beamWide)
-    
+        'g_c2b' : gain_c2b,
+        'g_d2b' : gain_d2b,
+        'g_d2c' : gain_d2c,
+        'g_d2d' : gain_d2d,
+        'g_b2d' : gain_b2d,
+        'g_c2d' : gain_c2d,
+        'g_dij' : gain_dij,
+
+        'beamPoint' : beamPoint,
+        'candicate' : candicate,
+
+        'data_cue_ul' : data_cue_ul,
+        'data_d2d_ul' : data_d2d_ul
+    }
+
+    sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
+    i_d2d_rx_ul = measure.UplinkCUE(numCUE, numD2D, beamWide, dist_c2b, dist_c2d, ue_point, rx_point, numD2DReciver, candicate_ul, directCUE, omnidirectCUE)
+    i_d2c_ul = measure.Cell_in_OmniD2D(1, numD2D, dist_d2d, dist_d2b, candicate_ul, omnidirectD2D)
+    i_d2c_ul = measure.Cell_in_DirectD2D(1, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate_ul, i_d2c_ul, directD2D, beamWide)
     i_d2d_rx_ul, nStartD2D_ul = measure.BetweenD2D(numD2D, numRB, data_d2d_ul, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_ul, tx_point, rx_point, directD2D, omnidirectD2D)
-    i_d2d_rx_dl, nStartD2D_dl = measure.BetweenD2D(numD2D, numRB, data_d2d_dl, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_dl, tx_point, rx_point, directD2D, omnidirectD2D)
-    
     i_d2d_ul = measure.InterferenceD2D(i_d2d_rx_ul)
-    i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
-
     root_ul, scheduleTimes_ul, assignmentD2D_ul, minD2Dsinr_ul, powerListD2D_ul = proposed.find_d2d_root(1, numD2D, numRB, nStartD2D_ul, i_d2d_ul, i_d2c_ul, i, scheduleTimes_ul, data_d2d_ul)
-    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, nStartD2D_ul, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
-
     graph_ul, noCellInterference_ul, cellInterference_ul = proposed.create_interference_graph(1, numD2D, i_d2d_ul, i_d2c_ul)
-    graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)
-
     longestPath_ul = proposed.find_longest_path(root_ul,nStartD2D_ul, noCellInterference_ul, graph_ul, i_d2d_ul)
+    powerListD2D_ul, assignmentD2D_ul = proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
 
-    proposed.phase2_power_configure(numRB, root_ul, i_d2d_rx_ul, gain_d2d, gain_dij, N0, longestPath_ul, minD2Dsinr_ul, powerListD2D_ul, assignmentD2D_ul, numD2DReciver)
-    print(powerListD2D_ul)
-    # print(root_ul)
-    # print(scheduleTimes_ul)
-    # print()
-    # print(root_dl)
-    # print(scheduleTimes_dl)
-    # print()
-    # print(longestPath_ul)
-    # print(i_d2d_ul)
-    # print(i_d2c_ul)
-    # print(omnidirectCUE)
-    # print(omnidirectD2D)
-    # print(i_d2d_ul)
-    # print(ue_point)
-    # print()
-    # print(tx_point)
-    # print()
-    # print(rx_point)
-    
-    # print()
-    # print(i_d2d_dl)
-    # print()
-    # print(i_d2d_rx_dl)
-    # print()
-    # print(i_d2d_rx_dl)
-    # print(candicate)
-    # print(i_d2c_ul)
-    # print(i_d2c_dl)
 
-# draw.deawCell(radius, ue_point, tx_point, rx_point, numD2DReciver)
+
+
+
+    candicate_dl, minCUEsinr_dl, powerList_dl, assignmentUE_dl, data_dl = allocate.cellAllocateDl(numCUE, numRB, candicate, gain_c2b, N0, data_cue_dl , Pmax, Pmin, cqiLevel)
+    i_d2d_rx_dl = measure.DownlinkBS(numD2D, rx_point, numD2DReciver, beamPoint)
+    i_d2c_dl = measure.Cell_in_OmniD2D(numCUE, numD2D, dist_d2d, dist_d2c, candicate_ul, omnidirectD2D)
+    i_d2c_dl = measure.Cell_in_DirectD2D(numCUE, numD2D, ue_point, tx_point, rx_point, numD2DReciver, candicate_dl, i_d2c_dl, directD2D, beamWide)
+    i_d2d_rx_dl, nStartD2D_dl = measure.BetweenD2D(numD2D, numRB, data_d2d_dl, N0, beamWide, dist_d2d, dist_dij, gain_d2d, numD2DReciver, i_d2d_rx_dl, tx_point, rx_point, directD2D, omnidirectD2D)
+    i_d2d_dl = measure.InterferenceD2D(i_d2d_rx_dl)
+    root_dl, scheduleTimes_dl, assignmentD2D_dl, minD2Dsinr_dl, powerListD2D_dl = proposed.find_d2d_root(numCUE, numD2D, numRB, nStartD2D_ul, i_d2d_dl, i_d2c_dl, i, scheduleTimes_dl, data_d2d_dl)
+    graph_dl, noCellInterference_dl, cellInterference_dl = proposed.create_interference_graph(numCUE, numD2D, i_d2d_dl, i_d2c_dl)

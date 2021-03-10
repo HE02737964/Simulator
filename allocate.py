@@ -1,23 +1,23 @@
 import numpy as np
 import tools
 
-def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, cqiLevel):
+def cellAllocateUl(**parameter):
     tool = tools.Tool()
     convert = tools.Convert()
-    candicate = np.sort(np.random.choice(range(0,numCUE), size=int(numCUE * (perScheduleCUE/100)), replace=False))     #根據比例隨機挑選要傳資料的CUE
+    candicate = np.sort(np.random.choice(range(0,parameter['numCUE']), size=int(parameter['numCUE'] * (parameter['perScheduleCUE']/100)), replace=False))     #根據比例隨機挑選要傳資料的CUE
     
-    minSINR = np.zeros(numCUE)
-    minCQI = np.zeros(numCUE)
-    SINR = np.zeros(numCUE)
-    rbList = np.zeros(numCUE)
+    minSINR = np.zeros(parameter['numCUE'])
+    minCQI = np.zeros(parameter['numCUE'])
+    SINR = np.zeros(parameter['numCUE'])
+    rbList = np.zeros(parameter['numCUE'])
 
-    power_prb = np.zeros((numCUE, numRB))
-    powerList = np.zeros(numCUE)
+    power_prb = np.zeros((parameter['numCUE'], parameter['numRB']))
+    powerList = np.zeros(parameter['numCUE'])
 
     #計算BS的最小SINR和CUE在每個RB上使用的power
     upperCqi = 0
     for i in candicate:
-        tbs, rb = tool.data_tbs_mapping(data[i], numRB)
+        tbs, rb = tool.data_tbs_mapping(parameter['data_cue_ul'][i], parameter['numRB'])
         cqi = convert.TBS_CQI_mapping(tbs)
         sinr = convert.CQI_SINR_mapping(cqi)
         rbList[i] = rb
@@ -26,21 +26,21 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, c
         if cqi >= 12:
             upperCqi = 15
         else:
-            upperCqi = cqi + cqiLevel
+            upperCqi = cqi + parameter['cqiLevel']
         upperSinr = convert.CQI_SINR_mapping(upperCqi)
         upperSinr = convert.dB_to_mW(upperSinr)
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         SINR[i] = upperSinr
-        for rb in range(numRB):
-            power = convert.SNR_to_Power(upperSinr, g_c2b[i][0][rb], N0)
-            if power > Pmax:
-                power = Pmax
-            if power < Pmin:
-                power = Pmin
+        for rb in range(parameter['numRB']):
+            power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][rb], parameter['N0'])
+            if power > parameter['Pmax']:
+                power = parameter['Pmax']
+            if power < parameter['Pmin']:
+                power = parameter['Pmin']
             power_prb[i][rb] = power
     
-    assignmentUE = np.zeros((numCUE, numRB))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
-    assignmentRB = np.zeros(numRB)              #RB的使用狀態(1=使用,0=未使用)
+    assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
+    assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
     
     #由候選UE依序分配擁有最小傳輸power的RB
@@ -48,8 +48,8 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, c
     for ue in candicate:
         rbIndex = 0                 #RB索引
         rb = rbList[ue]             #CUE需要多少個RB
-        while rbIndex < numRB:
-            while rb > 0 and rbIndex < numRB:
+        while rbIndex < parameter['numRB']:
+            while rb > 0 and rbIndex < parameter['numRB']:
                 if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
                     assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
                     assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
@@ -59,7 +59,7 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, c
                 else:
                     rbIndex += 1
             break
-        if rbIndex == numRB:
+        if rbIndex == parameter['numRB']:
             deleteCandicate.append(ue)
 
     candicate = np.setdiff1d(candicate, deleteCandicate)
@@ -68,8 +68,13 @@ def cellAllocateUl(numCUE, numRB, perScheduleCUE, g_c2b, N0, data, Pmax, Pmin, c
         minSINR[ue] = 0
         SINR[ue] = 0
         power_prb[ue] = 0
+
+    parameter.update({'candicateCUE_ul' : candicate})
+    parameter.update({'minCUEsinr_ul' : minSINR})
+    parameter.update({'powerCUEList_ul' : powerList})
+    parameter.update({'assignmentCUE_ul' : assignmentUE})
     
-    return candicate, minSINR, powerList, assignmentUE, data
+    return parameter
 
 def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, data, Pmax, Pmin, cqiLevel):
     tool = tools.Tool()
@@ -129,6 +134,7 @@ def cellAllocateDl(numCUE, numRB, candicate, g_c2b, N0, data, Pmax, Pmin, cqiLev
                     rbIndex += 1
             break
         if rbIndex == numRB:
+            #哪些CUE無法被分配到RB
             deleteCandicate.append(ue)
 
     candicate = np.setdiff1d(candicate, deleteCandicate)

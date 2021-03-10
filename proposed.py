@@ -1,6 +1,6 @@
 import numpy as np
 import tools
-np.seterr(divide = 'ignore') 
+np.seterr(divide='ignore', invalid='ignore')
 def find_d2d_root(numCell, numD2D, numRB, nStartD2D, i_d2d, i_d2c, time, scheduleTimes, data):
     tool = tools.Tool()
     i_len = np.zeros(numD2D)
@@ -94,7 +94,6 @@ def find_longest_path(root, nStart, chooseList, graph, i_d2d):
 def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath, d2d_min_sinr, powerList, assignmentD2D, numD2DReciver):
     targetList = root.copy()    #不能讓SINR低於所需最小值的D2D List
     longest = longestPath.copy()
-    print(longest)
     for path in longest:
         for key in path:
             if path[key]:
@@ -114,7 +113,6 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
                             if d2d_power_rx[rx][rb] > 199.52623149688787:
                                 d2d_power_rx[rx][rb] = 199.52623149688787
                                 flag = False
-                                # print(lastNode,'power not enough')
                     powerList[lastNode] = max(powerList[lastNode], np.max(d2d_power_rx))
                     for d2d in targetList:
                         for rx in range(numD2DReciver[d2d]):
@@ -124,8 +122,6 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
                                     interference = interference + (powerList[i] * g_dij[i][d2d][rx][rb])
                                 sinr = (powerList[d2d] * g_d2d[d2d][rx][rb]) / (N0 + interference)
                                 if sinr < d2d_min_sinr[d2d]:
-                                    # print(sinr,'<',d2d_min_sinr[d2d])
-                                    # print(d2d,'sinr','not enough')
                                     flag = False
                     if flag:
                         targetList.append(lastNode)
@@ -138,6 +134,10 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
                         if removeNode in targetList:
                             targetList.remove(removeNode)
                         point = len(path[key]) - 1
+
+                for d2d in path[key]:
+                    assignmentD2D[d2d] = 1
+
     for tx in root:
         d2d_power_rx = np.zeros((numD2DReciver[tx], numRB))
         for rx in range(numD2DReciver[tx]):
@@ -169,8 +169,27 @@ def phase2_power_configure(numRB, root, i_d2d_rx, g_d2d, g_dij, N0, longestPath,
     # print('minSi:',10*np.log10(d2d_min_sinr))
     # print('calsn:',np.around(10*np.log10(x),1))
     # print('calsi:',np.around(10*np.log10(xx),1))
-    return powerList
-    print(powerList)
+    return powerList, assignmentD2D
+
+def phase3_power_configure(**parameter):
+    candicate = (-parameter['data']).argsort()  #根據資料量大小做排序
+    #刪除已經分配RB的D2D以及與Cell環境有干擾的D2D
+    index = []
+    for d2d in range(parameter['numD2D']):
+        if all(parameter['assignmentD2D'][d2d]) or d2d in parameter['cellInterference_ul']:
+            index.append(np.argwhere(d2d == candicate)[0][0])        
+    candicate = np.delete(candicate, index)
+
+    #每個Rx計算目前現有的干擾強度以及計算所需SINR之傳輸功率
+    for tx in candicate:
+        d2d_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+        for rx in range(parameter['numD2DReciver'][tx]):
+            for rb in range(parameter['numRB']):
+                interference = 0
+                for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+                    interference = interference + (parameter['powerList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                d2d_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
+        parameter['powerList'][tx] = np.max(d2d_power_rx)
     
 def not_interference_cell(numCell, numD2D, i_d2d, i_d2c):
     noCell = []

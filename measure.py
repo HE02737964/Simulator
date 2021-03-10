@@ -4,7 +4,6 @@ import tools
 def UplinkCUE(numCUE, numD2D, beamWide, dis_c2b, dis_c2d, ue_point, rx_point, numD2DReciver, candicate, directCUE, omnidirectCUE):
     tool = tools.Tool()
     i_d2d_rx = []   #Dict,每個D2D Rx包含被哪些CUE和D2D Tx干擾
-    # i_d2d = []   #Dict,每個D2D被哪些CUE和D2D Tx干擾
 
     #CUE對D2D的干擾
     for d2d in range(numD2D):
@@ -54,7 +53,6 @@ def Cell_in_OmniD2D(numCell, numD2D, dis_d2d, dis_d2c, candicate, omnidirectD2D)
     for cell in range(numCell):
         r_c = []
         for d2d in range(numD2D):
-            #genrator的dis_d2b型態沒設置好,導致型態不同
             if numCell > 1:
                 if d2d in omnidirectD2D and max(dis_d2d[d2d]) >= dis_d2c[d2d][cell] and d2d not in r_c and cell in candicate:
                     r_c.append(d2d)

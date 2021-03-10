@@ -1,6 +1,6 @@
 {
 	"radius" : 500,
-	"numCUE" : 3,
+	"numCUE" : 30,
 	"numD2D" : 10,
 	"numRB" : 25,
 	"maxReciver" : 1,

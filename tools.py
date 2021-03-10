@@ -76,24 +76,30 @@ class Convert:
     
     def TBS_CQI_mapping(self, tbs):
         CQI = 0
-        if tbs ==0 or tbs == 1:
+        if tbs ==0:
             CQI = 1
-        elif tbs == 2 or tbs == 3:
+        elif tbs == 1:
             CQI = 2
-        elif tbs == 4 or tbs == 5:
+        elif tbs == 2 or tbs == 3:
             CQI = 3
-        elif tbs == 6 or tbs == 7:
+        elif tbs == 4 or tbs == 5:
             CQI = 4
-        elif tbs == 8:
+        elif tbs == 6 or tbs == 7:
             CQI = 5
-        elif tbs == 9 or tbs == 10 or tbs == 11:
-            CQI = np.random.randint(low=5, high=7)
-        elif tbs == 12 or tbs == 13:
+        elif tbs == 8:
+            CQI = 6
+        elif tbs == 9:
+            CQI = np.random.randint(low=6, high=7) #不含high，high=7表示tbs=9時，CQI取最小值6
+        elif tbs == 10:
+            CQI = 7
+        elif tbs == 11 or tbs == 12:
             CQI = 8
-        elif tbs == 14:
+        elif tbs == 13 or tbs == 14:
             CQI = 9
-        elif tbs == 15 or tbs == 16:
-            CQI = np.random.randint(low=9, high=10)
+        elif tbs == 15:
+            CQI = np.random.randint(low=9, high=10) #high=10 or 11，取10表示tbs=15時，CQI取最小值9
+        elif tbs == 16:
+            CQI = 10
         elif tbs == 17 or tbs == 18:
             CQI = 11
         elif tbs == 19 or tbs == 20:
