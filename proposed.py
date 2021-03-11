@@ -170,8 +170,28 @@ def phase3_power_configure(**parameter):
                 for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
                     interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
                 d2d_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
-        parameter['powerD2DList'][tx] = np.max(d2d_power_rx)
+        power = np.max(d2d_power_rx)
+        if power > parameter['Pmax']:
+            # power = parameter['Pmax']
+            power = 0
+        if power < parameter['Pmin']:
+            power = parameter['Pmin']
+        parameter['powerD2DList'][tx] = power
+
+        #干擾鄰居有tx的D2D計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
+        for d2d in range(parameter['numD2D']):
+            tx_power = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+            for rx in range(parameter['numD2DReciver'][d2d]):
+                if tx in parameter['i_d2d_rx'][d2d][rx]:
+                    for rb in range(parameter['numRB']):
+                        interference = 0
+                        for i in parameter['i_d2d_rx'][d2d][rx]:
+                            if tx != i:
+                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                        tx_power[rx][rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_d2d'][d2d][rx][rb])
+
     return parameter
+
 def d2d_interference_cell(**parameter):
     noCell = []     #D2D與Cell UE沒有干擾
     inCell = []     #D2D與Cell UE有干擾
