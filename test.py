@@ -87,7 +87,7 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 
-for currentTime in range(0,20):
+for currentTime in range(0,1):
     gain = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2b' : c.gainTx2Cell(dist_d2b),

@@ -162,14 +162,18 @@ def phase2_power_configure(**parameter):
 def phase3_power_configure(**parameter):
     candicate = (-parameter['data_d2d']).argsort()  #根據資料量大小做排序
     #刪除已經分配RB的D2D以及與Cell環境有干擾的D2D
-    index = []
-    for d2d in range(parameter['numD2D']):
-        if all(parameter['assignmentD2D'][d2d]) or d2d in parameter['d2d_cellInterference']:
-            index.append(np.argwhere(d2d == candicate)[0][0])        
-    candicate = np.delete(candicate, index)
+    candicate_d2d = []
+    candicate_cell = []
+    for d2d in candicate:
+        #挑出candicate中沒有被分配RB且與CUE沒有干擾的D2D
+        if not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_noCellInterference']:
+            candicate_d2d.append(d2d)
+        #挑出candicate中沒有被分配RB且與CUE有干擾的D2D
+        elif not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_cellInterference']:
+            candicate_cell.append(d2d)
 
     #每個Rx計算目前現有的干擾強度以及計算所需SINR之傳輸功率
-    for tx in candicate:
+    for tx in candicate_d2d:
         d2d_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
         for rx in range(parameter['numD2DReciver'][tx]):
             for rb in range(parameter['numRB']):
@@ -225,6 +229,24 @@ def phase3_power_configure(**parameter):
     # print(np.round(10*np.log10(s), 1))
     print(np.round(10*np.log10(parameter['powerD2DList']), 1))
     print(parameter['phase1_root'])
+    
+    print('candicate_cell',candicate_cell)
+    for tx in candicate_cell:
+        d2d_rb = np.ones(parameter['numRB'])
+        #找出tx可用的RB(即不干擾CUE的RB)
+        for cue in parameter['candicateCUE']:
+            #所有CUE使用RB送給BS，只要該RB有使用，那一回合所有D2D都無法使用該RB，因為接收端只有一個是BS
+            for cue_rx in range(parameter['numCellRx']):
+                if tx in parameter['i_d2c'][cue_rx]: #D2D tx 會干擾 CUE rx
+                    for rb in range(parameter['numRB']):
+                        if parameter['assignmentCUE'][cue][rb] == 1:
+                            d2d_rb[rb] = 0
+            print(parameter['assignmentCUE'][cue])
+        print(parameter['i_d2c'])
+        print(parameter['i_d2d'])
+        print('d2d_rb',d2d_rb)
+                
+    print(parameter['assignmentCUE'])
     return parameter
 
 def d2d_interference_cell(**parameter):
