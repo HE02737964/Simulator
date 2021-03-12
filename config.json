@@ -3,7 +3,7 @@
 	"numBS" : 1,
 	"numCUE" : 3,
 	"numD2D" : 10,
-	"numRB" : 25,
+	"numRB" : 100,
 	"maxReciver" : 1,
 	"d2dDistance" : 300,
 	"directCUE" : 50,

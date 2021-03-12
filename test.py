@@ -87,7 +87,7 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 
-for currentTime in range(0,1):
+for currentTime in range(0,20):
     gain = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2b' : c.gainTx2Cell(dist_d2b),
@@ -128,7 +128,7 @@ for currentTime in range(0,1):
     sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
     sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
 
-    print(sys_parameter_ul['longestPathList'])
+    # print(sys_parameter_ul['longestPathList'])
 
     downlink = {
         'numCellRx' : config["numCUE"],
@@ -155,6 +155,6 @@ for currentTime in range(0,1):
     sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
     sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
 
-    print(sys_parameter_dl['longestPathList'])
+    # print(sys_parameter_dl['longestPathList'])
 
-    draw.drawCell(**{**initial, **environment})
+    # draw.drawCell(**{**initial, **environment})
