@@ -33,14 +33,14 @@ class Channel():
         return gain
 
     def gainBS2Rx(self, distance):
-        gain = np.zeros((len(distance), max(self.numD2DReciver), self.numRB))   #二維陣列, BS - D2D所有RX在每個RB上的Gain
+        gain = np.zeros((1, len(distance), max(self.numD2DReciver), self.numRB))   #二維陣列, BS - D2D所有RX在每個RB上的Gain
 
         pathLossScale = self.pathLossScale(distance)
         
         fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver)])
         for tx in range(len(distance)):
             for rx in range(self.numD2DReciver[tx]):
-                gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
+                gain[0][tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
         return gain
 
     def gainTx2D2DRx(self, distance):

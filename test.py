@@ -88,13 +88,19 @@ environment = {
 }
 
 for currentTime in range(0,1):
-    gain = {
+    gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2b' : c.gainTx2Cell(dist_d2b),
+        'g_d2d' : c.gainD2DRx(dist_d2d),
+        'g_c2d' : c.gainTx2D2DRx(dist_c2d),
+        'g_dij' : c.gainTx2D2DRx(dist_dij)
+    }
+
+    gain_dl = {
+        'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2c' : c.gainTx2Cell(dist_d2c),
         'g_d2d' : c.gainD2DRx(dist_d2d),
-        'g_b2d' : c.gainBS2Rx(dist_b2d),
-        'g_c2d' : c.gainTx2D2DRx(dist_c2d),
+        'g_c2d' : c.gainBS2Rx(dist_b2d),
         'g_dij' : c.gainTx2D2DRx(dist_dij)
     }
 
@@ -115,7 +121,7 @@ for currentTime in range(0,1):
         'currentTime' : currentTime
     }
 
-    sys_parameter_ul = {**initial, **environment, **gain, **uplink}
+    sys_parameter_ul = {**initial, **environment, **gain_ul, **uplink}
     sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
     sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
     sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
@@ -142,7 +148,7 @@ for currentTime in range(0,1):
         'currentTime' : currentTime
     }
 
-    sys_parameter_dl = {**initial, **environment, **gain, **downlink}
+    sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
 
     sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
     sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
@@ -154,6 +160,7 @@ for currentTime in range(0,1):
     sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
     sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
     sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
+    sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
 
     # print(sys_parameter_dl['longestPathList'])
 

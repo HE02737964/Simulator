@@ -128,7 +128,7 @@ def cellAllocateDl(**parameter):
                     assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
                     assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
                     #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
-                    powerList = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
+                    powerList[0] = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
                     rb = rb - 1
                 else:
                     rbIndex += 1
