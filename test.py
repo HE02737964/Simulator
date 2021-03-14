@@ -90,7 +90,7 @@ environment = {
 for currentTime in range(0,1):
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
-        'g_d2b' : c.gainTx2Cell(dist_d2b),
+        'g_d2c' : c.gainTx2Cell(dist_d2b),
         'g_d2d' : c.gainD2DRx(dist_d2d),
         'g_c2d' : c.gainTx2D2DRx(dist_c2d),
         'g_dij' : c.gainTx2D2DRx(dist_dij)

@@ -263,8 +263,52 @@ def phase3_power_configure(**parameter):
             power = parameter['Pmin']
         parameter['powerD2DList'][tx] = power
 
-        
-
+        #干擾鄰居有tx的UE計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
+        for d2d in range(parameter['numD2D']):
+            tx_power_d2dRx = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+            for rx in range(parameter['numD2DReciver'][d2d]):
+                # print('tx',tx,'i',d2d,parameter['i_d2d_rx'][d2d][rx])
+                if tx in parameter['i_d2d_rx'][d2d][rx]['d2d']:
+                    for rb in range(parameter['numRB']):
+                        interference = 0
+                        for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
+                            if tx != i:
+                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                        tx_power_d2dRx[rx][rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_d2d'][d2d][rx][rb])
+            tx_power = np.min(tx_power_d2dRx)
+            if tx_power > parameter['Pmax']:
+                # power = parameter['Pmax']
+                tx_power = 0
+            if tx_power < parameter['Pmin']:
+                # power = parameter['Pmin']
+                tx_power = 0
+            if tx_power >= parameter['powerD2DList'][tx]:
+                parameter['powerD2DList'][tx] = tx_power
+            else:
+                parameter['powerD2DList'][tx] = 0
+        for cue in range(parameter['numCellRx']):
+            tx_power_CellRx = np.zeros(parameter['numRB'])
+            if tx in parameter['i_d2c'][cue]:
+                for rb in range(parameter['numRB']):
+                    interference = 0
+                    for i in parameter['i_d2c'][cue]:
+                        if tx != i:
+                            interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][cue][rb])
+                    print(cue)
+                    print(parameter['powerCUEList']) #ul and dl reciver
+                    tx_power_CellRx[rb] = ((parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][0][rb]) / (parameter['minCUEsinr'][d2d] * parameter['g_d2c'][tx][cue][0][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue][0][rb])
+            tx_power = np.min(tx_power_CellRx)
+            if tx_power > parameter['Pmax']:
+                # power = parameter['Pmax']
+                tx_power = 0
+            if tx_power < parameter['Pmin']:
+                # power = parameter['Pmin']
+                tx_power = 0
+            if tx_power >= parameter['powerD2DList'][tx]:
+                parameter['powerD2DList'][tx] = tx_power
+            else:
+                parameter['powerD2DList'][tx] = 0
+    print(parameter['powerD2DList'])
     return parameter
 
 def d2d_interference_cell(**parameter):
