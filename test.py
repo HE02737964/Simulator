@@ -113,6 +113,7 @@ for currentTime in range(0,1):
     data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=initial['numD2D'])
 
     uplink = {
+        'numCellTx' : config["numCUE"],
         'numCellRx' : config["numBS"],
 
         'data_cue' : data_cue_ul,
@@ -137,6 +138,7 @@ for currentTime in range(0,1):
     # print(sys_parameter_ul['longestPathList'])
 
     downlink = {
+        'numCellTx' : config["numBS"],
         'numCellRx' : config["numCUE"],
 
         'beamPoint' : beamPoint,
@@ -160,7 +162,7 @@ for currentTime in range(0,1):
     sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
     sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
     sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
-    sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
+    # sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
 
     # print(sys_parameter_dl['longestPathList'])
 
