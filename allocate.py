@@ -42,24 +42,27 @@ def cellAllocateUl(**parameter):
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
-    
+
     #由候選UE依序分配擁有最小傳輸power的RB
     deleteCandicate = []
+    emptyRB = parameter['numRB']
     for ue in candicate:
         rbIndex = 0                 #RB索引
         rb = rbList[ue]             #CUE需要多少個RB
-        while rbIndex < parameter['numRB']:
-            while rb > 0 and rbIndex < parameter['numRB']:
-                if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
-                    assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
-                    assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
-                    #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
-                    powerList[ue] = max(powerList[ue], power_prb[ue][sortPower[ue][rbIndex]])
-                    rb = rb - 1
-                else:
-                    rbIndex += 1
-            break
-        if rbIndex == parameter['numRB']:
+        if rbList[ue] > emptyRB:
+            deleteCandicate.append(ue)
+            continue
+        while rb > 0 and rbIndex < parameter['numRB']:
+            if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
+                assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
+                assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
+                #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
+                powerList[ue] = max(powerList[ue], power_prb[ue][sortPower[ue][rbIndex]])
+                emptyRB = emptyRB - 1
+                rb = rb - 1
+            else:
+                rbIndex = rbIndex + 1
+        if not any(assignmentUE[ue]):
             deleteCandicate.append(ue)
 
     candicate = np.setdiff1d(candicate, deleteCandicate)
@@ -119,22 +122,24 @@ def cellAllocateDl(**parameter):
     
     #由候選UE依序分配擁有最小傳輸power的RB
     deleteCandicate = []
+    emptyRB = parameter['numRB']
     for ue in parameter['inSectorCUE']:
         rbIndex = 0                 #RB索引
         rb = rbList[ue]             #CUE需要多少個RB
-        while rbIndex < parameter['numRB']:
-            while rb > 0 and rbIndex < parameter['numRB']:
-                if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
-                    assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
-                    assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
-                    #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
-                    powerList[0] = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
-                    rb = rb - 1
-                else:
-                    rbIndex += 1
-            break
-        if rbIndex == parameter['numRB']:
-            #哪些CUE無法被分配到RB
+        if rbList[ue] > emptyRB:
+            deleteCandicate.append(ue)
+            continue
+        while rb > 0 and rbIndex < parameter['numRB']:
+            if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
+                assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
+                assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
+                #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
+                powerList[0] = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
+                emptyRB = emptyRB - 1
+                rb = rb - 1
+            else:
+                rbIndex = rbIndex + 1
+        if not any(assignmentUE[ue]):
             deleteCandicate.append(ue)
 
     candicate = np.setdiff1d(parameter['inSectorCUE'], deleteCandicate)

@@ -1,11 +1,11 @@
 {
 	"radius" : 500,
 	"numBS" : 1,
-	"numCUE" : 8,
-	"numD2D" : 10,
-	"numRB" : 25,
+	"numCUE" : 25,
+	"numD2D" : 75,
+	"numRB" : 24,
 	"maxReciver" : 1,
-	"d2dDistance" : 300,
+	"d2dDistance" : 30,
 	"directCUE" : 50,
 	"directD2D" : 50,
 
@@ -19,7 +19,7 @@
 	"totalBeam" : 8,
 	"numScheduleBeam" : 3,
 
-	"dataCUEMax" : 1000,
+	"dataCUEMax" : 18336,
 	"dataCUEMin" : 1,
 	"dataD2DMax" : 18336,
 	"dataD2DMin" : 1,

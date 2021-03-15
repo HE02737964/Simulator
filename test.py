@@ -162,7 +162,7 @@ for currentTime in range(0,1):
     sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
     sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
     sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
+    sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
 
     # print(sys_parameter_dl['longestPathList'])
 
