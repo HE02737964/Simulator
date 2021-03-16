@@ -256,18 +256,24 @@ def phase3_power_configure(**parameter):
     # print('candicate_cell',candicate_cell)
     for tx in candicate_cell:
         d2d_rb = np.ones(parameter['numRB'], dtype=int)
+        numRB = parameter['numRB']
         #找出tx可用的RB(即不干擾CUE的RB)
         for cue in parameter['candicateCUE']:
             #所有CUE使用RB送給BS，只要該RB有使用，那一回合所有D2D都無法使用該RB，因為接收端只有一個是BS
             for cue_rx in range(parameter['numCellRx']):
                 if tx in parameter['i_d2c'][cue_rx]: #D2D tx 會干擾 CUE rx
+                    print("?????????")
                     for rb in range(parameter['numRB']):
                         if parameter['assignmentCUE'][cue][rb] == 1:
                             d2d_rb[rb] = 0
+                            numRB = numRB - 1
+        print(d2d_rb)
+        print(numRB)
         #將可用RB換成所需SINR
-        if sum(d2d_rb) == 0:
+        if numRB == 0:
             break
         parameter['minD2Dsinr'][tx] = tool.data_sinr_mapping(parameter['data_d2d'][tx], sum(d2d_rb)) #會有資料傳不完的問題
+        # print(tool.data_sinr_mapping(parameter['data_d2d'][tx], sum(d2d_rb)))
         tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
         #每個Rx計算目前現有的干擾強度以及計算所需SINR之Tx傳輸功率
         for rx in range(parameter['numD2DReciver'][tx]):
@@ -282,8 +288,8 @@ def phase3_power_configure(**parameter):
                     tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
         tx_min_power = np.max(tx_power_rx)
         if tx_min_power > parameter['Pmax']:
-            # tx_min_power = parameter['Pmax']
-            tx_min_power = 0
+            tx_min_power = parameter['Pmax']
+            # tx_min_power = 0
         if tx_min_power < parameter['Pmin']:
             tx_min_power = parameter['Pmin']
 
@@ -356,9 +362,15 @@ def phase3_power_configure(**parameter):
     print(len(parameter['phase1_root']))
     c = 0
     print(parameter['longestPathList'])
-    # for i in parameter['longestPathList']:
-    #     c = c + len(parameter['longestPathList'][i])
+    for i in parameter['longestPathList']:
+        for j in i:
+            c = c + len(i[j])
     print(c)
+    x = 0
+    for i in range(parameter['numD2D']):
+        if parameter['powerD2DList'][i] != 0:
+            x = x + 1
+    print(x)
     return parameter
 
 def d2d_interference_cell(**parameter):

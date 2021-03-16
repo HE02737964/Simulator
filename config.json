@@ -19,9 +19,9 @@
 	"totalBeam" : 8,
 	"numScheduleBeam" : 3,
 
-	"dataCUEMax" : 18336,
-	"dataCUEMin" : 1,
+	"dataCUEMax" : 3752,
+	"dataCUEMin" : 16,
 	"dataD2DMax" : 18336,
-	"dataD2DMin" : 1,
+	"dataD2DMin" : 680,
 	"beamWide" : 50
 }
