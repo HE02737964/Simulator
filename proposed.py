@@ -339,6 +339,26 @@ def phase3_power_configure(**parameter):
         parameter['powerD2DList'][tx] = np.max(powerD2DList_rb[tx])
     # print( parameter['powerD2DList'])
     # print("=================================")
+    s = np.zeros(parameter['numD2D'])
+    for tx in range(parameter['numD2D']):
+        s_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+        for rx in range(parameter['numD2DReciver'][tx]):
+            for rb in range(parameter['numRB']):
+                interference = 0
+                for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                s_rx[rx][rb] = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + interference)
+        s[tx] = np.min(s_rx)
+
+    print(np.round(10*np.log10(parameter['minD2Dsinr']), 1))
+    print(np.round(10*np.log10(s), 1))
+    print(np.round(10*np.log10(parameter['powerD2DList']), 1))
+    print(len(parameter['phase1_root']))
+    c = 0
+    print(parameter['longestPathList'])
+    # for i in parameter['longestPathList']:
+    #     c = c + len(parameter['longestPathList'][i])
+    print(c)
     return parameter
 
 def d2d_interference_cell(**parameter):

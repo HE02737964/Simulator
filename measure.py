@@ -91,11 +91,9 @@ def BetweenD2D(**parameter):
     minSINR = np.zeros(parameter['numD2D'])
     nStartD2D = []
     for tx in range(parameter['numD2D']):
-        r_d2d = []
         minSINR[tx] = tool.data_sinr_mapping(parameter['data_d2d'][tx], parameter['numRB'])
         D2Dsinr = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
         for rx in range(parameter['numD2DReciver'][tx]):
-            r = {}
             r_dij = {'d2d':[]}
             for d2d in range(parameter['numD2D']):       #對別人造成干擾的D2D
                 #以d2d Tx為圓心，其最遠的Rx為半徑，判斷其他D2D Rx是否在圓形範圍裡
