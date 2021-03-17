@@ -136,6 +136,7 @@ for currentTime in range(0,1):
     sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
 
     # print(sys_parameter_ul['longestPathList'])
+    # print(sys_parameter_ul['candicateD2D'])
 
     downlink = {
         'numCellTx' : config["numBS"],
