@@ -6,6 +6,7 @@ import channel
 import allocate
 import measure
 import proposed
+import time
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -49,6 +50,7 @@ tx_point = g.generateTxPoint(initial['numD2D'])
 rx_point = g.generateRxPoint(tx_point, d2dDistance, numD2DReciver)
 
 dist_c2b = g.distanceTx2Cell(ue_point, bs_point)
+dist_b2c = g.distanceTx2Cell(bs_point, ue_point)
 dist_d2b = g.distanceTx2Cell(tx_point, bs_point)
 dist_d2c = g.distanceTx2Cell(tx_point, ue_point)
 dist_d2d = g.distanceD2DRx(tx_point, rx_point, numD2DReciver)
@@ -72,6 +74,7 @@ environment = {
     'rx_point' : rx_point,
 
     'd_c2b' : dist_c2b,
+    'd_b2c' : dist_b2c,
     'd_d2b' : dist_d2b,
     'd_d2c' : dist_d2c,
     'd_d2d' : dist_d2d,
@@ -86,7 +89,7 @@ environment = {
 
     'scheduleTimes' : scheduleTimes_ul
 }
-
+start = time.time()
 for currentTime in range(0,1):
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
@@ -97,7 +100,7 @@ for currentTime in range(0,1):
     }
 
     gain_dl = {
-        'g_c2b' : c.gainTx2Cell(dist_c2b),
+        'g_c2b' : c.gainTx2Cell(dist_b2c),
         'g_d2c' : c.gainTx2Cell(dist_d2c),
         'g_d2d' : c.gainD2DRx(dist_d2d),
         'g_c2d' : c.gainBS2Rx(dist_b2d),
@@ -123,17 +126,17 @@ for currentTime in range(0,1):
     }
 
     sys_parameter_ul = {**initial, **environment, **gain_ul, **uplink}
-    sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
-    sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
-    sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
-    sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
-    sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
-    sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
-    sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
+    # sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
+    # sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
+    # sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
+    # sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
+    # sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
+    # sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
 
     # print(sys_parameter_ul['longestPathList'])
     # print(sys_parameter_ul['candicateD2D'])
@@ -153,18 +156,24 @@ for currentTime in range(0,1):
 
     sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
 
-    # sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
-    # sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.find_d2d_root(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
+    sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
+    sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
+    sys_parameter_dl = proposed.find_d2d_root(**sys_parameter_dl)
+    sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
+    sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
+    sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
+    sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
 
+    # print(sys_parameter_ul['assignmentCUE'])
+    # print("???")
+    # print(sys_parameter_dl['assignmentCUE'])
     # print(sys_parameter_dl['longestPathList'])
 
     # draw.drawCell(**{**initial, **environment})
+end = time.time()
+
+print("執行時間：%f 秒" % (end - start))

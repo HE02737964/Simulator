@@ -8,7 +8,7 @@ def cellAllocateUl(**parameter):
     
     minSINR = np.zeros(parameter['numCUE'])
     minCQI = np.zeros(parameter['numCUE'])
-    SINR = np.zeros(parameter['numCUE'])
+    sinrList = np.zeros(parameter['numCUE'])
     rbList = np.zeros(parameter['numCUE'])
 
     power_prb = np.zeros((parameter['numCUE'], parameter['numRB']))
@@ -30,7 +30,7 @@ def cellAllocateUl(**parameter):
         upperSinr = convert.CQI_SINR_mapping(upperCqi)
         upperSinr = convert.dB_to_mW(upperSinr)
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
-        SINR[i] = upperSinr
+        sinrList[i] = upperSinr
         for rb in range(parameter['numRB']):
             power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][rb], parameter['N0'])
             if power > parameter['Pmax']:
@@ -69,13 +69,15 @@ def cellAllocateUl(**parameter):
     for ue in deleteCandicate:
         minCQI[ue] = 0
         minSINR[ue] = 0
-        SINR[ue] = 0
+        sinrList[ue] = 0
         power_prb[ue] = 0
 
+    assignmentBS = np.reshape(assignmentRB, (-1, parameter['numRB'])) #BS使用RB接收資料的資料型態是1d array，np.reshape可以轉為2d array (-1會根據輸入的array推斷出新array的大小)
     parameter.update({'candicateCUE' : candicate})
     parameter.update({'minCUEsinr' : minSINR})
     parameter.update({'powerCUEList' : powerList})
-    parameter.update({'assignmentCUE' : assignmentUE})
+    parameter.update({'assignmentTxCell' : assignmentUE})
+    parameter.update({'assignmentRxCell' : assignmentBS})
     
     return parameter
 
@@ -109,7 +111,7 @@ def cellAllocateDl(**parameter):
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         sinrList[i] = upperSinr
         for rb in range(parameter['numRB']):
-            power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][rb], parameter['N0'])
+            power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][0][i][rb], parameter['N0'])
             if power > parameter['Pmax']:
                 power = parameter['Pmax']
             if power < parameter['Pmin']:
@@ -148,10 +150,13 @@ def cellAllocateDl(**parameter):
         minSINR[ue] = 0
         sinrList[ue] = 0
         power_prb[ue] = 0
+
+    assignmentBS = np.reshape(assignmentRB, (-1, parameter['numRB']))
     parameter.update({'candicateCUE' : candicate})
     parameter.update({'minCUEsinr' : minSINR})
     parameter.update({'powerCUEList' : powerList})
-    parameter.update({'assignmentCUE' : assignmentUE})
+    parameter.update({'assignmentTxCell' : assignmentBS})
+    parameter.update({'assignmentRxCell' : assignmentUE})
     return parameter
 
 def getSectorPoint(radius, totalBeam):

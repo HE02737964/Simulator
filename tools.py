@@ -126,7 +126,8 @@ class Tool:
         tbs = self.TBS()
         tbsIndex = 0
         for index in tbs:
-            if index == '26A':
+            if index == '26A' or numRB == 0:
+                tbsIndex = -1
                 break
             if tbs[index][numRB-1] >= data:
                 tbsIndex = index
@@ -151,6 +152,8 @@ class Tool:
     def data_sinr_mapping(self, data, numRB):
         convert = Convert()
         tbs = self.RB_TBS_mapping(data, numRB)
+        if tbs == -1:
+            return 0
         cqi = convert.TBS_CQI_mapping(tbs)
         sinr_dB = convert.CQI_SINR_mapping(cqi)
         sinr = convert.dB_to_mW(sinr_dB)
