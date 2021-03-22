@@ -1,5 +1,6 @@
 import numpy as np
 import tools
+import sys
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -175,7 +176,6 @@ def phase3_power_configure(**parameter):
     
     
     
-    print(candicate_d2d)
     #每個Rx計算目前現有的干擾強度以及計算所需SINR之Tx傳輸功率
     for tx in candicate_d2d:
         tx_power =  parameter['Pmax']
@@ -188,14 +188,13 @@ def phase3_power_configure(**parameter):
                     interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
                 tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
         tx_min_power = np.max(tx_power_rx)
-        print(tx_min_power)
+
         if tx_min_power > parameter['Pmax']:
             # tx_min_power = parameter['Pmax']
             tx_min_power = 0
         elif tx_min_power < parameter['Pmin']:
             tx_min_power = parameter['Pmin']
-        print(tx_min_power)
-        print()
+
         # print(10*np.log10(tx_min_power))
 
         #已設置過傳輸功率且干擾鄰居有tx的D2D的干擾鄰居有tx的D2D計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
@@ -255,7 +254,6 @@ def phase3_power_configure(**parameter):
 
 
     
-    print('candicate_cell',candicate_cell)
     #每個會干擾CUE(或BS)的tx首先找出可用的RB，得到可用的SINR，接下來則與前面步驟相同
     for tx in candicate_cell:
         d2d_rb = np.ones(parameter['numRB'], dtype=int)
@@ -293,14 +291,14 @@ def phase3_power_configure(**parameter):
                             interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
                 tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
         tx_min_power = np.max(tx_power_rx)
-        print(tx_min_power)
+
         if tx_min_power > parameter['Pmax']:
             # tx_min_power = parameter['Pmax']
             tx_min_power = 0
+            break
         elif tx_min_power < parameter['Pmin']:
             tx_min_power = parameter['Pmin']
-        print(tx_min_power)
-        print()
+        print('tx need min power',tx,tx_min_power)
 
         #已設置過傳輸功率且干擾鄰居有tx的D2D計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
         for d2d in parameter['candicateD2D']:
@@ -344,14 +342,18 @@ def phase3_power_configure(**parameter):
                     min_tx_power_CellRx = tx_power_CellRx[np.nonzero(tx_power_CellRx)]
                     if min_tx_power_CellRx.size > 0 and np.min(min_tx_power_CellRx) <= tx_power:
                         tx_power = np.min(min_tx_power_CellRx)
-   
+        print(flag)
+        print('use rb',d2d_rb)
+        print('with interference power',tx_power)
         #已設置傳輸功率過的D2D的干擾鄰居都沒有tx
         if flag:
             tx_power = tx_min_power
         else:
             if tx_power >= parameter['Pmax'] or tx_power < parameter['Pmin']:
                 tx_power = 0
+                break
         if tx_power >= tx_min_power:
+            print(tx,'assign')
             parameter['powerD2DList'][tx] = tx_power
             for rb in range(parameter['numRB']):
                 if d2d_rb[rb] == 1:
@@ -359,9 +361,10 @@ def phase3_power_configure(**parameter):
             parameter['candicateD2D'].append(tx)
             parameter['candicateD2D'].sort()
         else:
+            print(tx,'dont assign')
             parameter['powerD2DList'][tx] = 0
 
-
+        print()
     print(candicate_d2d)
     print(candicate_cell)
     sinr_cue = np.zeros(parameter['numCUE'])
@@ -372,19 +375,27 @@ def phase3_power_configure(**parameter):
             for rb in range(parameter['numRB']):
                 interference = 0
                 for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                    if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentD2D'][i][rb] == 1:
+                        interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+                i = interference
                 for i in parameter['i_d2d_rx'][tx][rx]['cue']:
-                    interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
+                    if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentTxCell'][i][rb] == 1:
+                        interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
                 s_rx[rx][rb] = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + interference)
+                x = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + i)
         sinr_d2d[tx] = np.min(s_rx)
         if np.round(10*np.log10(sinr_d2d[tx]), 1) < np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1) and parameter['powerD2DList'][tx] != 0:
             print("------------------------------------------------")
             print('D2D tx : ',tx)
             print(parameter['minD2Dsinr'][tx])
             print(sinr_d2d[tx])
+            print(x)
+            print(parameter['powerD2DList'][tx])
+            print(parameter['i_d2d'][tx])
             # print(np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1))
             # print(np.round(10*np.log10(sinr_d2d[tx]), 1))
             print("------------------------------------------------")
+            sys.exit()
 
     for tx in range(parameter['numCellTx']):
         s_rx = np.zeros((parameter['numCellRx'], parameter['numRB']))
@@ -392,21 +403,41 @@ def phase3_power_configure(**parameter):
             for rb in range(parameter['numRB']):
                 interference = 0
                 for i in parameter['i_d2c'][rx]:
-                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][rx][rb])
+                    if parameter['assignmentRxCell'][rx][rb] == 1 and parameter['assignmentD2D'][i][rb] == 1:
+                        interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][rx][rb])
                 if parameter['numCellRx'] >= 2:
                     s_rx[rx][rb] = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][rb]) / ( parameter['N0'] + interference)
                 else:
-                    s_rx[tx][rb] = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][rb]) / ( parameter['N0'] + interference)
+                    s_rx[rx][rb] = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][rb]) / ( parameter['N0'] + interference)
 
             if parameter['numCellRx'] >= 2:
                 sinr_cue[rx] = np.min(s_rx[rx])
+                # if np.round(10*np.log10(sinr_cue[rx]), 1) < np.round(10*np.log10(parameter['minCUEsinr'][tx]), 1) and parameter['powerCUEList'][tx] != 0:
+                #     print("------------------------------------------------")
+                #     print('CUE rx : ',rx)
+                #     print(parameter['minCUEsinr'][tx])
+                #     print(sinr_cue[rx])
+                #     print(parameter['i_d2c'][rx])
+                #     print("------------------------------------------------")
             else:
-                sinr_cue[tx] = np.min(s_rx[tx])
+                sinr_cue[tx] = np.min(s_rx[rx])
+                # if np.round(10*np.log10(sinr_cue[tx]), 1) < np.round(10*np.log10(parameter['minCUEsinr'][tx]), 1) and parameter['powerCUEList'][tx] != 0:
+                #     print("------------------------------------------------")
+                #     print('CUE rx : ',rx)
+                #     print(parameter['minCUEsinr'][tx])
+                #     print(sinr_cue[tx])
+                #     print(parameter['i_d2c'][rx])
+                #     print("------------------------------------------------")
 
     print(parameter['candicateCUE'])
     print(np.round(10*np.log10(parameter['powerCUEList']),1))
     print(np.round(10*np.log10(parameter['minCUEsinr']), 1))
     print(np.round(10*np.log10(sinr_cue), 1))
+    print(parameter['i_d2c'])
+    for i in range(parameter['numCellRx']):
+        for j in parameter['i_d2c'][i]:
+            if parameter['i_d2c'][i]:
+                print(parameter['powerD2DList'][j])
 
     return parameter
 

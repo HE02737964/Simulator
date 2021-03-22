@@ -16,6 +16,7 @@ def cellAllocateUl(**parameter):
 
     #計算BS的最小SINR和CUE在每個RB上使用的power
     upperCqi = 0
+    deleteCandicate = []
     for i in candicate:
         tbs, rb = tool.data_tbs_mapping(parameter['data_cue'][i], parameter['numRB'])
         cqi = convert.TBS_CQI_mapping(tbs)
@@ -34,7 +35,8 @@ def cellAllocateUl(**parameter):
         for rb in range(parameter['numRB']):
             power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][rb], parameter['N0'])
             if power > parameter['Pmax']:
-                power = parameter['Pmax']
+                deleteCandicate.append(i)
+                continue
             if power < parameter['Pmin']:
                 power = parameter['Pmin']
             power_prb[i][rb] = power
@@ -44,7 +46,6 @@ def cellAllocateUl(**parameter):
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
 
     #由候選UE依序分配擁有最小傳輸power的RB
-    deleteCandicate = []
     emptyRB = parameter['numRB']
     for ue in candicate:
         rbIndex = 0                 #RB索引
@@ -95,6 +96,7 @@ def cellAllocateDl(**parameter):
 
     #計算CUE的最小SINR和BS在每個RB上使用的power
     upperCqi = 0
+    deleteCandicate = []
     for i in parameter['inSectorCUE']:
         tbs, rb = tool.data_tbs_mapping(parameter['data_cue'][i], parameter['numRB'])
         cqi = convert.TBS_CQI_mapping(tbs)
@@ -113,7 +115,8 @@ def cellAllocateDl(**parameter):
         for rb in range(parameter['numRB']):
             power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][0][i][rb], parameter['N0'])
             if power > parameter['Pmax']:
-                power = parameter['Pmax']
+                deleteCandicate.append(i)
+                continue
             if power < parameter['Pmin']:
                 power = parameter['Pmin']
             power_prb[i][rb] = power
@@ -123,7 +126,6 @@ def cellAllocateDl(**parameter):
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
     
     #由候選UE依序分配擁有最小傳輸power的RB
-    deleteCandicate = []
     emptyRB = parameter['numRB']
     for ue in parameter['inSectorCUE']:
         rbIndex = 0                 #RB索引
