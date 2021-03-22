@@ -162,209 +162,48 @@ def phase2_power_configure(**parameter):
     return parameter
 
 def phase3_power_configure(**parameter):
+    print('candicateD2D',parameter['candicateD2D'])
     tool = tools.Tool()
     candicate = (-parameter['data_d2d']).argsort()  #根據資料量大小做排序
-    candicate_d2d = []
-    candicate_cell = []
-    for d2d in candicate:
-        #挑出candicate中沒有被分配RB且與CUE沒有干擾的D2D
-        if not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_noCellInterference']:
-            candicate_d2d.append(d2d)
-        #挑出candicate中沒有被分配RB且與CUE有干擾的D2D
-        elif not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_cellInterference']:
-            candicate_cell.append(d2d)
-    
-    
+    candicate_d2d, candicate_cell = classification(candicate, **parameter)
     
     #每個Rx計算目前現有的干擾強度以及計算所需SINR之Tx傳輸功率
     for tx in candicate_d2d:
-        tx_power =  parameter['Pmax']
-        flag = True
-        tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-        for rx in range(parameter['numD2DReciver'][tx]):
-            for rb in range(parameter['numRB']):
-                interference = 0
-                for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-                tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
-        tx_min_power = np.max(tx_power_rx)
-
-        if tx_min_power > parameter['Pmax']:
-            # tx_min_power = parameter['Pmax']
-            tx_min_power = 0
-        elif tx_min_power < parameter['Pmin']:
-            tx_min_power = parameter['Pmin']
-
-        # print(10*np.log10(tx_min_power))
+        d2d_rb, numUseRB = find_d2d_rb(tx, **parameter)
+        tx_power =  parameter['Pmax'] + 1
+        tx_min_power = d2d_need_min_power(tx, **parameter)
+        tx_min_power = check_power_in_Max_Min(tx_min_power, **parameter)
 
         #已設置過傳輸功率且干擾鄰居有tx的D2D的干擾鄰居有tx的D2D計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
-        for d2d in parameter['candicateD2D']:
-            for rx in range(parameter['numD2DReciver'][d2d]):
-                if tx in parameter['i_d2d_rx'][d2d][rx]['d2d']:
-                    flag = False
-                    tx_power_d2dRx = np.zeros(parameter['numRB'])
-                    for rb in range(parameter['numRB']):
-                        interference = 0
-                        for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
-                            if tx != i:
-                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][d2d][rx][rb])
-                        tx_power_d2dRx[rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][tx][d2d][rx][rb])
-             
-                    if np.min(tx_power_d2dRx) <= tx_power:
-                        tx_power = np.min(tx_power_d2dRx)
+        flag = True
+        flag, tx_power = d2d_use_min_interference_power(tx, flag, d2d_rb, tx_power, **parameter)
+        
         #已設置傳輸功率過的D2D的干擾鄰居都沒有tx
-        if flag:
-            tx_power = tx_min_power
-        else:
-            if tx_power >= parameter['Pmax']:
-                # power = parameter['Pmax']
-                tx_power = 0
-            if tx_power < parameter['Pmin']:
-                # power = parameter['Pmin']
-                tx_power = 0
-        if tx_power >= tx_min_power:
-            parameter['powerD2DList'][tx] = tx_power
-            parameter['assignmentD2D'][tx] = 1
-            parameter['candicateD2D'].append(tx)
-            parameter['candicateD2D'].sort()
-        else:
-            parameter['powerD2DList'][tx] = 0
+        tx_no_interference_any(tx, d2d_rb, flag, tx_power, tx_min_power, **parameter)
 
-    #D2D在每個RB上的傳輸功率
-    # powerD2DList_rb = np.zeros((parameter['numD2D'], parameter['numRB']))
-    # for d2d in range(parameter['numD2D']):
-    #     if parameter['powerD2DList'][d2d] != 0:
-    #         powerD2DList_rb[d2d] = parameter['powerD2DList'][d2d]
-    
-    # s = np.zeros(parameter['numD2D'])
-    # for tx in range(parameter['numD2D']):
-    #     s_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-    #     for rx in range(parameter['numD2DReciver'][tx]):
-    #         for rb in range(parameter['numRB']):
-    #             interference = 0
-    #             for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-    #                 interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-    #             s_rx[rx][rb] = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + interference)
-    #     s[tx] = np.min(s_rx)
-    #     if np.round(10*np.log10(s[tx]), 1) < np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1) and parameter['powerD2DList'][tx] != 0:
-    #         print('tx',tx)
-    #         print(np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1))
-    #         print(np.round(10*np.log10(s[tx]), 1))
-    #         print(np.round(10*np.log10(parameter['powerD2DList'][tx]), 1))
-
-
-    
     #每個會干擾CUE(或BS)的tx首先找出可用的RB，得到可用的SINR，接下來則與前面步驟相同
     for tx in candicate_cell:
-        d2d_rb = np.ones(parameter['numRB'], dtype=int)
-        numRB = parameter['numRB']
-        #找出tx可用的RB(即不干擾CUE的RB)
-        for cell_rx in range(parameter['numCellRx']):
-            #檢查Cell rx的干擾鄰居是否有tx
-            if tx in parameter['i_d2c'][cell_rx]: 
-                for rb in range(parameter['numRB']):
-                    if parameter['assignmentRxCell'][cell_rx][rb] == 1:
-                            d2d_rb[rb] = 0
-                            numRB = numRB - 1
+        #找出D2D tx可用的RB
+        d2d_rb, numUseRB = find_d2d_rb(tx, **parameter)
                             
         #將可用RB換成所需SINR，並檢查SINR或可用RB的數量是否能滿足
-        parameter['minD2Dsinr'][tx] = tool.data_sinr_mapping(parameter['data_d2d'][tx], numRB)
+        parameter['minD2Dsinr'][tx] = tool.data_sinr_mapping(parameter['data_d2d'][tx], numUseRB)
         if parameter['minD2Dsinr'][tx] == 0:
             break
         
         #每個Rx計算目前現有的干擾強度以及計算所需SINR之Tx傳輸功率
-        tx_power =  parameter['Pmax']
+        tx_power =  parameter['Pmax'] + 1
+        tx_min_power = d2d_need_min_power(tx, **parameter)
+        tx_min_power = check_power_in_Max_Min(tx_min_power, **parameter)
+        flag = False
+        
+        #已設置過傳輸功率且干擾鄰居有tx的D2D和CUE計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
         flag = True
-        tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-        for rx in range(parameter['numD2DReciver'][tx]):
-            for rb in range(parameter['numRB']):
-                interference = 0
-                #只計算tx能使用的RB
-                if d2d_rb[rb] == 1:
-                    for i in parameter['i_d2d_rx'][tx][rx]['cue']:
-                        #tx的cue干擾鄰居有使用該RB的話才有干擾
-                        if parameter['assignmentTxCell'][i][rb] == 1:
-                            interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
-                    for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-                        #tx的d2d干擾鄰居有使用該RB的話才有干擾
-                        if parameter['assignmentD2D'][i][rb] == 1:
-                            interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-                tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
-        tx_min_power = np.max(tx_power_rx)
-
-        if tx_min_power > parameter['Pmax']:
-            # tx_min_power = parameter['Pmax']
-            tx_min_power = 0
-            break
-        elif tx_min_power < parameter['Pmin']:
-            tx_min_power = parameter['Pmin']
-        print('tx need min power',tx,tx_min_power)
-
-        #已設置過傳輸功率且干擾鄰居有tx的D2D計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
-        for d2d in parameter['candicateD2D']:
-            for rx in range(parameter['numD2DReciver'][d2d]):
-                if tx in parameter['i_d2d_rx'][d2d][rx]['d2d']:
-                    flag = False
-                    tx_power_d2dRx = np.zeros(parameter['numRB'])
-                    for rb in range(parameter['numRB']):
-                        interference = 0
-                        #只計算tx能使用的RB
-                        if d2d_rb[rb] == 1:
-                            for i in parameter['i_d2d_rx'][d2d][rx]['cue']:
-                                #tx的cue干擾鄰居有使用該RB的話才有干擾
-                                if parameter['assignmentTxCell'][i][rb] == 1:
-                                    interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][d2d][rx][rb])
-                            for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
-                                #tx的d2d干擾鄰居有使用該RB的話才有干擾，並計算出除了tx以外的干擾
-                                if parameter['assignmentD2D'][i][rb] == 1 and tx != i:
-                                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][d2d][rx][rb])
-                            tx_power_d2dRx[rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][tx][d2d][rx][rb])
-                    min_tx_power_d2dRx = tx_power_d2dRx[np.nonzero(tx_power_d2dRx)]
-                    if min_tx_power_d2dRx.size > 0 and np.min(min_tx_power_d2dRx) <= tx_power:
-                        tx_power = np.min(min_tx_power_d2dRx)
-
-        #已設置過傳輸功率且干擾鄰居有tx的CUE計算滿足最小所需的SINR能接受的干擾，可推算出tx能用的傳輸功率
-        for cue_tx in range(parameter['numCellTx']):
-            for cue_rx in range(parameter['numCellRx']):
-                if tx in parameter['i_d2c'][rx]:
-                    flag = False
-                    tx_power_CellRx = np.zeros((parameter['numCellRx'], parameter['numRB']))
-                    for rb in range(parameter['numRB']):
-                        if parameter['assignmentRxCell'][cue_rx][rb] == 1 and d2d_rb[rb] == 1:
-                            interference = 0
-                            for i in parameter['i_d2c'][cue_rx]:
-                                if parameter['assignmentD2D'][i][rb] == 1 and tx != i:
-                                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][rx][rb])
-                            if parameter['numCellRx'] >= 2:
-                                tx_power_CellRx[cue_rx][rb] = ((parameter['powerCUEList'][cue_tx] * parameter['g_c2b'][cue_tx][cue_rx][rb]) / (parameter['minCUEsinr'][cue_rx] * parameter['g_d2c'][cue_tx][cue_rx][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue_tx][cue_rx][rb])
-                            else:
-                                tx_power_CellRx[cue_rx][rb] = ((parameter['powerCUEList'][cue_tx] * parameter['g_c2b'][cue_tx][cue_rx][rb]) / (parameter['minCUEsinr'][cue_tx] * parameter['g_d2c'][cue_tx][cue_rx][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue_tx][cue_rx][rb])
-                    min_tx_power_CellRx = tx_power_CellRx[np.nonzero(tx_power_CellRx)]
-                    if min_tx_power_CellRx.size > 0 and np.min(min_tx_power_CellRx) <= tx_power:
-                        tx_power = np.min(min_tx_power_CellRx)
-        print(flag)
-        print('use rb',d2d_rb)
-        print('with interference power',tx_power)
+        flag, tx_power = d2d_use_min_interference_power(tx, flag, d2d_rb, tx_power, **parameter)
+    
         #已設置傳輸功率過的D2D的干擾鄰居都沒有tx
-        if flag:
-            tx_power = tx_min_power
-        else:
-            if tx_power >= parameter['Pmax'] or tx_power < parameter['Pmin']:
-                tx_power = 0
-                break
-        if tx_power >= tx_min_power:
-            print(tx,'assign')
-            parameter['powerD2DList'][tx] = tx_power
-            for rb in range(parameter['numRB']):
-                if d2d_rb[rb] == 1:
-                    parameter['assignmentD2D'][tx][rb] = 1
-            parameter['candicateD2D'].append(tx)
-            parameter['candicateD2D'].sort()
-        else:
-            print(tx,'dont assign')
-            parameter['powerD2DList'][tx] = 0
+        tx_no_interference_any(tx, d2d_rb, flag, tx_power, tx_min_power, **parameter)
 
-        print()
     print(candicate_d2d)
     print(candicate_cell)
     sinr_cue = np.zeros(parameter['numCUE'])
@@ -377,19 +216,16 @@ def phase3_power_configure(**parameter):
                 for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
                     if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentD2D'][i][rb] == 1:
                         interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-                i = interference
                 for i in parameter['i_d2d_rx'][tx][rx]['cue']:
                     if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentTxCell'][i][rb] == 1:
                         interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
                 s_rx[rx][rb] = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + interference)
-                x = (parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / ( parameter['N0'] + i)
         sinr_d2d[tx] = np.min(s_rx)
         if np.round(10*np.log10(sinr_d2d[tx]), 1) < np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1) and parameter['powerD2DList'][tx] != 0:
             print("------------------------------------------------")
             print('D2D tx : ',tx)
             print(parameter['minD2Dsinr'][tx])
             print(sinr_d2d[tx])
-            print(x)
             print(parameter['powerD2DList'][tx])
             print(parameter['i_d2d'][tx])
             # print(np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1))
@@ -438,7 +274,7 @@ def phase3_power_configure(**parameter):
         for j in parameter['i_d2c'][i]:
             if parameter['i_d2c'][i]:
                 print(parameter['powerD2DList'][j])
-
+    print(parameter['candicateD2D'])
     return parameter
 
 def d2d_interference_cell(**parameter):
@@ -475,4 +311,114 @@ def dfs(node, graph, endPoint, chooseList, vis, path, longestPath):
 
     return longestPath
 
+def classification(candicate, **parameter):
+    candicate_d2d = []
+    candicate_cell = []
+    for d2d in candicate:
+        #挑出candicate中沒有被分配RB且與CUE沒有干擾的D2D
+        if not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_noCellInterference']:
+            candicate_d2d.append(d2d)
+        #挑出candicate中沒有被分配RB且與CUE有干擾的D2D
+        elif not all(parameter['assignmentD2D'][d2d]) and d2d in parameter['d2d_cellInterference']:
+            candicate_cell.append(d2d)
+    return candicate_d2d, candicate_cell
 
+def check_power_in_Max_Min(power, **parameter):
+    if power > parameter['Pmax']:
+        power = 0
+    elif power < parameter['Pmin']:
+        power = parameter['Pmin']
+    return power
+
+def d2d_need_min_power(tx, **parameter):
+    tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+    for rx in range(parameter['numD2DReciver'][tx]):
+        for rb in range(parameter['numRB']):
+            interference = 0
+            for i in parameter['i_d2d_rx'][tx][rx]['cue']:
+                #tx的cue干擾鄰居有使用該RB的話才有干擾
+                if parameter['assignmentTxCell'][i][rb] == 1:
+                    interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
+            for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+                #tx的d2d干擾鄰居有使用該RB的話才有干擾
+                if parameter['assignmentD2D'][i][rb] == 1:
+                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+            tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
+    tx_min_power = np.max(tx_power_rx)
+    return tx_min_power
+
+def d2d_use_min_interference_power(tx, flag, d2d_rb, tx_power, **parameter):
+    for d2d in parameter['candicateD2D']:
+        for rx in range(parameter['numD2DReciver'][d2d]):
+            if tx in parameter['i_d2d_rx'][d2d][rx]['d2d']:
+                flag = False
+                tx_power_d2dRx = np.zeros(parameter['numRB'])
+                for rb in range(parameter['numRB']):
+                    interference = 0
+                    if d2d_rb[rb] == 1:
+                        for i in parameter['i_d2d_rx'][d2d][rx]['cue']:
+                            #tx的cue干擾鄰居有使用該RB的話才有干擾
+                            if parameter['assignmentTxCell'][i][rb] == 1:
+                                interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][d2d][rx][rb])
+                        for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
+                            if parameter['assignmentD2D'][i][rb] == 1 and tx != i:
+                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][d2d][rx][rb])
+                    tx_power_d2dRx[rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][tx][d2d][rx][rb])
+                
+                min_tx_power_d2dRx = tx_power_d2dRx[np.nonzero(tx_power_d2dRx)]
+                
+                if min_tx_power_d2dRx.size > 0 and np.min(min_tx_power_d2dRx) <= tx_power:
+                    tx_power = np.min(tx_power_d2dRx)
+    #已設置過傳輸功率且干擾鄰居有tx的CUE計算滿足最小所需的SINR能接受的干擾，推算出tx能用的傳輸功率
+    for cue_tx in range(parameter['numCellTx']):
+        for cue_rx in range(parameter['numCellRx']):
+            if tx in parameter['i_d2c'][cue_rx]:
+                flag = False
+                tx_power_cellRx = np.zeros(parameter['numRB'])
+                for rb in range(parameter['numRB']):
+                    interference = 0
+                    if d2d_rb[rb] == 1 and parameter['assignmentRxCell'][cue_rx][rb] == 1:
+                        for i in parameter['i_d2c'][cue_rx]:
+                            if parameter['assignmentD2D'][i][rb] == 1 and tx != i:
+                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][rx][rb])
+                        if parameter['numCellRx'] >= 2:
+                            minCUEsinr = parameter['minCUEsinr'][cue_rx]
+                        else:
+                            minCUEsinr = parameter['minCUEsinr'][cue_tx]
+                        tx_power_cellRx[rb] = ((parameter['powerCUEList'][cue_tx] * parameter['g_c2b'][cue_tx][cue_rx][rb]) / (minCUEsinr * parameter['g_d2c'][cue_tx][cue_rx][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue_tx][cue_rx][rb])
+                
+                min_tx_power_cellRx = tx_power_cellRx[np.nonzero(tx_power_cellRx)]
+                
+                if min_tx_power_cellRx.size > 0 and np.min(min_tx_power_cellRx) <= tx_power:
+                    print('tx_power less than',tx_power, np.min(min_tx_power_cellRx))
+                    tx_power = np.min(min_tx_power_cellRx)
+
+    return flag, tx_power
+
+def tx_no_interference_any(tx, d2d_rb, flag, tx_power, tx_min_power, **parameter):
+    if flag:
+        tx_power = tx_min_power
+    else:
+        if tx_power > parameter['Pmax'] or tx_power < parameter['Pmin']:
+            tx_power = 0
+            return 
+    if tx_power >= tx_min_power:
+        parameter['powerD2DList'][tx] = tx_power
+        for rb in range(parameter['numRB']):
+            if d2d_rb[rb] == 1:
+                parameter['assignmentD2D'][tx][rb] = 1
+        parameter['candicateD2D'].append(tx)
+        parameter['candicateD2D'].sort()
+
+def find_d2d_rb(tx, **parameter):
+    d2d_rb = np.ones(parameter['numRB'], dtype=int)
+    numUseRB = parameter['numRB']
+    #找出tx可用的RB(即不干擾CUE的RB)
+    for cell_rx in range(parameter['numCellRx']):
+        #檢查Cell rx的干擾鄰居是否有tx
+        if tx in parameter['i_d2c'][cell_rx]: 
+            for rb in range(parameter['numRB']):
+                if parameter['assignmentRxCell'][cell_rx][rb] == 1:
+                        d2d_rb[rb] = 0
+                        numUseRB = numUseRB - 1
+    return d2d_rb, numUseRB

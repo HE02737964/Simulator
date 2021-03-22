@@ -25,6 +25,55 @@ class Genrator():
         point = np.vstack([x,y]).T                                              #np.vstack() = zip(), .T = 轉置矩陣
         return point
         
+    def generateGroupTxPoint(self, numUE, radius, cluster):
+        rx = 2 * self.radius * np.random.rand(1, cluster) - self.radius
+        ry = 2 * self.radius * np.random.rand(1, cluster) - self.radius
+        rl = (rx**2 + ry**2).flatten()
+        index_out = np.where(rl > self.radius**2)[0]
+        len1 = len(index_out)                                                   #超過BS範圍的點的數量
+        rx = np.delete(rx, index_out)                                             #超過BS範圍的點移除
+        ry = np.delete(ry, index_out)
+
+        while len1:                                                  #重新生成點,直到數量滿足
+            xt = 2 * self.radius * np.random.rand(1,len1) - self.radius
+            yt = 2 * self.radius * np.random.rand(1,len1) - self.radius
+            index_tmp = np.where((xt**2 + yt**2).flatten() > self.radius**2)[0]
+            len1 = len(index_tmp)
+            xt = np.delete(xt, index_tmp)
+            yt = np.delete(yt, index_tmp)
+            rx = np.append(rx, xt)
+            ry = np.append(ry, yt)
+        randomPoint = np.vstack([rx,ry]).T
+
+        total = numUE
+        point = []
+        for group in range(cluster):
+            numGroupUE = int(numUE / cluster)
+            if total < numGroupUE:
+                numGroupUE = total
+            x = 2 * radius * np.random.rand(1,numGroupUE) - radius            #隨機生成Tx UE的x座標
+            y = 2 * radius * np.random.rand(1,numGroupUE) - radius            #隨機生成Tx UE的y座標
+            location = ((x-randomPoint[group][0])**2 + (y-randomPoint[group][1])**2).flatten()                 #.flatten() 轉為一維陣列
+            index_out = np.where(location > radius**2)[0]                #找出超過BS範圍的點的index, [0]轉為一維陣列
+            len2 = len(index_out)                                        #超過BS範圍的點的數量
+            x = np.delete(x, index_out)                                  #超過BS範圍的點移除
+            y = np.delete(y, index_out)
+            print(np.vstack([x,y]).T     )
+            while len2:                                                  #重新生成點,直到數量滿足
+                tx = 2 * radius * np.random.rand(1,len2) - radius
+                ty = 2 * radius * np.random.rand(1,len2) - radius
+                location1 = ((tx-randomPoint[group][0])**2 + (ty-randomPoint[group][1])**2).flatten()
+                index_tmp = np.where(location1 > radius**2)[0]
+                len2 = len(index_tmp)
+                tx = np.delete(tx, index_tmp)
+                ty = np.delete(ty, index_tmp)
+                x = np.append(x, tx)
+                y = np.append(y, ty)
+            groupPoint = np.vstack([x,y]).T                                              #np.vstack() = zip(), .T = 轉置矩陣
+            total = total - numGroupUE
+            print(groupPoint)
+        return np.asarray(point)
+
     def generateRxPoint(self, tx_point, d2dDistance, numD2DReciver):
         numD2D = len(tx_point)
 

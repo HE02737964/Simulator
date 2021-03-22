@@ -19,6 +19,9 @@
 	"totalBeam" : 8,
 	"numScheduleBeam" : 3,
 
+	"numD2DCluster" : 5,
+	"clusterRadius" : 125,
+
 	"dataCUEMax" : 3752,
 	"dataCUEMin" : 16,
 	"dataD2DMax" : 18336,

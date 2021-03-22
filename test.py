@@ -36,7 +36,9 @@ initial = {
     'cqiLevel' : config["cqiLevel"],
     'beamWide' : config["beamWide"],
     'totalBeam' : config["totalBeam"],
-    'numScheduleBeam' : config["numScheduleBeam"]
+    'numScheduleBeam' : config["numScheduleBeam"],
+    "numD2DCluster" : config["numD2DCluster"],
+	"clusterRadius" : config["clusterRadius"],
 }
 
 numD2DReciver = np.random.randint(low=1, high=maxReciver+1, size=initial['numD2D'])
@@ -46,7 +48,8 @@ c = channel.Channel(initial['numRB'], numD2DReciver)
 
 bs_point = [[0,0]]
 ue_point = g.generateTxPoint(initial['numCUE'])
-tx_point = g.generateTxPoint(initial['numD2D'])
+# tx_point = g.generateTxPoint(initial['numD2D'])
+tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'])
 rx_point = g.generateRxPoint(tx_point, d2dDistance, numD2DReciver)
 
 dist_c2b = g.distanceTx2Cell(ue_point, bs_point)
@@ -90,7 +93,7 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 start = time.time()
-for currentTime in range(0,100):
+for currentTime in range(0,1):
     # time.sleep(2)
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
@@ -174,7 +177,7 @@ for currentTime in range(0,100):
     # print(sys_parameter_dl['assignmentCUE'])
     # print(sys_parameter_dl['longestPathList'])
 
-    # draw.drawCell(**{**initial, **environment})
+    draw.drawCell(**{**initial, **environment})
 end = time.time()
 
 print("執行時間：%f 秒" % (end - start))
