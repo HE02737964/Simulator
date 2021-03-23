@@ -231,7 +231,7 @@ def phase3_power_configure(**parameter):
             # print(np.round(10*np.log10(parameter['minD2Dsinr'][tx]), 1))
             # print(np.round(10*np.log10(sinr_d2d[tx]), 1))
             print("------------------------------------------------")
-            sys.exit()
+            # sys.exit()
 
     for tx in range(parameter['numCellTx']):
         s_rx = np.zeros((parameter['numCellRx'], parameter['numRB']))
