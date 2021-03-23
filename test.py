@@ -6,6 +6,7 @@ import channel
 import allocate
 import measure
 import proposed
+import juad
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -93,7 +94,7 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 
-for currentTime in range(0,1000):
+for currentTime in range(0,1):
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2c' : c.gainTx2Cell(dist_d2b),
@@ -129,19 +130,27 @@ for currentTime in range(0,1000):
     }
 
     sys_parameter_ul = {**initial, **environment, **gain_ul, **uplink}
+
     sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
     sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
     sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
-    sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
-    sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
-    sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
-    sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
-    print(sys_parameter_ul['i_d2d'])
-    print(sys_parameter_ul['i_d2c'])
+    # sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
+    # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
+    # print(sys_parameter_ul['i_d2d'])
+    # print(sys_parameter_ul['i_d2c'])
+    juad.juad_ul(0,0, **sys_parameter_ul)
+    s_nu = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'])
+    s_d = (initial['Pmax'] * gain_ul['g_d2d'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_c2d'][0][0][0][0])
+    s_u = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_d2c'][0][0][0])
+    print('no d2d inte:',s_nu)
+    print('no cue inte:', s_d)
+    print('d2d inte cu:', s_u)
 
     downlink = {
         'numCellTx' : config["numBS"],
