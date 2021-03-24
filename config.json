@@ -1,15 +1,15 @@
 {
 	"radius" : 500,
 	"numBS" : 1,
-	"numCUE" : 4,
-	"numD2D" : 75,
+	"numCUE" : 10,
+	"numD2D" : 10,
 	"numRB" : 25,
 	"maxReciver" : 1,
 	"d2dDistance" : 50,
 	"directCUE" : 50,
 	"directD2D" : 50,
 
-	"perScheduleCUE" : 50,
+	"perScheduleCUE" : 100,
 	"cqiLevel" : 3,
 	"Pmax" : 199.52623149688787,
 	"Pmin" : 0.0001,

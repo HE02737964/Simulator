@@ -1,4 +1,5 @@
 import numpy as np
+import munkres
 import tools
 import sys
 
@@ -154,3 +155,37 @@ def juad_ul(cue, d2d, **parameter):
     parameter.update({'throughputCUE' : throughput_cue})
     parameter.update({'maxThroughputCUE' : t_cue})
     parameter.update({'throughputD2D' : throughput_d2d})
+    
+    parameter['weight_matrix'][d2d][cue] = solution
+    parameter['weight_cue'][d2d][cue] = throughput_cue
+    parameter['weight_d2d'][d2d][cue] = throughput_d2d
+
+    return parameter
+
+def bipartite_matching(cue, d2d, **parameter):
+    cost_matrix = parameter['weight_matrix'].copy()
+    max_value = np.max(cost_matrix)
+    cost_matrix = max_value - cost_matrix
+    cost_matrix = cost_matrix.tolist()
+
+    m = munkres.Munkres()
+    indexes = m.compute(cost_matrix)
+    munkres.print_matrix(cost_matrix, msg='Lowest cost through this matrix:')
+    
+    cost = 0
+    for row, column in indexes:
+        value = cost_matrix[row][column]
+        cost = cost + value
+
+    assignment = [i[0] for i in indexes]
+    d2d_throughput = 0
+    for i in range(parameter['numD2D']):
+        if assignment[i] != 0:
+            d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignment[i]]
+
+    numD2DSchedule = 0
+    for i in range(parameter['numD2D']):
+        if assignment[i] != 0 and parameter['weight_d2d'][i][assignment[i]] != 0:
+            numD2DSchedule = numD2DSchedule + 1
+
+    return parameter
