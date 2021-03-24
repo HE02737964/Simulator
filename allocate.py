@@ -50,6 +50,8 @@ def cellAllocateUl(**parameter):
     for ue in candicate:
         rbIndex = 0                 #RB索引
         rb = rbList[ue]             #CUE需要多少個RB
+        if ue in deleteCandicate:
+            continue
         if rbList[ue] > emptyRB:
             deleteCandicate.append(ue)
             continue

@@ -94,7 +94,7 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 
-for currentTime in range(0,1):
+for currentTime in range(0,1000):
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2c' : c.gainTx2Cell(dist_d2b),
@@ -144,13 +144,18 @@ for currentTime in range(0,1):
     # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
     # print(sys_parameter_ul['i_d2d'])
     # print(sys_parameter_ul['i_d2c'])
-    juad.juad_ul(0,0, **sys_parameter_ul)
-    s_nu = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'])
-    s_d = (initial['Pmax'] * gain_ul['g_d2d'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_c2d'][0][0][0][0])
-    s_u = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_d2c'][0][0][0])
-    print('no d2d inte:',s_nu)
-    print('no cue inte:', s_d)
-    print('d2d inte cu:', s_u)
+    print(sys_parameter_ul['candicateCUE'])
+    for i in sys_parameter_ul['candicateCUE']:
+        for j in range(sys_parameter_ul['numD2D']):
+            juad.juad_ul(i, j, **sys_parameter_ul)
+    # juad.juad_ul(0, 0, **sys_parameter_ul)
+
+    # s_nu = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'])
+    # s_d = (initial['Pmax'] * gain_ul['g_d2d'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_c2d'][0][0][0][0])
+    # s_u = (initial['Pmax'] * gain_ul['g_c2b'][0][0][0]) / (initial['N0'] + initial['Pmax'] * gain_ul['g_d2c'][0][0][0])
+    # print('no d2d inte:',s_nu)
+    # print('no cue inte:', s_d)
+    # print('d2d inte cu:', s_u)
 
     downlink = {
         'numCellTx' : config["numBS"],

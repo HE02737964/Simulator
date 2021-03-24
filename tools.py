@@ -89,7 +89,8 @@ class Convert:
         elif tbs == 8:
             CQI = 6
         elif tbs == 9:
-            CQI = np.random.randint(low=6, high=7) #不含high，high=7表示tbs=9時，CQI取最小值6
+            # CQI = np.random.randint(low=6, high=7) #不含high，high=7表示tbs=9時，CQI取最小值6
+            CQI = 6
         elif tbs == 10:
             CQI = 7
         elif tbs == 11 or tbs == 12:
@@ -97,7 +98,8 @@ class Convert:
         elif tbs == 13 or tbs == 14:
             CQI = 9
         elif tbs == 15:
-            CQI = np.random.randint(low=9, high=10) #high=10 or 11，取10表示tbs=15時，CQI取最小值9
+            # CQI = np.random.randint(low=9, high=10) #high=10 or 11，取10表示tbs=15時，CQI取最小值9
+            CQI = 9
         elif tbs == 16:
             CQI = 10
         elif tbs == 17 or tbs == 18:
@@ -112,6 +114,40 @@ class Convert:
             CQI = 15
         return CQI
 
+    def CQI_TBS_mapping(self, cqi):
+        tbs = 0
+        if cqi == 1:
+            tbs = 0
+        elif cqi == 2:
+            tbs = 1
+        elif cqi == 3:
+            tbs = 2 #介於2-3之間，給予最差的
+        elif cqi == 4:
+            tbs = 4
+        elif cqi == 5:
+            tbs = 6
+        elif cqi == 6:
+            tbs = 8
+        elif cqi == 7:
+            tbs = 9
+        elif cqi == 8:
+            tbs = 11
+        elif cqi == 9:
+            tbs = 13
+        elif cqi == 10:
+            tbs = 15
+        elif cqi == 11:
+            tbs = 17
+        elif cqi == 12:
+            tbs = 19
+        elif cqi == 13:
+            tbs = 21
+        elif cqi == 14:
+            tbs = 23
+        elif cqi == 15:
+            tbs = 25
+        return tbs
+
     def SNR_to_Power(self, snr, gain, N0):
         return ((snr * N0) / gain)
 
@@ -122,11 +158,24 @@ class Tool:
             f.close()
         return tbs
     
+    def TBS_Throughput_mapping(self, tbsIndex, numRB):
+        tbsJSON = self.TBS()
+        tbsIndex = str(tbsIndex)
+        throughput = tbsJSON[tbsIndex][numRB - 1]
+        return throughput
+
+    def sinr_throughput_mapping(self, sinr, numRB):
+        convert = Convert()
+        cqiIndex = convert.SINR_CQI_mapping(sinr)
+        tbsIndex = convert.CQI_TBS_mapping(cqiIndex)
+        throughput = self.TBS_Throughput_mapping(tbsIndex, numRB)
+        return throughput
+
     def RB_TBS_mapping(self, data, numRB):
         tbs = self.TBS()
         tbsIndex = 0
         for index in tbs:
-            if index == '26A' or numRB == 0:
+            if index == '26' or numRB == 0:
                 tbsIndex = -1
                 break
             if tbs[index][numRB-1] >= data:
@@ -138,7 +187,7 @@ class Tool:
         tbs = self.TBS()
         for rb in range(numRB):     #用較少RB,較高的TBS index
             for index in tbs:
-                if index == "26A":
+                if index == "26":
                     break
                 if tbs[index][rb] >= data:
                     return int(index), rb+1
