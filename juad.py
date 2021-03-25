@@ -10,7 +10,7 @@ def juad_ul(cue, d2d, **parameter):
     #cue和d2d所需的sinr值
     s_cue = parameter['minCUEsinr'][cue]
     s_d2d = parameter['minD2Dsinr'][d2d]
-    print(s_cue)
+    
     #cue和d2d所使用的RB總數量
     numCUERB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
     numD2DRB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
@@ -37,15 +37,15 @@ def juad_ul(cue, d2d, **parameter):
     t_cue = tool.sinr_throughput_mapping(snr_cue, numCUERB)
 
     #計算 Y0
-    Y0_cue = (s_cue * parameter['N0'] * (s_d2d * g_d2c + g_d2d)) / (g_d2d * g_c2b - ( s_d2d * s_cue * g_c2d * g_d2c))
-    Y0_d2d = (s_d2d * parameter['N0'] * (s_cue * g_c2d + g_c2b)) / (g_d2d * g_c2b - ( s_d2d * s_cue * g_d2c * g_c2d))
+    Y0_cue = (s_cue * parameter['N0'] * (s_d2d * g_d2c + g_d2d)) / (g_d2d * g_c2b - s_d2d * s_cue * g_c2d * g_d2c)
+    Y0_d2d = (s_d2d * parameter['N0'] * (s_cue * g_c2d + g_c2b)) / (g_d2d * g_c2b - s_d2d * s_cue * g_d2c * g_c2d)
     Y0 = [Y0_cue, Y0_d2d]
+    print(Y0)
 
     #計算 Y1
     Y1_cue  = (s_cue * (parameter['Pmax'] * g_d2c + parameter['N0'])) / g_c2b
     Y1_d2d  = parameter['Pmax']
     Y1 = [Y1_cue, Y1_d2d]
-    print('Y1_CUE',Y1_cue)
 
     #計算 Y2
     Y2_cue = parameter['Pmax']
@@ -69,9 +69,9 @@ def juad_ul(cue, d2d, **parameter):
 
     point_cue = [Y1_cue, Y2_cue, Y3_cue, Y4_cue, Y5_cue]
     point_d2d = [Y1_d2d, Y2_d2d, Y3_d2d, Y4_d2d, Y5_d2d]
-    print(point_cue)
-    print(point_d2d)
-    print("??")
+    # print(point_cue)
+    # print(point_d2d)
+    # print("??")
     #計算d2d複用cue的rb時的throughput
     R_sum = np.zeros((5,3))
     for point in range(5):
@@ -94,6 +94,7 @@ def juad_ul(cue, d2d, **parameter):
             R_sum[point] = 0
 
     #分為3種case，將不合理的功率值設為0
+    #這裡需要確認判斷功率的條件
     #case 1 論文中圖(b)的Y1,Y2
     if Y1_cue < parameter['Pmax'] and Y3_d2d < parameter['Pmax']:
         R_sum[3] = 0
@@ -111,6 +112,8 @@ def juad_ul(cue, d2d, **parameter):
         R_sum[2] = 0
         R_sum[3] = 0
 
+    power_cue = power_d2d = 0
+
     #找出R_sum最大的index
     solution = np.max(R_sum[:,0])
     index = np.where(R_sum == solution)
@@ -125,6 +128,10 @@ def juad_ul(cue, d2d, **parameter):
     sinr_cue = (point_cue[index_cue] * g_c2b) / (point_d2d[index_d2d] * g_d2c + parameter['N0'])
     throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
 
+    #設置cue和d2d的傳輸功率
+    power_cue = point_cue[index_cue]
+    power_d2d = point_d2d[index_d2d]
+
     #與d2d匹配後對整體throughput的提升
     solution = solution -  t_cue
 
@@ -132,20 +139,34 @@ def juad_ul(cue, d2d, **parameter):
     if Y0_cue > parameter['Pmax'] or Y0_d2d > parameter['Pmax']:
         solution = 0
 
+    if Y0_cue < parameter['Pmin'] or Y0_d2d < parameter['Pmin']:
+        solution = 0
+
     if solution <= 0:
         throughput_d2d = 0 
         solution = 0
         sinr_cue = (parameter['Pmax'] * g_c2b) / (parameter['N0'])
+        power_cue = parameter['Pmax']
+        power_d2d = 0
         throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
+        print('cant matching')
     
     #debug用
-    print('cue rb : ',numCUERB)
-    print('power_cue : ',point_cue[index_cue])
-    print('power_d2d : ',point_d2d[index_d2d])
-    print('need data rate : ',r_cue)
-    print('cue',cue,'throughput',throughput_cue)
-    print('need data rate : ',r_d2d)
-    print('d2d',d2d,'throughput',throughput_d2d)
+    # print('Y0_cue', Y0_cue)
+    # print('Y0_d2d', Y0_d2d)
+    # print('cue rb : ',numCUERB)
+    print(point_cue)
+    print(point_d2d)
+    print('power_cue : ', power_cue)
+    print('power_d2d : ', power_d2d)
+    print('sinr_cue', sinr_cue)
+    print('min_sinr', s_cue)
+    print('sinr_d2d', sinr_d2d)
+    print('min_sinr', s_d2d)
+    # print('need data rate : ',r_cue)
+    # print('cue',cue,'throughput',throughput_cue)
+    # print('need data rate : ',r_d2d)
+    # print('d2d',d2d,'throughput',throughput_d2d)
     print()
 
     if throughput_cue < r_cue:
@@ -160,8 +181,8 @@ def juad_ul(cue, d2d, **parameter):
     parameter.update({'throughputCUE' : throughput_cue})
     parameter.update({'maxThroughputCUE' : t_cue})
     parameter.update({'throughputD2D' : throughput_d2d})
-    parameter.update({'power_cue' : point_cue[index_cue]})
-    parameter.update({'power_d2d' : point_d2d[index_d2d]})
+    parameter.update({'power_cue' : power_cue})
+    parameter.update({'power_d2d' : power_d2d})
     
     parameter['weight_matrix'][d2d][cue] = solution
     parameter['weight_cue'][d2d][cue] = throughput_cue
