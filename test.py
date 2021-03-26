@@ -67,7 +67,8 @@ directCUE, omnidirectCUE = g.ueSignalType(initial['numCUE'], directCUE)
 directD2D, omnidirectD2D = g.ueSignalType(initial['numD2D'], directD2D)
 
 sectorPoint = allocate.getSectorPoint(initial['radius'], initial['totalBeam'])
-scheduleTimes_ul = np.zeros(initial['numD2D'])
+# scheduleTimes_ul = np.zeros(initial['numD2D'])
+scheduleTimes_ul = np.array([3,4,2,1,6])
 scheduleTimes_dl = np.zeros(initial['numD2D'])
 
 environment = {
@@ -139,10 +140,10 @@ for currentTime in range(0,1):
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
     sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
+    # sys_parameter_ul['i_d2d'] = 
     sys_parameter_ul = method.phase1(**sys_parameter_ul)
     print(sys_parameter_ul['i_d2d'])
     print(sys_parameter_ul['i_d2c'])
-    method.phase1(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
     # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
@@ -220,4 +221,4 @@ for currentTime in range(0,1):
     # draw.drawCell(**{**initial, **environment})
 
 
-draw.drawCell(**{**initial, **environment})
+# draw.drawCell(**{**initial, **environment})

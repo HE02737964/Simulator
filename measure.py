@@ -116,7 +116,7 @@ def BetweenD2D(**parameter):
                 D2Dsinr[rx][rb] = (parameter['Pmax'] * parameter['g_d2d'][tx][rx][rb]) / parameter['N0']
         if np.min(D2Dsinr) < minSINR[tx]:
             nStartD2D.append(tx)
-    parameter.update({'nStartD2D' : nStartD2D})
+    parameter.update({'nStartD2D' : np.asarray(nStartD2D)})
     parameter.update({'minD2Dsinr' : minSINR})
     return parameter
 
