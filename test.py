@@ -6,6 +6,7 @@ import channel
 import allocate
 import measure
 import proposed
+import method
 import juad
 
 with open('config.json', 'r') as f:
@@ -49,8 +50,8 @@ c = channel.Channel(initial['numRB'], numD2DReciver)
 
 bs_point = [[0,0]]
 ue_point = g.generateTxPoint(initial['numCUE'])
-tx_point = g.generateTxPoint(initial['numD2D'])
-# tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
+# tx_point = g.generateTxPoint(initial['numD2D'])
+tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
 rx_point = g.generateRxPoint(tx_point, d2dDistance, numD2DReciver)
 
 dist_c2b = g.distanceTx2Cell(ue_point, bs_point)
@@ -131,12 +132,17 @@ for currentTime in range(0,1):
 
     sys_parameter_ul = {**initial, **environment, **gain_ul, **uplink}
 
-    # sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
-    # sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
-    # sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
-    # sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
-    # sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
-    # sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
+    sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
+    sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
+    sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
+    sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
+    sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
+    sys_parameter_ul = method.phase1(**sys_parameter_ul)
+    print(sys_parameter_ul['i_d2d'])
+    print(sys_parameter_ul['i_d2c'])
+    method.phase1(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
     # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
@@ -174,33 +180,33 @@ for currentTime in range(0,1):
 
 
     #JUAD Method test
-    sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
-    sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
-    sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
-    sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
+    # sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
+    # sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
+    # sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
+    # sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
+    # sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
 
-    weight_matrix = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    weight_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    weight_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    power_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    power_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    # weight_matrix = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    # weight_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    # weight_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    # power_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    # power_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
     
-    sys_parameter_ul.update({'weight_matrix' : weight_matrix})
-    sys_parameter_ul.update({'weight_cue' : weight_cue})
-    sys_parameter_ul.update({'weight_d2d' : weight_d2d})
+    # sys_parameter_ul.update({'weight_matrix' : weight_matrix})
+    # sys_parameter_ul.update({'weight_cue' : weight_cue})
+    # sys_parameter_ul.update({'weight_d2d' : weight_d2d})
 
-    for j in range(sys_parameter_ul['numD2D']):
-        for i in sys_parameter_ul['candicateCUE']:
-            sys_parameter_ul = juad.juad_ul(i, j, **sys_parameter_ul)
-            power_cue[j][i] = sys_parameter_ul['power_cue']
-            power_d2d[j][i] = sys_parameter_ul['power_d2d']
-    # print(sys_parameter_ul['weight_matrix'])
-    sys_parameter_ul = juad.bipartite_matching(i, j, **sys_parameter_ul)
+    # for j in range(sys_parameter_ul['numD2D']):
+    #     for i in sys_parameter_ul['candicateCUE']:
+    #         sys_parameter_ul = juad.juad_ul(i, j, **sys_parameter_ul)
+    #         power_cue[j][i] = sys_parameter_ul['power_cue']
+    #         power_d2d[j][i] = sys_parameter_ul['power_d2d']
+    # # print(sys_parameter_ul['weight_matrix'])
+    # sys_parameter_ul = juad.bipartite_matching(i, j, **sys_parameter_ul)
     
-    for d2d,cue in sys_parameter_ul['matching_index']:
-        sinr_cue = (power_cue[d2d][cue] * sys_parameter_ul['g_c2b'][cue][0][0]) / (sys_parameter_ul['N0'] + power_d2d[d2d][cue] * sys_parameter_ul['g_d2c'][d2d][0][0])
-        sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_ul['g_d2d'][d2d][0][0]) / (sys_parameter_ul['N0'] + power_cue[d2d][cue] * sys_parameter_ul['g_c2d'][cue][d2d][0][0])
+    # for d2d,cue in sys_parameter_ul['matching_index']:
+    #     sinr_cue = (power_cue[d2d][cue] * sys_parameter_ul['g_c2b'][cue][0][0]) / (sys_parameter_ul['N0'] + power_d2d[d2d][cue] * sys_parameter_ul['g_d2c'][d2d][0][0])
+    #     sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_ul['g_d2d'][d2d][0][0]) / (sys_parameter_ul['N0'] + power_cue[d2d][cue] * sys_parameter_ul['g_c2d'][cue][d2d][0][0])
         # print('matching',sys_parameter_ul['matching_index'])
         # print(d2d,cue)
         # print(power_cue[d2d][cue])
@@ -214,4 +220,4 @@ for currentTime in range(0,1):
     # draw.drawCell(**{**initial, **environment})
 
 
-# draw.drawCell(**{**initial, **environment})
+draw.drawCell(**{**initial, **environment})
