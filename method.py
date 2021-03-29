@@ -7,20 +7,39 @@ def initial_parameter(**parameter):
     parameter = cal_priority(**parameter)
     parameter = create_no_cell_interference_graph(**parameter) #建沒有與Cell UE關聯的干擾圖
     parameter.update({'longestPath_type' : "priority"})
+    d2d_use_rb_List = np.zeros((parameter['numD2D'], parameter['numRB']), dtype=int)
+    parameter.update({'d2d_use_rb_List' : d2d_use_rb_List})
     return parameter
 
 def phase1(**parameter):
+    tool = tools.Tool()
+    #找出d2d所有可用的RB以及所需sinr
+    for d2d in range(parameter['numD2D']):
+        parameter = get_d2d_use_rb(d2d, **parameter)
+        numUseRB = np.sum(parameter['d2d_use_rb_List'][d2d])
+        parameter['minD2Dsinr'][d2d] = tool.data_sinr_mapping(parameter['data_d2d'][d2d], numUseRB)
+        d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+        print(parameter['d2d_use_rb_List'][d2d])
+        #將sinr不滿足的d2d放入無法啟動的list中
+        for rx in range(parameter['numD2DReciver'][d2d]):
+            for rb in range(parameter['numRB']):
+                d2dSinr[rx][rb] = parameter['d2d_use_rb_List'][d2d][rb] * ((parameter['Pmax'] * parameter['g_d2d'][d2d][rx][rb]) / parameter['N0'])
+                print(d2dSinr[rx][rb])
+        minSinr = np.min(d2dSinr[np.nonzero(d2dSinr)])
+        if minSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0 or d2d not in parameter['nStartD2D']:
+            parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
+
     for root in parameter['priority_sort_index']:
-        print(root)
+        # print(root)
         #root不能被assign而且最大power能滿足SINR值(不在nStartD2D裡面)
         if parameter['powerD2DList'][root] == 0 and root not in parameter['nStartD2D']:
             longestPath = find_longest_path(root, **parameter)
             
-            if parameter['powerD2DList'][3] == 0:
-                parameter['powerD2DList'][3] = 1
+            # if parameter['powerD2DList'][3] == 0:
+            #     parameter['powerD2DList'][3] = 1
         # print(parameter['powerD2DList'])
         # print(longestPath)
-        print()
+        # print()
     
     return parameter
 
@@ -112,7 +131,25 @@ def get_d2d_use_rb(d2d, **parameter):
             #CUE有使用的RB做or運算，找出所有rx cue會被d2d干擾的RB
             cueUseRBList = np.logical_or(cueUseRBList, parameter['assignmentRxCell'][cue])
     d2dUseRBList = d2dUseRBList - cueUseRBList
-    return d2dUseRBList
+    parameter['d2d_use_rb_List'][d2d] = d2dUseRBList
+    return parameter
+
+# def cal_p3(d2d, **parameter):
+#     tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+#     for rx in range(parameter['numD2DReciver'][tx]):
+#         for rb in range(parameter['numRB']):
+#             interference = 0
+#             for i in parameter['i_d2d_rx'][tx][rx]['cue']:
+#                 #tx的cue干擾鄰居有使用該RB的話才有干擾
+#                 if parameter['assignmentTxCell'][i][rb] == 1:
+#                     interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
+#             for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+#                 #tx的d2d干擾鄰居有使用該RB的話才有干擾
+#                 if parameter['assignmentD2D'][i][rb] == 1:
+#                     interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
+#             tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
+#     tx_min_power = np.max(tx_power_rx)
+#     return tx_min_power
 
 #計算d2d每個rx在每個rb上的干擾
 def cal_d2d_interference(tx, rx, rb, **parameter):

@@ -175,7 +175,8 @@ class Tool:
         tbs = self.TBS()
         tbsIndex = 0
         for index in tbs:
-            if index == '26' or numRB == 0:
+            #最大tbs indx仍傳不完或可用RB數量為0
+            if index == '26A' or numRB == 0:
                 tbsIndex = -1
                 break
             if tbs[index][numRB-1] >= data:
