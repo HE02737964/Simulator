@@ -3,6 +3,7 @@ import tools
 
 def initial_parameter(**parameter):
     parameter.update({'powerD2DList' : np.zeros(parameter['numD2D'])})
+    parameter.update({'nStartD2D' : np.asarray([])})
     parameter = cal_num_interfered_neighbor(**parameter)
     parameter = cal_priority(**parameter)
     parameter = create_no_cell_interference_graph(**parameter) #建沒有與Cell UE關聯的干擾圖

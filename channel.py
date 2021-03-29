@@ -26,10 +26,12 @@ class Channel():
 
         pathLossScale = self.pathLossScale(distance)
 
-        fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver)])
-        for tx in range(len(distance)):
-            for rx in range(self.numD2DReciver[tx]):
-                gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
+        #確保生成出的gain能大於6.7e-13 (power最強且無干擾時能滿足最大SINR)
+        while np.min(gain) < 6.7e-13:
+            fading = np.random.rayleigh(1, [len(distance), max(self.numD2DReciver)])
+            for tx in range(len(distance)):
+                for rx in range(self.numD2DReciver[tx]):
+                    gain[tx][rx] = (fading[tx][rx]**2) / pathLossScale[tx][rx]
         return gain
 
     def gainBS2Rx(self, distance):

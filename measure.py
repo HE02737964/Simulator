@@ -89,10 +89,8 @@ def Cell_in_DirectD2D(**parameter):
 def BetweenD2D(**parameter):
     tool = tools.Tool()
     minSINR = np.zeros(parameter['numD2D'])
-    nStartD2D = []
     for tx in range(parameter['numD2D']):
         minSINR[tx] = tool.data_sinr_mapping(parameter['data_d2d'][tx], parameter['numRB'])
-        D2Dsinr = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
         for rx in range(parameter['numD2DReciver'][tx]):
             r_dij = {'d2d':[]}
             for d2d in range(parameter['numD2D']):       #對別人造成干擾的D2D
@@ -112,11 +110,6 @@ def BetweenD2D(**parameter):
                             r_dij['d2d'].sort()
             parameter['i_d2d_rx'][tx][rx].update(r_dij)
 
-            for rb in range(parameter['numRB']):
-                D2Dsinr[rx][rb] = (parameter['Pmax'] * parameter['g_d2d'][tx][rx][rb]) / parameter['N0']
-        if np.min(D2Dsinr) < minSINR[tx]:
-            nStartD2D.append(tx)
-    parameter.update({'nStartD2D' : np.asarray(nStartD2D)})
     parameter.update({'minD2Dsinr' : minSINR})
     return parameter
 
