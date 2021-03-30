@@ -135,22 +135,28 @@ def get_d2d_use_rb(d2d, **parameter):
     parameter['d2d_use_rb_List'][d2d] = d2dUseRBList
     return parameter
 
-# def cal_p3(d2d, **parameter):
-#     tx_power_rx = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-#     for rx in range(parameter['numD2DReciver'][tx]):
-#         for rb in range(parameter['numRB']):
-#             interference = 0
-#             for i in parameter['i_d2d_rx'][tx][rx]['cue']:
-#                 #tx的cue干擾鄰居有使用該RB的話才有干擾
-#                 if parameter['assignmentTxCell'][i][rb] == 1:
-#                     interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
-#             for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-#                 #tx的d2d干擾鄰居有使用該RB的話才有干擾
-#                 if parameter['assignmentD2D'][i][rb] == 1:
-#                     interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-#             tx_power_rx[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
-#     tx_min_power = np.max(tx_power_rx)
-#     return tx_min_power
+
+def cal_need_power(d2d, **parameter):
+    p3_need_power = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+    p2_need_power = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+    virtual_interference = 0
+    for rx in range(parameter['numD2DReciver'][d2d]):
+        for rb in range(parameter['numRB']):
+            interference = 0
+            for i in parameter['i_d2d_rx'][d2d][rx]['cue']:
+                #tx的cue干擾鄰居有使用該RB的話才有干擾
+                if parameter['assignmentTxCell'][i][rb] == 1:
+                    interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][d2d][rx][rb])
+            for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
+                #tx的d2d干擾鄰居有使用該RB的話才有干擾
+                if parameter['assignmentD2D'][i][rb] == 1:
+                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][d2d][rx][rb])
+            # 虛擬干擾的計算方式virtual_interference = 
+            p3_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference)) / parameter['g_d2d'][d2d][rx][rb]
+            p2_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference + virtual_interference)) / parameter['g_d2d'][d2d][rx][rb]
+    p3 = np.max(p3_need_power)
+    p2 = np.max(p2_need_power)
+    return p3, p2
 
 #計算d2d每個rx在每個rb上的干擾
 def cal_d2d_interference(tx, rx, rb, **parameter):
