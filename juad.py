@@ -129,7 +129,7 @@ def juad_ul(cue, d2d, **parameter):
     throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
 
     #設置cue和d2d的傳輸功率
-    power_cue = point_cue[index_cue]
+    power_cue = point_cue[index_d2d]
     power_d2d = point_d2d[index_d2d]
 
     #與d2d匹配後對整體throughput的提升
@@ -155,6 +155,7 @@ def juad_ul(cue, d2d, **parameter):
     # print('Y0_cue', Y0_cue)
     # print('Y0_d2d', Y0_d2d)
     # print('cue rb : ',numCUERB)
+    print(d2d, cue)
     print(point_cue)
     print(point_d2d)
     print('power_cue : ', power_cue)
