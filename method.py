@@ -30,18 +30,18 @@ def phase1(**parameter):
         if minSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0 or d2d not in parameter['nStartD2D']:
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
 
-    for root in parameter['priority_sort_index']:
-        # print(root)
-        #root不能被assign而且最大power能滿足SINR值(不在nStartD2D裡面)
-        if parameter['powerD2DList'][root] == 0 and root not in parameter['nStartD2D']:
+    candicate = np.copy(parameter['priority_sort_index'])
+    while candicate:
+        root = candicate[0]
+        #root如果被assign或最大power不能滿足SINR值(在nStartD2D裡面)
+        if parameter['powerD2DList'][root] != 0 or root in parameter['nStartD2D']:
+            candicate = np.delete(candicate, 0)
+            continue
+        else:
             longestPath = find_longest_path(root, **parameter)
-            
-            # if parameter['powerD2DList'][3] == 0:
-            #     parameter['powerD2DList'][3] = 1
-        # print(parameter['powerD2DList'])
-        # print(longestPath)
-        # print()
-    
+
+        for node in longestPath:
+            pass
     return parameter
 
 #計算D2D的干擾鄰居數量
@@ -140,47 +140,56 @@ def cal_need_power(d2d, **parameter):
     p3_need_power = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
     p2_need_power = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
     virtual_interference = 0
+    #方便計算干擾用，先假設d2d已被分配它能使用的rb
+    parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d]
     for rx in range(parameter['numD2DReciver'][d2d]):
         for rb in range(parameter['numRB']):
-            interference = 0
-            for i in parameter['i_d2d_rx'][d2d][rx]['cue']:
-                #tx的cue干擾鄰居有使用該RB的話才有干擾
-                if parameter['assignmentTxCell'][i][rb] == 1:
-                    interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][d2d][rx][rb])
-            for i in parameter['i_d2d_rx'][d2d][rx]['d2d']:
-                #tx的d2d干擾鄰居有使用該RB的話才有干擾
-                if parameter['assignmentD2D'][i][rb] == 1:
-                    interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][d2d][rx][rb])
+            interference = cal_d2d_interference(d2d, rx, rb, **parameter)            
             # 虛擬干擾的計算方式virtual_interference = 
             p3_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference)) / parameter['g_d2d'][d2d][rx][rb]
             p2_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference + virtual_interference)) / parameter['g_d2d'][d2d][rx][rb]
     p3 = np.max(p3_need_power)
     p2 = np.max(p2_need_power)
+    parameter['assignmentD2D'][d2d] = 0
     return p3, p2
 
-#計算能對其他裝置造成的最小干擾功率
+#計算能對其他裝置造成的最小干擾功率(p1)
 def cal_min_interference_power(d2d, **parameter):
-    for tx in range(parameter['numD2D']):
+    #d2d沒有干擾任何裝置
+    if not parameter['t_d2d'][d2d] and not parameter['t_d2c'][d2d]:
+        return -1 
+
+    #被干擾的裝置分為2種case討論，一種是d2d另一種是cue
+    p1 = parameter['Pmax']
+    #方便計算干擾用，先假設d2d已被分配它能使用的rb
+    parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d]
+    for tx in parameter['t_d2d'][d2d]:
         for rx in range(parameter['numD2DReciver'][tx]):
-            if d2d in parameter['i_d2d_rx'][tx][rx]['d2d']:
-                flag = False
-                tx_power_d2dRx = np.zeros(parameter['numRB'])
+            if d2d in parameter['i_d2d_rx'][tx][rx]:
+                d2d_min_power = np.zeros(parameter['numRB'])
                 for rb in range(parameter['numRB']):
-                    interference = 0
-                    if parameter['d2d_use_rb_List'][tx][rb] == 1:
-                        for i in parameter['i_d2d_rx'][tx][rx]['cue']:
-                            #tx的cue干擾鄰居有使用該RB的話才有干擾
-                            if parameter['assignmentTxCell'][i][rb] == 1:
-                                interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
-                        for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-                            if parameter['assignmentD2D'][i][rb] == 1 and tx != i:
-                                interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
-                    tx_power_d2dRx[rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][tx][d2d][rx][rb])
-                
-                min_tx_power_d2dRx = tx_power_d2dRx[np.nonzero(tx_power_d2dRx)]
-                
-                if min_tx_power_d2dRx.size > 0 and np.min(min_tx_power_d2dRx) <= tx_power:
-                    tx_power = np.min(tx_power_d2dRx)
+                    if parameter['assignmentD2D'][d2d] == 1:
+                        interference = cal_d2d_interference(tx, rx, rb, **parameter)
+                        d2d_min_power[rb] = ((parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / (parameter['minD2Dsinr'][d2d] * parameter['g_dij'][tx][d2d][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][tx][d2d][rx][rb])            
+                d2d_nonzero_min_power = d2d_min_power[np.nonzero(d2d_min_power)]              
+                if d2d_nonzero_min_power.size > 0 and np.min(d2d_min_power) < p1:
+                    p1 = np.min(d2d_min_power)
+    
+    for cue in parameter['t_d2c'][d2d]:
+            d2d_min_power = np.zeros(parameter['numRB'])
+            for rb in range(parameter['numRB']):
+                interference = cal_cue_interference(cue, rb, **parameter)
+                # uplink
+                if parameter['numCellRx'] == 1:
+                    d2d_min_power[rb] = ((parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][0][rb]) / (parameter['minCUEsinr'][cue] * parameter['g_d2c'][d2d][0][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue][0][rb])
+                # downlink
+                else:
+                    d2d_min_power[rb] = ((parameter['powerCUEList'][cue] * parameter['g_c2b'][0][cue][rb]) / (parameter['minCUEsinr'][cue] * parameter['g_d2c'][d2d][cue][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][0][cue][rb])
+                d2d_nonzero_min_power = d2d_min_power[np.nonzero(d2d_min_power)]              
+                if d2d_nonzero_min_power.size > 0 and np.min(d2d_min_power) < p1:
+                    p1 = np.min(d2d_min_power)
+    parameter['assignmentD2D'][d2d] = 0
+    return p1 
 
 #計算d2d每個rx在每個rb上的干擾
 def cal_d2d_interference(tx, rx, rb, **parameter):
