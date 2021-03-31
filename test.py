@@ -142,8 +142,11 @@ for currentTime in range(0,1):
     sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
     # sys_parameter_ul['i_d2d'] = 
     sys_parameter_ul = method.phase1(**sys_parameter_ul)
-    print(sys_parameter_ul['i_d2d'])
-    print(sys_parameter_ul['i_d2c'])
+    print('i_d2d',sys_parameter_ul['i_d2d'])
+    print('i_d2c',sys_parameter_ul['i_d2c'])
+    print('t_c2d',sys_parameter_ul['t_c2d'])
+    print('t_d2c',sys_parameter_ul['t_d2c'])
+    print('t_d2d',sys_parameter_ul['t_d2d'])
     # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
     # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
