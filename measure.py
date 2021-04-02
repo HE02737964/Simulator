@@ -63,12 +63,12 @@ def Cell_in_OmniD2D(**parameter):
         for d2d in range(parameter['numD2D']):
             if parameter['numCellRx'] > 1:
                 #cue會被d2d tx干擾
-                if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell in parameter['candicateCUE'] and cell not in parameter['t_d2c'][d2d]:
+                if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell in parameter['candicateCUE'] and cell not in t_d2c[d2d]:
                     i_c.append(d2d)
                     t_d2c.append(cell)
 
             else:
-                if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell not in parameter['t_d2c'][d2d]:
+                if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell not in t_d2c[d2d]:
                     i_c.append(d2d)
                     t_d2c.append(cell)
         i_d2c.append(i_c)

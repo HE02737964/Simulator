@@ -142,6 +142,7 @@ for currentTime in range(0,1):
     sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
     # sys_parameter_ul['i_d2d'] = 
     sys_parameter_ul = method.phase1(**sys_parameter_ul)
+    print('power',sys_parameter_ul['powerD2DList'])
     print('i_d2d',sys_parameter_ul['i_d2d'])
     print('i_d2c',sys_parameter_ul['i_d2c'])
     print('t_c2d',sys_parameter_ul['t_c2d'])
