@@ -32,55 +32,90 @@ def phase1(**parameter):
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
 
     candicate = np.copy(parameter['priority_sort_index'])
-    # while candicate.size > 0:
-    root = candicate[0]
-    print('root',root)
-    #root如果被assign或最大power不能滿足SINR值(在nStartD2D裡面)
-    if parameter['powerD2DList'][root] != 0 or root in parameter['nStartD2D']:
-        candicate = np.delete(candicate, 0)
-        # continue
-    else:
-        longestPath = find_longest_path(root, **parameter)
-    print('longestPath', longestPath)
-    index = len(longestPath) - 1
-    print('index', index)
-    while index >= 0:
+    print('candicate',candicate)
+    while candicate.size > 0:
+        root = candicate[0]
+        print('root',root)
+        #root如果被assign或最大power不能滿足SINR值(在nStartD2D裡面)
+        if parameter['powerD2DList'][root] != 0 or root in parameter['nStartD2D']:
+            candicate = np.delete(candicate, 0)
+            continue
+        else:
+            longestPath = find_longest_path(root, **parameter)
+        print('longestPath', longestPath)
+        index = len(longestPath) - 1
         print('index', index)
-        node = longestPath[index]
-        print('node', node)
-        length = len(longestPath) - 1
-        print('length', length)
-        p3, p2 = cal_need_power(node, **parameter)
-        p1 = cal_min_interference_power(node, **parameter)
-        p = min(p1, p2)
-        print('p3',p3)
-        print('p2',p2)
-        print('p1',p1)
-        print('p ',p )
-        
-        if p3 > parameter['Pmax'] or p3 > p and p != -1:
-            iterations = (length - index) + 1
-            print('iterations', iterations)
-            for i in range(iterations):
-                print('i', i)
-                d2d = longestPath[-1]
-                parameter['assignmentD2D'][d2d] = 0
-                parameter['powerD2DList'][d2d] = 0
-                longestPath.pop()
-            index = len(longestPath) - 1
-            print('longestpath pop')
-            print(longestPath)
-        #干擾容忍功率大於所需的傳輸功率 or node沒有干擾其他d2d
-        elif p3 < p or p == -1:
-            parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
-            parameter['powerD2DList'][node] = p2
-            index = index - 1
+        while index >= 0:
             print('index', index)
+            node = longestPath[index]
+            print('node', node)
+            length = len(longestPath) - 1
+            print('length', length)
+            p3, p2 = cal_need_power(node, **parameter)
+            p1 = cal_min_interference_power(node, **parameter)
+            p = min(p1, p2)
+            print('p3',p3)
+            print('p2',p2)
+            print('p1',p1)
+            print('p ',p )
             
+            if p3 > parameter['Pmax']:
+                iterations = (length - index) + 1
+                print('iterations', iterations)
+                if iterations == 1:
+                    deleteD2D = np.where(longestPath[index] == candicate)[0]
+                    print('remove',candicate[deleteD2D])
+                    candicate = np.delete(candicate, deleteD2D)
+                    print('candicate',candicate)
+                for i in range(iterations):
+                    print('i', i)
+                    d2d = longestPath[-1]
+                    parameter['assignmentD2D'][d2d] = 0
+                    parameter['powerD2DList'][d2d] = 0
+                    longestPath.pop()
+                index = len(longestPath) - 1
+                print('longestpath pop')
+                print(longestPath)
+            #干擾容忍功率大於所需的傳輸功率 or node沒有干擾其他d2d
+            if p == -1:
+                print('p',p)
+                p2 = set_power_in_max_min(p2, **parameter)
+                parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
+                print('p22',p2)
+                parameter['powerD2DList'][node] = p2
+                index = index - 1
+                print('index', index)
+            elif p3 < p:
+                print('p',p)
+                p = set_power_in_max_min(p, **parameter)
+                parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
+                parameter['powerD2DList'][node] = p
+                index = index - 1
+                print('index', index)
+            else:
+                iterations = (length - index) + 1
+                print('iterations', iterations)
+                for i in range(iterations):
+                    print('i', i)
+                    d2d = longestPath[-1]
+                    parameter['assignmentD2D'][d2d] = 0
+                    parameter['powerD2DList'][d2d] = 0
+                    longestPath.pop()
+                index = len(longestPath) - 1
+                print('longestpath pop')
+                print(longestPath)
+                
         for d2d in range(parameter['numD2D']):
             if parameter['powerD2DList'][d2d] != 0:
                 deleteD2D = np.where(d2d == candicate)[0]
                 candicate = np.delete(candicate, deleteD2D)
+
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            sinr = cal_d2d_sinr(d2d, **parameter)
+            print('d2d', d2d, 'sinr', sinr)
+            print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])
+            print()
 
     return parameter
 
@@ -205,9 +240,9 @@ def cal_min_interference_power(d2d, **parameter):
     for tx in parameter['t_d2d'][d2d]:
         if parameter['powerD2DList'][tx] == 0:
             continue
-        flag = True
         for rx in range(parameter['numD2DReciver'][tx]):
             if d2d in parameter['i_d2d_rx'][tx][rx]:
+                flag = True
                 d2d_min_power = np.zeros(parameter['numRB'])
                 for rb in range(parameter['numRB']):
                     if parameter['assignmentD2D'][d2d] == 1:
@@ -260,9 +295,17 @@ def cal_cue_interference(cue, rb, **parameter):
 #檢查power是否介於最大和最小值之間
 def set_power_in_max_min(power, **parameter):
     if power > parameter['Pmax']:
-        return 0
+        power = parameter['Pmax']
     if power < parameter['Pmin']:
-        return parameter['Pmin']
+        power = parameter['Pmin']
+    return power
+
+def max_power_set_zero(power, **parameter):
+    if power > parameter['Pmax']:
+        power = 0
+    if power < parameter['Pmin']:
+        power =  parameter['Pmin']
+    return power
 
 #計算d2d的sinr
 def cal_d2d_sinr(d2d, **parameter):
