@@ -8,6 +8,11 @@ def initial_parameter(**parameter):
     parameter = cal_priority(**parameter)
     parameter = create_no_cell_interference_graph(**parameter) #建沒有與Cell UE關聯的干擾圖
     parameter.update({'longestPath_type' : "priority"})
+    
+    #每個d2d都有它要略過拜訪的child
+    skipNode = [[] for i in range(parameter['numD2D'])]
+    parameter.update({'skipNode' : skipNode})
+    
     assignmentD2D = np.zeros((parameter['numD2D'], parameter['numRB']))
     parameter.update({'assignmentD2D' : assignmentD2D})
     d2d_use_rb_List = np.zeros((parameter['numD2D'], parameter['numRB']), dtype=int)
@@ -16,17 +21,25 @@ def initial_parameter(**parameter):
 
 def phase1(**parameter):
     tool = tools.Tool()
+    
     #找出d2d所有可用的RB以及所需sinr
     for d2d in range(parameter['numD2D']):
+        #得到d2d能使用的rb list
         parameter = get_d2d_use_rb(d2d, **parameter)
+       
+        #d2d能使用的rb數量
         numUseRB = np.sum(parameter['d2d_use_rb_List'][d2d])
+       
+        #將d2d的資料量轉為所需sinr
         parameter['minD2Dsinr'][d2d] = tool.data_sinr_mapping(parameter['data_d2d'][d2d], numUseRB)
-        d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+       
         #利用Pmax計算d2d rx的snr
+        d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
         for rx in range(parameter['numD2DReciver'][d2d]):
             for rb in range(parameter['numRB']):
                 d2dSinr[rx][rb] = parameter['d2d_use_rb_List'][d2d][rb] * ((parameter['Pmax'] * parameter['g_d2d'][d2d][rx][rb]) / parameter['N0'])
         minSinr = np.min(d2dSinr[np.nonzero(d2dSinr)])
+       
         #將snr不滿足的d2d放入無法啟動的list中
         if minSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0:
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
@@ -65,9 +78,15 @@ def phase1(**parameter):
                 if iterations == 1:
                     deleteD2D = np.where(longestPath[index] == candicate)[0]
                     print('remove',candicate[deleteD2D])
+                    parameter['assignmentD2D'][node] = 0
+                    parameter['powerD2DList'][node] = 0
                     candicate = np.delete(candicate, deleteD2D)
                     print('candicate',candicate)
+                    longestPath.pop()
+                    index = len(longestPath) - 1
+                    print(longestPath)
                 else:
+                    parameter['skipNode'][node].append(longestPath[index + 1])
                     for i in range(iterations):
                         print('i', i)
                         d2d = longestPath[-1]
@@ -112,11 +131,32 @@ def phase1(**parameter):
                 deleteD2D = np.where(d2d == candicate)[0]
                 candicate = np.delete(candicate, deleteD2D)
 
+    for tx in range(parameter['numD2D']):
+        if parameter['powerD2DList'][tx] != 0:
+            power_list = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+            for rx in range(parameter['numD2DReciver'][tx]):
+                for rb in range(parameter['numRB']):
+                    interference = cal_d2d_interference(tx, rx, rb, **parameter)
+                    power_list[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
+            
+            if np.max(power_list) < parameter['Pmin']:
+                parameter['powerD2DList'][tx] = parameter['Pmin']
+            else:
+                parameter['powerD2DList'][tx] = np.max(power_list)
+            print(parameter['powerD2DList'][tx])
+
     for d2d in range(parameter['numD2D']):
         if parameter['powerD2DList'][d2d] != 0:
             sinr = cal_d2d_sinr(d2d, **parameter)
             print('d2d', d2d, 'sinr', sinr)
             print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])
+            print()
+
+    for cue in range(parameter['numCellTx']):
+        if parameter['powerCUEList'][cue] != 0:
+            sinr = cal_cue_sinr(cue, **parameter)
+            print('cue', cue, 'sinr', sinr)
+            print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
             print()
 
     return parameter
@@ -171,7 +211,7 @@ def d2d_interference_cell(**parameter):
 def find_longest_path(root, **parameter):
     longestPath = []
     power_assign_list = np.where(parameter['powerD2DList'] != 0)[0]
-    not_visit_point = np.concatenate((power_assign_list, parameter['nStartD2D']))
+    not_visit_point = np.concatenate((power_assign_list, parameter['nStartD2D'], parameter['skipNode'][root]))
     vis = [False] * len(parameter['d2d_no_cell_interference_graph'])
     if not vis[root]:
         path = []
