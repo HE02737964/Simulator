@@ -12,8 +12,12 @@ def juad_ul(cue, d2d, **parameter):
     s_d2d = parameter['minD2Dsinr'][d2d]
     
     #cue和d2d所使用的RB總數量
-    numCUERB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
-    numD2DRB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
+    if parameter['numCellRx'] == 1:
+        numCUERB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
+        numD2DRB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
+    else:
+        numCUERB = np.sum(parameter['assignmentRxCell'][cue], dtype=int)
+        numD2DRB = np.sum(parameter['assignmentRxCell'][cue], dtype=int)
     
     #cue和d2d所需的資料量(Throughput)
     r_cue = parameter['data_cue'][cue]
@@ -25,12 +29,19 @@ def juad_ul(cue, d2d, **parameter):
     g_d2d = np.min(g_d2d)
     
     #取cue - d2d所有rx最差的gain
-    g_c2d = parameter['g_c2d'][cue][d2d][np.nonzero(parameter['g_c2d'][cue][d2d])]
+    if parameter['numCellRx'] == 1:
+        g_c2d = parameter['g_c2d'][cue][d2d][np.nonzero(parameter['g_c2d'][cue][d2d])]
+    else:
+        g_c2d = parameter['g_c2d'][0][d2d][np.nonzero(parameter['g_c2d'][0][d2d])]
     g_c2d = np.min(g_c2d)
 
     #取tx - rx 最差的gain（因為每個RB的gain都相同，所以不管tx rx有沒有使用該rb都沒差)
-    g_d2c = np.min(parameter['g_d2c'][d2d])
-    g_c2b = np.min(parameter['g_c2b'][cue])
+    if parameter['numCellRx'] == 1:
+        g_d2c = np.min(parameter['g_d2c'][d2d])
+        g_c2b = np.min(parameter['g_c2b'][cue])
+    else:
+        g_d2c = np.min(parameter['g_d2c'][d2d][cue])
+        g_c2b = np.min(parameter['g_c2b'][0][cue])
 
     #cue沒有干擾時的Throughput
     snr_cue = (parameter['Pmax'] * g_c2b) / (parameter['N0'])
@@ -149,7 +160,6 @@ def juad_ul(cue, d2d, **parameter):
         power_cue = parameter['Pmax']
         power_d2d = 0
         throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
-        print('cant matching')
     
     #debug用
     # print('Y0_cue', Y0_cue)
@@ -170,13 +180,11 @@ def juad_ul(cue, d2d, **parameter):
     # print('d2d',d2d,'throughput',throughput_d2d)
     print()
 
-    if throughput_cue < r_cue:
-        print('exit!!!')
-        sys.exit()
+    if throughput_cue > r_cue:
+        throughput_cue = r_cue
     
-    if throughput_d2d < r_d2d and throughput_d2d != 0:
-        print('exit!!!')
-        sys.exit()
+    if throughput_d2d > r_d2d:
+        throughput_d2d = r_d2d
 
     parameter.update({'throughputRasing' : solution})
     parameter.update({'throughputCUE' : throughput_cue})
@@ -191,7 +199,7 @@ def juad_ul(cue, d2d, **parameter):
 
     return parameter
 
-def bipartite_matching(cue, d2d, **parameter):
+def bipartite_matching(**parameter):
     cost_matrix = parameter['weight_matrix'].copy()
     max_value = np.max(cost_matrix)
     cost_matrix = max_value - cost_matrix

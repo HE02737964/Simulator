@@ -67,15 +67,17 @@ def phase1(**parameter):
                     print('remove',candicate[deleteD2D])
                     candicate = np.delete(candicate, deleteD2D)
                     print('candicate',candicate)
-                for i in range(iterations):
-                    print('i', i)
-                    d2d = longestPath[-1]
-                    parameter['assignmentD2D'][d2d] = 0
-                    parameter['powerD2DList'][d2d] = 0
-                    longestPath.pop()
-                index = len(longestPath) - 1
-                print('longestpath pop')
-                print(longestPath)
+                else:
+                    for i in range(iterations):
+                        print('i', i)
+                        d2d = longestPath[-1]
+                        parameter['assignmentD2D'][d2d] = 0
+                        parameter['powerD2DList'][d2d] = 0
+                        longestPath.pop()
+                    index = len(longestPath) - 1
+                    print('longestpath pop')
+                    print(longestPath)
+                continue
             #干擾容忍功率大於所需的傳輸功率 or node沒有干擾其他d2d
             if p == -1:
                 print('p',p)
