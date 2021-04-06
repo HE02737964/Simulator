@@ -214,17 +214,26 @@ def bipartite_matching(**parameter):
         value = cost_matrix[row][column]
         cost = cost + value
 
-    assignment = [i[0] for i in indexes]
+    print('index',indexes)
+    assignmentD2D = [i[0] for i in indexes]
+    assignmentCUE = [i[1] for i in indexes]
+    print('assignment',assignmentD2D)
     d2d_throughput = 0
-    for i in range(parameter['numD2D']):
-        if assignment[i] != 0:
-            d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignment[i]]
-
+    for i in range(len(assignmentCUE)):
+        if parameter['numCellRx'] == 1:
+            if parameter['powerCUEList'][assignmentCUE[i]] != 0:
+                d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignmentCUE[i]]
+        else:
+            d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignmentCUE[i]]
+    print('thhhh',d2d_throughput)
     numD2DSchedule = 0
-    for i in range(parameter['numD2D']):
-        if assignment[i] != 0 and parameter['weight_d2d'][i][assignment[i]] != 0:
-            numD2DSchedule = numD2DSchedule + 1
-    
-    parameter.update({'matching_index' : indexes})
+    for i in range(len(assignmentCUE)):
+        if parameter['numCellRx'] == 1:
+            if parameter['powerCUEList'][assignmentCUE[i]] != 0 and parameter['weight_d2d'][i][assignmentCUE[i]] != 0:
+                numD2DSchedule = numD2DSchedule + 1
+            else:
+                numD2DSchedule = numD2DSchedule + 1
 
+    parameter.update({'matching_index' : indexes})
+    print('numD2DSchedule',numD2DSchedule)
     return parameter

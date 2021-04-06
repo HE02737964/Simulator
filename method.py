@@ -38,7 +38,10 @@ def phase1(**parameter):
         for rx in range(parameter['numD2DReciver'][d2d]):
             for rb in range(parameter['numRB']):
                 d2dSinr[rx][rb] = parameter['d2d_use_rb_List'][d2d][rb] * ((parameter['Pmax'] * parameter['g_d2d'][d2d][rx][rb]) / parameter['N0'])
-        minSinr = np.min(d2dSinr[np.nonzero(d2dSinr)])
+        if np.sum(parameter['d2d_use_rb_List'][d2d]) == 0:
+            minSinr = 0
+        else:
+            minSinr = np.min(d2dSinr[np.nonzero(d2dSinr)])
        
         #將snr不滿足的d2d放入無法啟動的list中
         if minSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0:
@@ -46,6 +49,7 @@ def phase1(**parameter):
 
     candicate = np.copy(parameter['priority_sort_index'])
     print('candicate',candicate)
+    print(parameter['d2d_no_cell_interference_graph'])
     while candicate.size > 0:
         root = candicate[0]
         print('root',root)
@@ -173,7 +177,7 @@ def cal_num_interfered_neighbor(**parameter):
 #計算D2D的priority(越大優先權越高)
 def cal_priority(**parameter):
     priority = (parameter['data_d2d'] / parameter['num_interference']) * (1 / parameter['scheduleTimes'])
-    priority = np.asarray([1,5,2,3,4])
+    # priority = np.asarray([1,5,2,3,4])
     sort_priority = (-priority).argsort()
     parameter.update({'priority' : priority})
     parameter.update({'priority_sort_index' : sort_priority})
@@ -304,7 +308,7 @@ def cal_min_interference_power(d2d, **parameter):
                 d2d_min_power[rb] = ((parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][0][rb]) / (parameter['minCUEsinr'][cue] * parameter['g_d2c'][d2d][0][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][cue][0][rb])
             # downlink
             else:
-                d2d_min_power[rb] = ((parameter['powerCUEList'][cue] * parameter['g_c2b'][0][cue][rb]) / (parameter['minCUEsinr'][cue] * parameter['g_d2c'][d2d][cue][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][0][cue][rb])
+                d2d_min_power[rb] = ((parameter['powerCUEList'][0] * parameter['g_c2b'][0][cue][rb]) / (parameter['minCUEsinr'][cue] * parameter['g_d2c'][d2d][cue][rb])) - ((parameter['N0'] + interference) / parameter['g_c2b'][0][cue][rb])
             d2d_nonzero_min_power = d2d_min_power[np.nonzero(d2d_min_power)]
             if d2d_nonzero_min_power.size > 0 and np.min(d2d_min_power) < Pmin:
                 Pmin = np.min(d2d_min_power)
