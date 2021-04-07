@@ -80,9 +80,7 @@ def juad_ul(cue, d2d, **parameter):
 
     point_cue = [Y1_cue, Y2_cue, Y3_cue, Y4_cue, Y5_cue]
     point_d2d = [Y1_d2d, Y2_d2d, Y3_d2d, Y4_d2d, Y5_d2d]
-    # print(point_cue)
-    # print(point_d2d)
-    # print("??")
+
     #計算d2d複用cue的rb時的throughput
     R_sum = np.zeros((5,3))
     for point in range(5):
