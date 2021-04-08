@@ -96,8 +96,8 @@ environment = {
     'scheduleTimes' : scheduleTimes_ul
 }
 t_m = 0
-t_j = 0
-for currentTime in range(0,10):
+juad_throughput = 0
+for currentTime in range(0,1):
     gain_ul = {
         'g_c2b' : c.gainTx2Cell(dist_c2b),
         'g_d2c' : c.gainTx2Cell(dist_d2b),
@@ -140,8 +140,10 @@ for currentTime in range(0,10):
     sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
-    sys_parameter_ul = method.phase1(**sys_parameter_ul)
+    
+    sys_parameter_ul_p = sys_parameter_ul.copy()
+    ##sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
+    ##sys_parameter_ul = method.phase1(**sys_parameter_ul)
     # print('power',sys_parameter_ul['powerD2DList'])
     # print('i_d2d',sys_parameter_ul['i_d2d'])
     # print('i_d2c',sys_parameter_ul['i_d2c'])
@@ -149,48 +151,39 @@ for currentTime in range(0,10):
     # print('t_d2c',sys_parameter_ul['t_d2c'])
     # print('t_d2d',sys_parameter_ul['t_d2d'])
 
-    for i in range(sys_parameter_ul['numD2D']):
-        if sys_parameter_ul['powerD2DList'][i] != 0:
+    sys_parameter_ul_p = method.initial_parameter(**sys_parameter_ul_p)
+    sys_parameter_ul_p = method.phase1(**sys_parameter_ul_p)
+    for i in range(sys_parameter_ul_p['numD2D']):
+        if sys_parameter_ul_p['powerD2DList'][i] != 0:
             t_m = t_m + data_d2d_ul[i]
 
     #juad
-    weight_matrix = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    weight_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    weight_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    power_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    power_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
+    sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
+    sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
     
-    sys_parameter_ul.update({'weight_matrix' : weight_matrix})
-    sys_parameter_ul.update({'weight_cue' : weight_cue})
-    sys_parameter_ul.update({'weight_d2d' : weight_d2d})
+    assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
+    assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
 
-    for j in range(sys_parameter_ul['numD2D']):
-        for i in sys_parameter_ul['candicateCUE']:
-            sys_parameter_ul = juad.juad_ul(i, j, **sys_parameter_ul)
-            power_cue[j][i] = sys_parameter_ul['power_cue']
-            power_d2d[j][i] = sys_parameter_ul['power_d2d']
-    # print(sys_parameter_ul['weight_matrix'])
-    sys_parameter_ul = juad.bipartite_matching(**sys_parameter_ul)
+    for i in range(len(assignmentCUE)):
+        if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+            print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
+            print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
+            print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
+            print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
+            print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
+            print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
+            print()
+            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
     
-    for d2d,cue in sys_parameter_ul['matching_index']:
-        if power_cue[d2d][cue] != 0 and power_d2d[d2d][cue] != 0:
-            sinr_cue = (power_cue[d2d][cue] * sys_parameter_ul['g_c2b'][cue][0][0]) / (sys_parameter_ul['N0'] + power_d2d[d2d][cue] * sys_parameter_ul['g_d2c'][d2d][0][0])
-            sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_ul['g_d2d'][d2d][0][0]) / (sys_parameter_ul['N0'] + power_cue[d2d][cue] * sys_parameter_ul['g_c2d'][cue][d2d][0][0])
-            t_j = t_j + sys_parameter_ul['weight_d2d'][d2d][cue]
-            # throughput = throughput + sys_parameter_ul['weight_d2d'][d2d][cue]
-            # throughput = throughput + sys_parameter_ul['weight_cue'][d2d][cue]
-
-
-
-
     # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
     # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
     # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
     # sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
     # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
-    # print(sys_parameter_ul['i_d2d'])
-    # print(sys_parameter_ul['i_d2c'])
     
+# -------------------------------------------------------------------------------------------------------------------------------------
+
+    #downlink
     downlink = {
         'numCellTx' : config["numBS"],
         'numCellRx' : config["numCUE"],
@@ -212,134 +205,43 @@ for currentTime in range(0,10):
     sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
     sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
     sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
-    sys_parameter_dl = method.initial_parameter(**sys_parameter_dl)
-    sys_parameter_dl = method.phase1(**sys_parameter_dl)
+
+    #proposed
+    ## sys_parameter_dl = method.initial_parameter(**sys_parameter_dl)
+    ## sys_parameter_dl = method.phase1(**sys_parameter_dl)
     # sys_parameter_dl = proposed.find_d2d_root(**sys_parameter_dl)
     # sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
     # sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
     # sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
     # sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
 
-    for i in range(sys_parameter_ul['numD2D']):
-        if sys_parameter_ul['powerD2DList'][i] != 0:
-            t_m = t_m + data_d2d_ul[i]
+    # for i in range(sys_parameter_ul['numD2D']):
+    #     if sys_parameter_ul['powerD2DList'][i] != 0:
+    #         t_m = t_m + data_d2d_ul[i]
 
 
-    weight_matrix = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    weight_cue = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    weight_d2d = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    power_cue = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    power_d2d = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    
-    sys_parameter_dl.update({'weight_matrix' : weight_matrix})
-    sys_parameter_dl.update({'weight_cue' : weight_cue})
-    sys_parameter_dl.update({'weight_d2d' : weight_d2d})
+    #juad
+    # sys_parameter_dl = juad.initial_parameter(**sys_parameter_dl)
+    # sys_parameter_dl = juad.maximum_matching(**sys_parameter_dl)
 
-    for j in range(sys_parameter_dl['numD2D']):
-        for i in sys_parameter_dl['candicateCUE']:
-            sys_parameter_dl = juad.juad_ul(i, j, **sys_parameter_dl)
-            power_cue[j][i] = sys_parameter_dl['power_cue']
-            power_d2d[j][i] = sys_parameter_dl['power_d2d']
+    # assignmentD2D = [i[0] for i in sys_parameter_dl['matching_index']]
+    # assignmentCUE = [i[1] for i in sys_parameter_dl['matching_index']]
 
-    sys_parameter_dl = juad.bipartite_matching(**sys_parameter_dl)
-
-
-    for d2d,cue in sys_parameter_dl['matching_index']:
-        if power_cue[d2d][cue] != 0 and power_d2d[d2d][cue] != 0:
-            sinr_cue = (power_cue[d2d][cue] * sys_parameter_dl['g_c2b'][0][cue][0]) / (sys_parameter_dl['N0'] + power_d2d[d2d][cue] * sys_parameter_dl['g_d2c'][d2d][cue][0])
-            sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_dl['g_d2d'][d2d][0][0]) / (sys_parameter_dl['N0'] + power_cue[d2d][cue] * sys_parameter_dl['g_c2d'][0][d2d][0][0])
-            # throughput = throughput + sys_parameter_dl['weight_d2d'][d2d][cue]
-            # throughput = throughput + sys_parameter_dl['weight_cue'][d2d][cue]
-            t_j = t_j + sys_parameter_dl['weight_d2d'][d2d][cue]
-
-
-
-    #JUAD Method test
-    # sys_parameter_ul = allocate.cellAllocateUl(**sys_parameter_ul)
-    # sys_parameter_ul = measure.UplinkCUE(**sys_parameter_ul)
-    # sys_parameter_ul = measure.Cell_in_OmniD2D(**sys_parameter_ul)
-    # sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
-    # sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
-
-    # weight_matrix = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    # weight_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    # weight_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    # power_cue = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    # power_d2d = np.zeros((sys_parameter_ul['numD2D'], sys_parameter_ul['numCUE']))
-    
-    # sys_parameter_ul.update({'weight_matrix' : weight_matrix})
-    # sys_parameter_ul.update({'weight_cue' : weight_cue})
-    # sys_parameter_ul.update({'weight_d2d' : weight_d2d})
-
-    # for j in range(sys_parameter_ul['numD2D']):
-    #     for i in sys_parameter_ul['candicateCUE']:
-    #         sys_parameter_ul = juad.juad_ul(i, j, **sys_parameter_ul)
-    #         power_cue[j][i] = sys_parameter_ul['power_cue']
-    #         power_d2d[j][i] = sys_parameter_ul['power_d2d']
-    # # print(sys_parameter_ul['weight_matrix'])
-    # sys_parameter_ul = juad.bipartite_matching(**sys_parameter_ul)
-    
-    # print('matching',sys_parameter_ul['matching_index'])
-    # throughput = 0
-    # for d2d,cue in sys_parameter_ul['matching_index']:
-    #     if power_cue[d2d][cue] != 0 and power_d2d[d2d][cue] != 0:
-    #         sinr_cue = (power_cue[d2d][cue] * sys_parameter_ul['g_c2b'][cue][0][0]) / (sys_parameter_ul['N0'] + power_d2d[d2d][cue] * sys_parameter_ul['g_d2c'][d2d][0][0])
-    #         sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_ul['g_d2d'][d2d][0][0]) / (sys_parameter_ul['N0'] + power_cue[d2d][cue] * sys_parameter_ul['g_c2d'][cue][d2d][0][0])
-    #         throughput = throughput + sys_parameter_ul['weight_d2d'][d2d][cue]
-    #         throughput = throughput + sys_parameter_ul['weight_cue'][d2d][cue]
-    #         print(d2d,cue)
-    #         print('power cue',power_cue[d2d][cue])
-    #         print('power d2d',power_d2d[d2d][cue])
-    #         print(sinr_cue)
-    #         print(sys_parameter_ul['minCUEsinr'])
-    #         print(sinr_d2d)
-    #         print(sys_parameter_ul['minD2Dsinr'])
+    # for i in range(len(assignmentCUE)):
+    #     if sys_parameter_dl['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
+    #         print('min sinr cue', assignmentCUE[i], sys_parameter_dl['minCUEsinr'][assignmentCUE[i]])
+    #         print('cal sinr cue', assignmentCUE[i], sys_parameter_dl['sinrCUEList'][i][assignmentCUE[i]])
+    #         print('min sinr d2d', i,  sys_parameter_dl['minD2Dsinr'][assignmentCUE[i]])
+    #         print('cal sinr d2d', i, sys_parameter_dl['sinrD2DList'][i][assignmentCUE[i]])
     #         print()
-    # print(throughput)
+    #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
-    # sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
-    # sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
 
-    # weight_matrix = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    # weight_cue = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    # weight_d2d = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    # power_cue = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
-    # power_d2d = np.zeros((sys_parameter_dl['numD2D'], sys_parameter_dl['numCUE']))
+
     
-    # sys_parameter_dl.update({'weight_matrix' : weight_matrix})
-    # sys_parameter_dl.update({'weight_cue' : weight_cue})
-    # sys_parameter_dl.update({'weight_d2d' : weight_d2d})
-
-    # for j in range(sys_parameter_dl['numD2D']):
-    #     for i in sys_parameter_dl['candicateCUE']:
-    #         sys_parameter_dl = juad.juad_ul(i, j, **sys_parameter_dl)
-    #         power_cue[j][i] = sys_parameter_dl['power_cue']
-    #         power_d2d[j][i] = sys_parameter_dl['power_d2d']
-    # # print(sys_parameter_dl['weight_matrix'])
-    # sys_parameter_dl = juad.bipartite_matching(**sys_parameter_dl)
-    
-    # print('matching',sys_parameter_dl['matching_index'])
-    # throughput = 0
-    # for d2d,cue in sys_parameter_dl['matching_index']:
-    #     if power_cue[d2d][cue] != 0 and power_d2d[d2d][cue] != 0:
-    #         sinr_cue = (power_cue[d2d][cue] * sys_parameter_dl['g_c2b'][0][cue][0]) / (sys_parameter_dl['N0'] + power_d2d[d2d][cue] * sys_parameter_dl['g_d2c'][d2d][cue][0])
-    #         sinr_d2d = (power_d2d[d2d][cue] * sys_parameter_dl['g_d2d'][d2d][0][0]) / (sys_parameter_dl['N0'] + power_cue[d2d][cue] * sys_parameter_dl['g_c2d'][0][d2d][0][0])
-    #         throughput = throughput + sys_parameter_dl['weight_d2d'][d2d][cue]
-    #         throughput = throughput + sys_parameter_dl['weight_cue'][d2d][cue]
-    #         print(d2d,cue)
-    #         print('power cue',power_cue[d2d][cue])
-    #         print('power d2d',power_d2d[d2d][cue])
-    #         print(sinr_cue)
-    #         print(sys_parameter_dl['minCUEsinr'])
-    #         print(sinr_d2d)
-    #         print(sys_parameter_dl['minD2Dsinr'])
-    #         print()
-    # print(throughput)
     # draw.drawCell(**{**initial, **environment})
 
-print('t_m',t_m)
-print('t_j',t_j)
+print('Maximum throughput', np.sum(data_d2d_ul))
+print('prop_throughput',t_m)
+print('juad_throughput',juad_throughput)
 # draw.drawCell(**{**initial, **environment})

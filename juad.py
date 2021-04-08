@@ -3,10 +3,53 @@ import munkres
 import tools
 import sys
 
+#初始化參數
+def initial_parameter(**parameter):
+    weight_matrix = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    weight_cue = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    weight_d2d = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    
+    sinrCUEList = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    sinrD2DList = np.zeros((parameter['numD2D'], parameter['numCUE']))
+
+    powerCUEList = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    powerD2DList = np.zeros((parameter['numD2D'], parameter['numCUE']))
+    
+    parameter.update({'weight_matrix' : weight_matrix})
+    parameter.update({'weight_cue' : weight_cue})
+    parameter.update({'weight_d2d' : weight_d2d})
+    parameter.update({'powerCUEList' : powerCUEList})
+    parameter.update({'powerD2DList' : powerD2DList})
+    parameter.update({'sinrCUEList' : sinrCUEList})
+    parameter.update({'sinrD2DList' : sinrD2DList})
+    return parameter
+
 #一個CUE和D2D的計算
-def juad_ul(cue, d2d, **parameter):
+def gp_method(cue, d2d, **parameter):
     tool = tools.Tool()
 
+    #判斷cue是bs還是cell ue
+    c_tx = 0
+    c_rx = 0
+    if parameter['numCellRx'] == 1:
+        c_tx = cue
+        c_rx = 0
+    else:
+        c_tx = 0
+        c_rx = cue
+
+    #先判斷cue和d2d是否有干擾
+    flag_cue = False
+    flag_d2d = False
+
+    #cue干擾d2d
+    if cue in parameter['i_d2d'][d2d]['cue']:
+        flag_cue = True
+
+    #d2d干擾cue
+    if d2d in parameter['i_d2c'][c_rx]:
+        flag_d2d = True
+    
     #cue和d2d所需的sinr值
     s_cue = parameter['minCUEsinr'][cue]
     s_d2d = parameter['minD2Dsinr'][d2d]
@@ -22,26 +65,38 @@ def juad_ul(cue, d2d, **parameter):
     #cue和d2d所需的資料量(Throughput)
     r_cue = parameter['data_cue'][cue]
     # r_d2d = parameter['data_d2d'][d2d] #思考是否需要將其轉換為可使用RB的數量中所需的資料量
-    r_d2d = tool.sinr_throughput_mapping(s_d2d, numCUERB)
+    r_d2d = tool.sinr_throughput_mapping(s_d2d, numD2DRB)
 
-    #取d2d - d2d所有rx最差的gain
-    g_d2d = parameter['g_d2d'][d2d][np.nonzero(parameter['g_d2d'][d2d])]
-    g_d2d = np.min(g_d2d)
-    
-    #取cue - d2d所有rx最差的gain
-    if parameter['numCellRx'] == 1:
-        g_c2d = parameter['g_c2d'][cue][d2d][np.nonzero(parameter['g_c2d'][cue][d2d])]
+    #取d2d - cue有干擾的d2drx中最差的gain
+    g_d2d = 100
+    if cue not in parameter['i_d2d'][d2d]['cue']:
+        g_d2d = parameter['g_d2d'][d2d][np.nonzero(parameter['g_d2d'][d2d])]
+        g_d2d = np.min(g_d2d)
     else:
-        g_c2d = parameter['g_c2d'][0][d2d][np.nonzero(parameter['g_c2d'][0][d2d])]
+        for rx in range(parameter['numD2DReciver'][d2d]):
+            if cue in parameter['i_d2d_rx'][d2d][rx]['cue']:
+                g_min = np.min(parameter['g_d2d'][d2d][rx])
+                if g_min < g_d2d:
+                    g_d2d = g_min
+
+    #取cue - d2d所有rx最差的gain
+    g_c2d = parameter['g_c2d'][c_tx][d2d][np.nonzero(parameter['g_c2d'][c_tx][d2d])]
     g_c2d = np.min(g_c2d)
 
-    #取tx - rx 最差的gain（因為每個RB的gain都相同，所以不管tx rx有沒有使用該rb都沒差)
-    if parameter['numCellRx'] == 1:
-        g_d2c = np.min(parameter['g_d2c'][d2d])
-        g_c2b = np.min(parameter['g_c2b'][cue])
+    g_c2d = 100
+    if cue not in parameter['i_d2d'][d2d]['cue']:
+        g_c2d = parameter['g_c2d'][c_tx][d2d][np.nonzero(parameter['g_c2d'][c_tx][d2d])]
+        g_c2d = np.min(g_c2d)
     else:
-        g_d2c = np.min(parameter['g_d2c'][d2d][cue])
-        g_c2b = np.min(parameter['g_c2b'][0][cue])
+        for rx in range(parameter['numD2DReciver'][d2d]):
+            if cue in parameter['i_d2d_rx'][d2d][rx]['cue']:
+                g_min = np.min(parameter['g_c2d'][c_tx][d2d][rx])
+                if g_min < g_c2d:
+                    g_c2d = g_min
+
+    #取tx - rx 最差的gain（因為每個RB的gain都相同，所以不管tx rx有沒有使用該rb都沒差)
+    g_d2c = np.min(parameter['g_d2c'][d2d][c_rx])
+    g_c2b = np.min(parameter['g_c2b'][c_tx][c_rx])
 
     #cue沒有干擾時的Throughput
     snr_cue = (parameter['Pmax'] * g_c2b) / (parameter['N0'])
@@ -51,10 +106,9 @@ def juad_ul(cue, d2d, **parameter):
     Y0_cue = (s_cue * parameter['N0'] * (s_d2d * g_d2c + g_d2d)) / (g_d2d * g_c2b - s_d2d * s_cue * g_c2d * g_d2c)
     Y0_d2d = (s_d2d * parameter['N0'] * (s_cue * g_c2d + g_c2b)) / (g_d2d * g_c2b - s_d2d * s_cue * g_d2c * g_c2d)
     Y0 = [Y0_cue, Y0_d2d]
-    print(Y0)
 
     #計算 Y1
-    Y1_cue  = (s_cue * (parameter['Pmax'] * g_d2c + parameter['N0'])) / g_c2b
+    Y1_cue  = (s_cue * (flag_d2d * parameter['Pmax'] * g_d2c + parameter['N0'])) / g_c2b
     Y1_d2d  = parameter['Pmax']
     Y1 = [Y1_cue, Y1_d2d]
 
@@ -65,16 +119,22 @@ def juad_ul(cue, d2d, **parameter):
 
     #計算 Y3
     Y3_cue = parameter['Pmax']
-    Y3_d2d = (s_d2d * (parameter['Pmax'] * g_c2d + parameter['N0'])) / g_d2d
+    Y3_d2d = (s_d2d * (flag_cue * parameter['Pmax'] * g_c2d + parameter['N0'])) / g_d2d
     Y3 = [Y3_cue, Y3_d2d]
 
     #計算 Y4
     Y4_cue = parameter['Pmax']
-    Y4_d2d = (parameter['Pmax'] * g_c2b - parameter['N0'] * s_cue) / (s_cue * g_d2c)
+    if not flag_d2d:
+        Y4_d2d = (s_d2d * parameter['N0']) / g_d2d
+    else:
+        Y4_d2d = (parameter['Pmax'] * g_c2b - parameter['N0'] * s_cue) / (s_cue * g_d2c)
     Y4 = [Y4_cue, Y4_d2d]
 
     #計算 Y5
-    Y5_cue = (parameter['Pmax'] * g_d2d - parameter['N0'] * s_d2d) / (s_d2d * g_c2d)
+    if not flag_cue:
+        Y5_cue = (s_cue * parameter['N0']) / g_c2b
+    else:
+        Y5_cue = (parameter['Pmax'] * g_d2d - parameter['N0'] * s_d2d) / (s_d2d * g_c2d)
     Y5_d2d = parameter['Pmax']
     Y5 = [Y5_cue, Y5_d2d]
 
@@ -84,10 +144,10 @@ def juad_ul(cue, d2d, **parameter):
     #計算d2d複用cue的rb時的throughput
     R_sum = np.zeros((5,3))
     for point in range(5):
-        sinr_cue = (point_cue[point] * g_c2b) / (point_d2d[point] * g_d2c +  parameter['N0'])
+        sinr_cue = (point_cue[point] * g_c2b) / (flag_d2d * point_d2d[point] * g_d2c +  parameter['N0'])
         R_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
 
-        sinr_d2d = (point_d2d[point] * g_d2d) / (point_cue[point] * g_c2d + parameter['N0'])
+        sinr_d2d = (point_d2d[point] * g_d2d) / (flag_cue * point_cue[point] * g_c2d + parameter['N0'])
         R_d2d = tool.sinr_throughput_mapping(sinr_d2d, numD2DRB)
 
         sum = R_cue + R_d2d
@@ -104,22 +164,22 @@ def juad_ul(cue, d2d, **parameter):
 
     #分為3種case，將不合理的功率值設為0
     #這裡需要確認判斷功率的條件
-    #case 1 論文中圖(b)的Y1,Y2
-    if Y1_cue < parameter['Pmax'] and Y3_d2d < parameter['Pmax']:
-        R_sum[3] = 0
-        R_sum[4] = 0
+    # #case 1 論文中圖(b)的Y1,Y2
+    # if Y1_cue < parameter['Pmax'] and Y3_d2d < parameter['Pmax']:
+    #     R_sum[3] = 0
+    #     R_sum[4] = 0
 
-    #case 2 論文中圖(c)的Y2,Y4
-    if Y3_d2d < parameter['Pmax'] and  Y4_d2d < parameter['Pmax']:
-        R_sum[0] = 0
-        R_sum[2] = 0
-        R_sum[4] = 0
+    # #case 2 論文中圖(c)的Y2,Y4
+    # if Y3_d2d < parameter['Pmax'] and  Y4_d2d < parameter['Pmax']:
+    #     R_sum[0] = 0
+    #     R_sum[2] = 0
+    #     R_sum[4] = 0
 
-    #case 3 論文中圖(d)的Y1,Y5
-    if Y5_cue < parameter['Pmax'] and Y1_cue < parameter['Pmax']:
-        R_sum[1] = 0
-        R_sum[2] = 0
-        R_sum[3] = 0
+    # #case 3 論文中圖(d)的Y1,Y5
+    # if Y5_cue < parameter['Pmax'] and Y1_cue < parameter['Pmax']:
+    #     R_sum[1] = 0
+    #     R_sum[2] = 0
+    #     R_sum[3] = 0
 
     power_cue = power_d2d = 0
 
@@ -130,14 +190,14 @@ def juad_ul(cue, d2d, **parameter):
     index_d2d = index[0][0]
 
     #計算最大throughput組合的d2d sinr和cue throughput
-    sinr_d2d = (point_d2d[index_d2d] * g_d2d) / (point_cue[index_d2d] * g_c2d + parameter['N0'])
+    sinr_d2d = (point_d2d[index_d2d] * g_d2d) / (flag_cue * point_cue[index_d2d] * g_c2d + parameter['N0'])
     throughput_d2d = tool.sinr_throughput_mapping(sinr_d2d, numD2DRB)
 
     #計算最大throughput組合的cue sinr和cue throughput
-    sinr_cue = (point_cue[index_cue] * g_c2b) / (point_d2d[index_d2d] * g_d2c + parameter['N0'])
+    sinr_cue = (point_cue[index_cue] * g_c2b) / (flag_d2d * point_d2d[index_d2d] * g_d2c + parameter['N0'])
     throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
 
-    #設置cue和d2d的傳輸功率
+    #設置cue和d2d的傳輸功率 
     power_cue = point_cue[index_d2d]
     power_d2d = point_d2d[index_d2d]
 
@@ -152,31 +212,16 @@ def juad_ul(cue, d2d, **parameter):
         solution = 0
 
     if solution <= 0:
-        throughput_d2d = 0 
         solution = 0
-        sinr_cue = (parameter['Pmax'] * g_c2b) / (parameter['N0'])
+        
         power_cue = parameter['Pmax']
+        sinr_cue = (power_cue * g_c2b) / (parameter['N0'])
+        
         power_d2d = 0
+        sinr_d2d = 0
+
         throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
-    
-    #debug用
-    # print('Y0_cue', Y0_cue)
-    # print('Y0_d2d', Y0_d2d)
-    # print('cue rb : ',numCUERB)
-    print(d2d, cue)
-    print(point_cue)
-    print(point_d2d)
-    print('power_cue : ', power_cue)
-    print('power_d2d : ', power_d2d)
-    print('sinr_cue', sinr_cue)
-    print('min_sinr', s_cue)
-    print('sinr_d2d', sinr_d2d)
-    print('min_sinr', s_d2d)
-    # print('need data rate : ',r_cue)
-    # print('cue',cue,'throughput',throughput_cue)
-    # print('need data rate : ',r_d2d)
-    # print('d2d',d2d,'throughput',throughput_d2d)
-    print()
+        throughput_d2d = 0
 
     if throughput_cue > r_cue:
         throughput_cue = r_cue
@@ -184,17 +229,21 @@ def juad_ul(cue, d2d, **parameter):
     if throughput_d2d > r_d2d:
         throughput_d2d = r_d2d
 
+    parameter['powerCUEList'][d2d][cue] = power_cue
+    parameter['powerD2DList'][d2d][cue] = power_d2d
+
+    parameter['sinrCUEList'][d2d][cue] = sinr_cue
+    parameter['sinrD2DList'][d2d][cue] = sinr_d2d
+
+
     parameter.update({'throughputRasing' : solution})
     parameter.update({'throughputCUE' : throughput_cue})
     parameter.update({'maxThroughputCUE' : t_cue})
     parameter.update({'throughputD2D' : throughput_d2d})
-    parameter.update({'power_cue' : power_cue})
-    parameter.update({'power_d2d' : power_d2d})
     
     parameter['weight_matrix'][d2d][cue] = solution
     parameter['weight_cue'][d2d][cue] = throughput_cue
     parameter['weight_d2d'][d2d][cue] = throughput_d2d
-
     return parameter
 
 def bipartite_matching(**parameter):
@@ -211,27 +260,15 @@ def bipartite_matching(**parameter):
     for row, column in indexes:
         value = cost_matrix[row][column]
         cost = cost + value
-
-    print('index',indexes)
-    assignmentD2D = [i[0] for i in indexes]
-    assignmentCUE = [i[1] for i in indexes]
-    print('assignment',assignmentD2D)
-    d2d_throughput = 0
-    for i in range(len(assignmentCUE)):
-        if parameter['numCellRx'] == 1:
-            if parameter['powerCUEList'][assignmentCUE[i]] != 0:
-                d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignmentCUE[i]]
-        else:
-            d2d_throughput = d2d_throughput + parameter['weight_d2d'][i][assignmentCUE[i]]
-    print('thhhh',d2d_throughput)
-    numD2DSchedule = 0
-    for i in range(len(assignmentCUE)):
-        if parameter['numCellRx'] == 1:
-            if parameter['powerCUEList'][assignmentCUE[i]] != 0 and parameter['weight_d2d'][i][assignmentCUE[i]] != 0:
-                numD2DSchedule = numD2DSchedule + 1
-            else:
-                numD2DSchedule = numD2DSchedule + 1
-
+    print('cost',cost)
     parameter.update({'matching_index' : indexes})
-    print('numD2DSchedule',numD2DSchedule)
+    return parameter
+
+#主程式
+def maximum_matching(**parameter):
+    for j in range(parameter['numD2D']):
+        for i in parameter['candicateCUE']:
+            parameter = gp_method(i, j, **parameter)
+
+    parameter = bipartite_matching(**parameter)
     return parameter

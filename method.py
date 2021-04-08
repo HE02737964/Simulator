@@ -80,6 +80,7 @@ def phase1(**parameter):
                 iterations = (length - index) + 1
                 print('iterations', iterations)
                 if iterations == 1:
+                    print('node',node,'longestPath[index]',longestPath[index])
                     deleteD2D = np.where(longestPath[index] == candicate)[0]
                     print('remove',candicate[deleteD2D])
                     parameter['assignmentD2D'][node] = 0
@@ -90,7 +91,9 @@ def phase1(**parameter):
                     index = len(longestPath) - 1
                     print(longestPath)
                 else:
-                    parameter['skipNode'][node].append(longestPath[index + 1])
+                    if longestPath[index + 1] not in parameter['skipNode'][node]:
+                        parameter['skipNode'][node].append(longestPath[index + 1])
+                    print(parameter['skipNode'][node])
                     for i in range(iterations):
                         print('i', i)
                         d2d = longestPath[-1]
@@ -215,30 +218,33 @@ def d2d_interference_cell(**parameter):
 def find_longest_path(root, **parameter):
     longestPath = []
     power_assign_list = np.where(parameter['powerD2DList'] != 0)[0]
-    not_visit_point = np.concatenate((power_assign_list, parameter['nStartD2D'], parameter['skipNode'][root]))
-    vis = [False] * len(parameter['d2d_no_cell_interference_graph'])
+    not_visit_point = np.concatenate((power_assign_list, parameter['nStartD2D']))
+    vis = [False for i in range(parameter['numD2D'])]
     if not vis[root]:
         path = []
-        longestPath = dfs(root, parameter['d2d_no_cell_interference_graph'], not_visit_point, vis, path, longestPath)
-
+        longestPath = dfs(root, parameter['d2d_no_cell_interference_graph'], not_visit_point, vis, path, longestPath, power_assign_list, **parameter)
+        print(longestPath)
     if parameter['longestPath_type'] == "priority":
         return longestPath[0]
 
-#DFS算法
-def dfs(node, graph, not_visit_point, vis, path, longestPath):
+#DFS算法(所有可能都找出來)
+def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list, **parameter):
     vis[node] = True
+    # print(node,'vis')
+    # print(vis)
     if node in not_visit_point:
-        return []
+        return [[]]
     else:
         path.append(node)
         for i in graph[node]:
+            if i in parameter['skipNode'][node]:
+                vis[i] = True
             if not vis[i]:
-                dfs(i, graph, not_visit_point, vis, path, longestPath)
+                dfs(i, graph, not_visit_point, vis, path, longestPath, power_assign_list, **parameter)
         p = path.copy()
         longestPath.append(p)
         path.pop()
-        vis[node] = False
-
+        # vis[node] = False
     return longestPath
 
 #得到d2d能使用的rb
