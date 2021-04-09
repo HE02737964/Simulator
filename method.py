@@ -80,8 +80,7 @@ def phase1(**parameter):
                 iterations = (length - index) + 1
                 print('iterations', iterations)
                 if iterations == 1:
-                    print('node',node,'longestPath[index]',longestPath[index])
-                    deleteD2D = np.where(longestPath[index] == candicate)[0]
+                    deleteD2D = np.where(node == candicate)[0]
                     print('remove',candicate[deleteD2D])
                     parameter['assignmentD2D'][node] = 0
                     parameter['powerD2DList'][node] = 0
@@ -123,15 +122,29 @@ def phase1(**parameter):
             else:
                 iterations = (length - index) + 1
                 print('iterations', iterations)
-                for i in range(iterations):
-                    print('i', i)
-                    d2d = longestPath[-1]
-                    parameter['assignmentD2D'][d2d] = 0
-                    parameter['powerD2DList'][d2d] = 0
+                if iterations == 1:
+                    deleteD2D = np.where(node == candicate)[0]
+                    print('remove',candicate[deleteD2D])
+                    parameter['assignmentD2D'][node] = 0
+                    parameter['powerD2DList'][node] = 0
+                    candicate = np.delete(candicate, deleteD2D)
+                    print('candicate',candicate)
                     longestPath.pop()
-                index = len(longestPath) - 1
-                print('longestpath pop')
-                print(longestPath)
+                    index = len(longestPath) - 1
+                    print(longestPath)
+                else:
+                    if longestPath[index + 1] not in parameter['skipNode'][node]:
+                        parameter['skipNode'][node].append(longestPath[index + 1])
+                    print(parameter['skipNode'][node])
+                    for i in range(iterations):
+                        print('i', i)
+                        d2d = longestPath[-1]
+                        parameter['assignmentD2D'][d2d] = 0
+                        parameter['powerD2DList'][d2d] = 0
+                        longestPath.pop()
+                    index = len(longestPath) - 1
+                    print('longestpath pop')
+                    print(longestPath)
                 
         for d2d in range(parameter['numD2D']):
             if parameter['powerD2DList'][d2d] != 0:
