@@ -8,6 +8,7 @@ import measure
 import proposed
 import method
 import juad
+import time
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -95,25 +96,27 @@ environment = {
 
     'scheduleTimes' : scheduleTimes_ul
 }
+
+gain_ul = {
+    'g_c2b' : c.gainTx2Cell(dist_c2b),
+    'g_d2c' : c.gainTx2Cell(dist_d2b),
+    'g_d2d' : c.gainD2DRx(dist_d2d),
+    'g_c2d' : c.gainTx2D2DRx(dist_c2d),
+    'g_dij' : c.gainTx2D2DRx(dist_dij)
+}
+
+gain_dl = {
+    'g_c2b' : c.gainTx2Cell(dist_b2c),
+    'g_d2c' : c.gainTx2Cell(dist_d2c),
+    'g_d2d' : c.gainD2DRx(dist_d2d),
+    'g_c2d' : c.gainBS2Rx(dist_b2d),
+    'g_dij' : c.gainTx2D2DRx(dist_dij)
+}
+
 t_m = 0
 juad_throughput = 0
-for currentTime in range(0,1):
-    gain_ul = {
-        'g_c2b' : c.gainTx2Cell(dist_c2b),
-        'g_d2c' : c.gainTx2Cell(dist_d2b),
-        'g_d2d' : c.gainD2DRx(dist_d2d),
-        'g_c2d' : c.gainTx2D2DRx(dist_c2d),
-        'g_dij' : c.gainTx2D2DRx(dist_dij)
-    }
-
-    gain_dl = {
-        'g_c2b' : c.gainTx2Cell(dist_b2c),
-        'g_d2c' : c.gainTx2Cell(dist_d2c),
-        'g_d2d' : c.gainD2DRx(dist_d2d),
-        'g_c2d' : c.gainBS2Rx(dist_b2d),
-        'g_dij' : c.gainTx2D2DRx(dist_dij)
-    }
-
+start = time.time()
+for currentTime in range(0,10000):
     beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])
     inSectorCUE = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
 
@@ -158,22 +161,22 @@ for currentTime in range(0,1):
             t_m = t_m + data_d2d_ul[i]
 
     #juad
-    sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
-    sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
+    # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
+    # sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
     
-    assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
-    assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
+    # assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
+    # assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
 
-    for i in range(len(assignmentCUE)):
-        if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
-            print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
-            print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
-            print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
-            print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
-            print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
-            print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
-            print()
-            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
+    # for i in range(len(assignmentCUE)):
+    #     if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+    #         print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
+    #         print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
+    #         print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
+    #         print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
+    #         print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
+    #         print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
+    #         print()
+    #         juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
     
     # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
     # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
@@ -199,12 +202,12 @@ for currentTime in range(0,1):
 
     sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
 
-    sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
-    sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
-    sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
-    sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
-    sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
-    sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
+    # sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
+    # sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
+    # sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
+    # sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
+    # sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
+    # sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
 
     #proposed
     ## sys_parameter_dl = method.initial_parameter(**sys_parameter_dl)
@@ -240,8 +243,18 @@ for currentTime in range(0,1):
 
     
     # draw.drawCell(**{**initial, **environment})
-
+end = time.time()
+print("執行時間：%f 秒" % (end - start))
 print('Maximum throughput', np.sum(data_d2d_ul))
 print('prop_throughput',t_m)
 print('juad_throughput',juad_throughput)
 # draw.drawCell(**{**initial, **environment})
+
+# file1 = open('data1.txt', 'w')
+# for key in sys_parameter_ul_p:
+#     value = sys_parameter_ul_p[key]
+#     file1.write(str(key))
+#     file1.write(" ")
+#     file1.write(str(value))
+#     file1.write("\n")
+# file1.close()
