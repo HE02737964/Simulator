@@ -37,19 +37,16 @@ def phase1(**parameter):
         d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
         parameter['powerD2DList'][d2d] = parameter['Pmax']
         parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
-        for rx in range(parameter['numD2DReciver'][d2d]):
-            for rb in range(parameter['numRB']):
-                d2dSinr[rx][rb] = cal_d2d_sinr(d2d, **parameter)
-                # d2dSinr[rx][rb] = parameter['d2d_use_rb_List'][d2d][rb] * ((parameter['Pmax'] * parameter['g_d2d'][d2d][rx][rb]) / parameter['N0'])
+
+        d2dSinr = cal_d2d_sinr(d2d, **parameter)
+
         parameter['powerD2DList'][d2d] = 0
         parameter['assignmentD2D'][d2d] = 0
         if np.sum(parameter['d2d_use_rb_List'][d2d]) == 0:
-            minSinr = 0
-        else:
-            minSinr = np.min(d2dSinr[np.nonzero(d2dSinr)])
+            d2dSinr = 0
        
         #將snr不滿足的d2d放入無法啟動的list中
-        if minSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0:
+        if d2dSinr < parameter['minD2Dsinr'][d2d] or parameter['minD2Dsinr'][d2d] == 0:
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
 
     candicate = np.copy(parameter['priority_sort_index'])

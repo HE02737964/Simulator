@@ -117,7 +117,7 @@ gain_dl = {
 t_m = 0
 juad_throughput = 0
 start = time.time()
-for currentTime in range(0,10000):
+for currentTime in range(0,1):
     beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])
     inSectorCUE = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
 
@@ -144,11 +144,11 @@ for currentTime in range(0,10000):
     sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    sys_parameter_ul = gcrs.initial_parameter(**sys_parameter_ul)
-    print("--------------------------")
-    print(sys_parameter_ul['assignmentTxCell'])
-    print('------------')
-    print(sys_parameter_ul['rb_use_status'])
+    # sys_parameter_ul = gcrs.initial_parameter(**sys_parameter_ul)
+    # print("--------------------------")
+    # print(sys_parameter_ul['assignmentTxCell'])
+    # print('------------')
+    # print(sys_parameter_ul['rb_use_status'])
     sys_parameter_ul_p = sys_parameter_ul.copy()
     ##sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
     ##sys_parameter_ul = method.phase1(**sys_parameter_ul)
@@ -159,11 +159,11 @@ for currentTime in range(0,10000):
     # print('t_d2c',sys_parameter_ul['t_d2c'])
     # print('t_d2d',sys_parameter_ul['t_d2d'])
 
-    sys_parameter_ul_p = method.initial_parameter(**sys_parameter_ul_p)
-    sys_parameter_ul_p = method.phase1(**sys_parameter_ul_p)
-    for i in range(sys_parameter_ul_p['numD2D']):
-        if sys_parameter_ul_p['powerD2DList'][i] != 0:
-            t_m = t_m + data_d2d_ul[i]
+    # sys_parameter_ul_p = method.initial_parameter(**sys_parameter_ul_p)
+    # sys_parameter_ul_p = method.phase1(**sys_parameter_ul_p)
+    # for i in range(sys_parameter_ul_p['numD2D']):
+    #     if sys_parameter_ul_p['powerD2DList'][i] != 0:
+    #         t_m = t_m + data_d2d_ul[i]
 
     #juad
     # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
@@ -189,6 +189,11 @@ for currentTime in range(0,10000):
     # sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
     # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
     
+    #gcrs
+    gcrs_ul = sys_parameter_ul.copy()
+    gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
+    gcrs.vertex_coloring(**gcrs_ul)
+
 # -------------------------------------------------------------------------------------------------------------------------------------
 
     #downlink

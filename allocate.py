@@ -32,14 +32,13 @@ def cellAllocateUl(**parameter):
         upperSinr = convert.dB_to_mW(upperSinr)
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         sinrList[i] = upperSinr
-        for rb in range(parameter['numRB']):
-            power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][rb], parameter['N0'])
-            if power > parameter['Pmax']:
-                deleteCandicate.append(i)
-                continue
-            if power < parameter['Pmin']:
-                power = parameter['Pmin']
-            power_prb[i][rb] = power
+        power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][0], parameter['N0'])
+        if power > parameter['Pmax']:
+            deleteCandicate.append(i)
+            continue
+        if power < parameter['Pmin']:
+            power = parameter['Pmin']
+        power_prb[i][rb] = power
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
@@ -114,14 +113,13 @@ def cellAllocateDl(**parameter):
         upperSinr = convert.dB_to_mW(upperSinr)
         upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
         sinrList[i] = upperSinr
-        for rb in range(parameter['numRB']):
-            power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][0][i][rb], parameter['N0'])
-            if power > parameter['Pmax']:
-                deleteCandicate.append(i)
-                continue
-            if power < parameter['Pmin']:
-                power = parameter['Pmin']
-            power_prb[i][rb] = power
+        power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][0][i][0], parameter['N0'])
+        if power > parameter['Pmax']:
+            deleteCandicate.append(i)
+            continue
+        if power < parameter['Pmin']:
+            power = parameter['Pmin']
+        power_prb[i][rb] = power
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)

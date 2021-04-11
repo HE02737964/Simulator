@@ -32,16 +32,9 @@ def initial_parameter(**parameter):
     edge_cue = np.zeros((parameter['numCellTx'], parameter['numRB'], parameter['numRB']))
     edge_d2d = np.zeros((parameter['numD2D'], parameter['numRB'], parameter['numRB']))
 
-    #宣告RB use list 以及RB throughput list
-    rb_use_status= np.full((parameter['numRB'], 1), {'cue' : [], 'd2d' : []})
+    #宣告 throughput list
+    interference_rb = np.zeros((parameter['numRB']))
     throughput_rb = np.zeros((parameter['numRB']))
-
-    for cue in range(parameter['numCellTx']):
-        for rb in range(parameter['numRB']):
-            if parameter['assignmentTxCell'][cue][rb] == 1:
-                rb_use_status[rb][0]['cue'] = np.append(rb_use_status[rb][0]['cue'], cue)
-    
-    rb_use_status[24][0]['d2d'] = np.append(rb_use_status[24][0]['d2d'], 87)
 
     parameter.update({'initial_power' : initial_power})
     parameter.update({'weight_cue' : weight_cue})
@@ -49,12 +42,41 @@ def initial_parameter(**parameter):
     parameter.update({'assignmentD2D' : color_d2d})
     parameter.update({'edge_cue' : edge_cue})
     parameter.update({'edge_d2d' : edge_d2d})
-    parameter.update({'rb_use_status' : rb_use_status})
+    parameter.update({'interference_rb' : interference_rb})
     parameter.update({'throughput_rb' : throughput_rb})
     return parameter
 
 def vertex_coloring(**parameter):
-    while  True:
-        while True:
-            subscript = parameter['rb_use_status'][0][parameter['rb_use_status'][0] == 0]
-            vertex = 0
+    rb = 0
+    iterations = 5
+    rb_use_list = {'cue' : [], 'd2d' : []}
+    for cue in range(parameter['numCellTx']):
+        if parameter['assignmentTxCell'][cue][rb] == 1:
+            rb_use_list['cue'].append(cue)
+    
+    subscript = []
+    for d2d in range(parameter['numD2D']):
+        if d2d not in rb_use_list['d2d']:
+            subscript.append(d2d)
+    for i in range(len(subscript)):
+        vertex = subscript[i]
+        current_Vt = parameter['throughput_rb'][rb]
+        current_Vi = parameter['interference_rb'][rb]
+        rb_use_list['d2d'].append(vertex)
+
+
+def cal_d2d_sinr(tx, rb_use_list, **parameter):
+    rx_sinr = np.zeros((parameter['numD2DReciver'][tx]))
+    for rx in range(parameter['numD2DReciver'][tx]):
+        interference = cal_d2d_interference(tx, rx, rb_use_list)
+        rx_sinr[rx] = (parameter['powerD2DList'] * parameter['g_d2d'][tx][rx][0]) / parameter['N0'] + interference
+    return np.min(rx_sinr)
+
+def cal_d2d_interference(tx, rx, rb_use_list, **parameter):
+    interference = 0
+    for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+        if i in rb_use_list['d2d']:
+            interference = interference + parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][0]
+    for i in parameter['i_d2d_rx'][tx][rx]['cue']:
+        interference = interference + parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][0]
+    return interference
