@@ -8,6 +8,7 @@ import measure
 import proposed
 import method
 import juad
+import gcrs
 import time
 
 with open('config.json', 'r') as f:
@@ -143,7 +144,11 @@ for currentTime in range(0,10000):
     sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    
+    sys_parameter_ul = gcrs.initial_parameter(**sys_parameter_ul)
+    print("--------------------------")
+    print(sys_parameter_ul['assignmentTxCell'])
+    print('------------')
+    print(sys_parameter_ul['rb_use_status'])
     sys_parameter_ul_p = sys_parameter_ul.copy()
     ##sys_parameter_ul = method.initial_parameter(**sys_parameter_ul)
     ##sys_parameter_ul = method.phase1(**sys_parameter_ul)
