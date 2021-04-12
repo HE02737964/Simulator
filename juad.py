@@ -27,6 +27,7 @@ def initial_parameter(**parameter):
 #一個CUE和D2D的計算
 def gp_method(cue, d2d, **parameter):
     tool = tools.Tool()
+    convert = tools.Convert()
 
     #判斷cue是bs還是cell ue
     c_tx = 0
@@ -65,7 +66,7 @@ def gp_method(cue, d2d, **parameter):
     #cue和d2d所需的資料量(Throughput)
     r_cue = parameter['data_cue'][cue]
     # r_d2d = parameter['data_d2d'][d2d] #思考是否需要將其轉換為可使用RB的數量中所需的資料量
-    r_d2d = tool.sinr_throughput_mapping(s_d2d, numD2DRB)
+    r_d2d = tool.sinr_throughput_mapping(convert.mW_to_dB(s_d2d), numD2DRB)
 
     #取d2d - cue有干擾的d2drx中最差的gain
     g_d2d = 100
@@ -100,7 +101,7 @@ def gp_method(cue, d2d, **parameter):
 
     #cue沒有干擾時的Throughput
     snr_cue = (parameter['Pmax'] * g_c2b) / (parameter['N0'])
-    t_cue = tool.sinr_throughput_mapping(snr_cue, numCUERB)
+    t_cue = tool.sinr_throughput_mapping(convert.mW_to_dB(snr_cue), numCUERB)
 
     #計算 Y0
     Y0_cue = (s_cue * parameter['N0'] * (s_d2d * g_d2c + g_d2d)) / (g_d2d * g_c2b - s_d2d * s_cue * g_c2d * g_d2c)
@@ -145,10 +146,10 @@ def gp_method(cue, d2d, **parameter):
     R_sum = np.zeros((5,3))
     for point in range(5):
         sinr_cue = (point_cue[point] * g_c2b) / (flag_d2d * point_d2d[point] * g_d2c +  parameter['N0'])
-        R_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
+        R_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
 
         sinr_d2d = (point_d2d[point] * g_d2d) / (flag_cue * point_cue[point] * g_c2d + parameter['N0'])
-        R_d2d = tool.sinr_throughput_mapping(sinr_d2d, numD2DRB)
+        R_d2d = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_d2d), numD2DRB)
 
         sum = R_cue + R_d2d
         R_sum[point][0] = sum
@@ -191,11 +192,11 @@ def gp_method(cue, d2d, **parameter):
 
     #計算最大throughput組合的d2d sinr和cue throughput
     sinr_d2d = (point_d2d[index_d2d] * g_d2d) / (flag_cue * point_cue[index_d2d] * g_c2d + parameter['N0'])
-    throughput_d2d = tool.sinr_throughput_mapping(sinr_d2d, numD2DRB)
+    throughput_d2d = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_d2d), numD2DRB)
 
     #計算最大throughput組合的cue sinr和cue throughput
     sinr_cue = (point_cue[index_cue] * g_c2b) / (flag_d2d * point_d2d[index_d2d] * g_d2c + parameter['N0'])
-    throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
+    throughput_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
 
     #設置cue和d2d的傳輸功率 
     power_cue = point_cue[index_d2d]
@@ -220,7 +221,7 @@ def gp_method(cue, d2d, **parameter):
         power_d2d = 0
         sinr_d2d = 0
 
-        throughput_cue = tool.sinr_throughput_mapping(sinr_cue, numCUERB)
+        throughput_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
         throughput_d2d = 0
 
     if throughput_cue > r_cue:
