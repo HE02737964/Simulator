@@ -27,101 +27,130 @@ def initial_parameter(**parameter):
     #color_cue = assignmentTxCell
     color_d2d = np.zeros((parameter['numD2D'], parameter['numRB']))
 
+    rb_use_status = []
+    for rb in range(parameter['numRB']):
+        rb_use_dict = {'cue' : [], 'd2d' : []}
+        rb_use_status.append(rb_use_dict)
+
     #宣告edge
     edge_cue = np.zeros((parameter['numCellTx'], parameter['numRB'], parameter['numRB']))
     edge_d2d = np.zeros((parameter['numD2D'], parameter['numRB'], parameter['numRB']))
 
     #宣告 throughput list
-    interference_rb = np.zeros((parameter['numRB']))
+    edge_rb = np.zeros((parameter['numRB']))
     throughput_rb = np.zeros((parameter['numRB']))
 
     #宣告power list
     powerD2DList = np.full((parameter['numD2D']), initial_power)
 
+    #功率分配因子
+    delta = np.zeros((parameter['numRB']))
+
     parameter.update({'initial_power' : initial_power})
     parameter.update({'weight_cue' : weight_cue})
     parameter.update({'weight_d2d' : weight_d2d})
     parameter.update({'assignmentD2D' : color_d2d})
+    parameter.update({'rb_use_status' : rb_use_status})
     parameter.update({'edge_cue' : edge_cue})
     parameter.update({'edge_d2d' : edge_d2d})
-    parameter.update({'interference_rb' : interference_rb})
+    parameter.update({'edge_rb' : edge_rb})
     parameter.update({'throughput_rb' : throughput_rb})
     parameter.update({'powerD2DList' : powerD2DList})
+    parameter.update({'delta' : delta})
     return parameter
 
 def vertex_coloring(**parameter):
     tool = tools.Tool()
     convert = tools.Convert()
-    rb_status = []
-    iterations = 5
-    for rb in range(parameter['numRB']):
-        rb_use_list = {'cue' : [], 'd2d' : []}
-        rb_status.append(rb_use_list)
-        
+    
+    iterations = 1
     for i in range(iterations):
         for rb in range(parameter['numRB']):
             for cue in range(parameter['numCellTx']):
-                if parameter['assignmentTxCell'][cue][rb] == 1 and cue not in rb_status[rb]['cue']:
-                    rb_status[rb]['cue'].append(cue)
+                if parameter['assignmentTxCell'][cue][rb] == 1 and cue not in parameter['rb_use_status'][rb]['cue']:
+                    parameter['rb_use_status'][rb]['cue'].append(cue)
             
             subscript = []
+            new_Vt = []
             for d2d in range(parameter['numD2D']):
-                if d2d not in rb_status[rb]['d2d']:
+                if d2d not in parameter['rb_use_status'][rb]['d2d']:
                     subscript.append(d2d)
+            print('subscript',subscript)
             while subscript:
                 #選擇一個未著色的頂點
                 vertex = subscript[0]
                 
                 #記錄當前Vt, Vi
                 current_Vt = parameter['throughput_rb'][rb]
-                current_Vi = parameter['interference_rb'][rb]
+                current_Vi = parameter['edge_rb'][rb]
 
                 #將vertex放入Sk裡
-                rb_status[rb]['d2d'].append(vertex)
+                parameter['rb_use_status'][rb]['d2d'].append(vertex)
 
                 #更新Vt
                 throughput = 0
-                flag = False
-                for i in rb_status[rb]['d2d']:
-                    sinr = cal_d2d_sinr(i, rb_status[rb], **parameter)
-                    #要滿足所需之sinr
-                    if sinr < parameter['minD2Dsinr'][i]:
-                        flag = True
-                        rb_status[rb]['d2d'].remove(vertex)
-                        parameter['throughput_rb'][rb] = current_Vt
-                        subscript.remove(vertex)
-
-                for i in rb_status[rb]['cue']:
-                    sinr = cal_cue_sinr(i, rb_status[rb], **parameter)
-                    #要滿足所需之sinr
-                    print(sinr)
-                    print(parameter['minCUEsinr'][i])
-                    if sinr < parameter['minCUEsinr'][i]:
-                        if vertex in rb_status[rb]['d2d']:
-                            flag = True
-                            rb_status[rb]['d2d'].remove(vertex)
-                            parameter['throughput_rb'][rb] = current_Vt
-                            subscript.remove(vertex)
-                if flag:
+                for i in parameter['rb_use_status'][rb]['d2d']:
+                    sinr = cal_d2d_sinr(i, parameter['rb_use_status'][rb], **parameter)
                     t = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
                     throughput = throughput + t
-
-                parameter['throughput_rb'][rb] = throughput
-
-                if vertex in rb_status[rb]['d2d']:
-                    #vertex不能讓throughput增長
-                    if parameter['throughput_rb'][rb] < current_Vt:
-                        #將vertex移除Sk
-                        rb_status[rb]['d2d'].remove(vertex)
-                        parameter['throughput_rb'][rb] = current_Vt
-                        subscript.remove(vertex)
-                    else:
-                        subscript.remove(vertex)
-        for rb in range(parameter['numRB']):
-            pass
-    print(rb_status)
+                
+                new_Vt.append(throughput) #算法更新accroding(22)
+                subscript.remove(vertex)
+            maxIndex = new_Vt.index(max(new_Vt))
+        #         if vertex in parameter['rb_use_status'][rb]['d2d']:
+        #             #vertex不能讓throughput增長
+        #             if parameter['throughput_rb'][rb] < current_Vt:
+        #                 #將vertex移除Sk
+        #                 parameter['rb_use_status'][rb]['d2d'].remove(vertex)
+        #                 parameter['throughput_rb'][rb] = current_Vt
+        #                 subscript.remove(vertex)
+        #             else:
+        #                 print('put vertex',vertex,'in rb',rb)
+        #                 subscript.remove(vertex)
+        # #計算每個RB上的Vi
+        # totalVi = 0
+        # for rb in range(parameter['numRB']):
+        #     weight = 0
+        #     for cue in parameter['rb_use_status'][rb]['cue']:
+        #         for d2d in parameter['rb_use_status'][rb]['d2d']:
+        #             weight = weight + cal_cue_edge_weight(cue, d2d, rb, **parameter)
+        #     for d2d_v in parameter['rb_use_status'][rb]['d2d']:
+        #         d2d_u = parameter['rb_use_status'][rb]['d2d'][-1]
+        #         if d2d_u != d2d_v:
+        #             weight = weight + cal_d2d_edge_weight(d2d_u, d2d_v, rb, **parameter)
+        #     parameter['edge_rb'][rb] = weight
+        #     totalVi = totalVi + weight
+        
+        # for rb in range(parameter['numRB']):
+        #     parameter['delta'][rb] = (1 / parameter['edge_rb'][rb]) / totalVi
+        #     for d2d in parameter['rb_use_status'][rb]['d2d']:
+        #         parameter['powerD2DList'][d2d] = max(parameter['powerD2DList'][d2d], parameter['delta'][rb] * parameter['Pmax'])
+    # t = np.sum()
+    print(parameter['throughput_rb'])
+    print(parameter['i_d2c'])
+    print('rb weight',parameter['edge_rb'])
+    print(totalVi)
+    print(parameter['rb_use_status'])
+    print()
     return parameter
 
+def judg_all_ue_sinr(vertex, rb, **parameter):
+    flag = False
+    for i in parameter['rb_use_status'][rb]['d2d']:
+        sinr = cal_d2d_sinr(i, parameter['rb_use_status'][rb], **parameter)
+        #要滿足所需之sinr
+        if sinr < parameter['minD2Dsinr'][i] and vertex in parameter['rb_use_status'][rb]['d2d']:
+            flag = True
+            # print('d2d',i,'sinr',sinr,'<',parameter['minD2Dsinr'][i],'remove d2d',vertex)
+            
+    for i in parameter['rb_use_status'][rb]['cue']:
+        sinr = cal_cue_sinr(i, rb, parameter['rb_use_status'][rb], **parameter)
+        #要滿足所需之sinr
+        if sinr < parameter['minCUEsinr'][i] and vertex in parameter['rb_use_status'][rb]['d2d']:
+            if vertex in parameter['rb_use_status'][rb]['d2d']:
+                flag = True
+                # print('cue',i,'sinr',sinr,'<',parameter['minCUEsinr'][i],'remove d2d',vertex)
+    return flag
 
 def cal_d2d_sinr(tx, rb_use_list, **parameter):
     rx_sinr = np.zeros((parameter['numD2DReciver'][tx]))
@@ -140,18 +169,19 @@ def cal_d2d_interference(tx, rx, rb_use_list, **parameter):
             interference = interference + parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][0]
     return interference
 
-def cal_cue_sinr(tx, rb_use_list, **parameter):
+def cal_cue_sinr(tx, rb, rb_use_list, **parameter):
     sinr = 0
     for rx in range(parameter['numCellRx']):
-        interference = cal_cue_interference(tx, rx, rb_use_list, **parameter)
-        sinr = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][0]) / (parameter['N0'] + interference)
+        if parameter['assignmentRxCell'][rx][rb] == 1:
+            interference = cal_cue_interference(tx, rx, rb_use_list, **parameter)
+            sinr = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][rb]) / (parameter['N0'] + interference)
     return sinr
 
 def cal_cue_interference(tx, rx, rb_use_list, **parameter):
     interference = 0
     for i in parameter['i_d2c'][rx]:
         if i in rb_use_list['d2d']:
-            interference = interference + parameter['powerCUEList'][tx] * parameter['g_d2c'][i][tx][rx][0]
+            interference = interference + (parameter['powerD2DList'][i] * parameter['g_d2c'][i][rx][0])
     return interference
 
 def cal_d2d_edge_weight(u, v, rb, **parameter):
@@ -169,5 +199,27 @@ def cal_d2d_edge_weight(u, v, rb, **parameter):
         for u_rx in range(parameter['numD2DReciver'][u]):
             if v in parameter['i_d2d_rx'][u][u_rx]['d2d']:
                 vu_weight_list[u_rx] = parameter['powerD2DList'][v] * parameter['g_dij'][v][u][u_rx][rb]
+    weight = np.max(uv_weight_list) + np.max(vu_weight_list)
+    return weight
+
+def cal_cue_edge_weight(u, v, rb, **parameter):
+    #u是cue
+    if parameter['numCellRx'] == 1:
+        rx = 0
+    else:
+        rx = u
+
+    uv_weight_list = np.zeros((parameter['numD2DReciver'][v]))
+    vu_weight_list = np.zeros((1))
+
+    #表示 u 會干擾 v
+    if u in parameter['i_d2d'][v]['cue']:
+        for v_rx in range(parameter['numD2DReciver'][v]):
+            if u in parameter['i_d2d_rx'][v][v_rx]['cue']:
+                uv_weight_list[v_rx] = parameter['powerCUEList'][u] * parameter['g_c2d'][u][v][v_rx][rb]
+    
+    #表示 v 會干擾 u
+    if v in parameter['i_d2c'][rx]:
+        vu_weight_list[u] = parameter['powerD2DList'][v] * parameter['g_d2c'][v][rx][rb]
     weight = np.max(uv_weight_list) + np.max(vu_weight_list)
     return weight

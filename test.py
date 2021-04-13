@@ -115,8 +115,10 @@ gain_dl = {
     'g_dij' : c.gainTx2D2DRx(dist_dij)
 }
 
+total = 0
 t_m = 0
 juad_throughput = 0
+gcrs_throughput = 0
 start = time.time()
 simu = 0
 meth = 0
@@ -135,7 +137,7 @@ for currentTime in range(0,1):
     data_cue_dl = np.random.randint(low=dataCUEMin, high=dataCUEMax, size=initial['numCUE'])
     data_d2d_ul = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=initial['numD2D'])
     data_d2d_dl = np.random.randint(low=dataD2DMin, high=dataD2DMax, size=initial['numD2D'])
-
+    total = total + np.sum(data_d2d_ul) + np.sum(data_d2d_dl)
     uplink = {
         'numCellTx' : config["numCUE"],
         'numCellRx' : config["numBS"],
@@ -154,18 +156,16 @@ for currentTime in range(0,1):
     sys_parameter_ul = measure.Cell_in_DirectD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.BetweenD2D(**sys_parameter_ul)
     sys_parameter_ul = measure.InterferenceD2D(**sys_parameter_ul)
-    # sys_parameter_ul = gcrs.initial_parameter(**sys_parameter_ul)
-    # print("--------------------------")
-    # print(sys_parameter_ul['assignmentTxCell'])
-    # print('------------')
-    # print(sys_parameter_ul['rb_use_status'])
-    # sys_parameter_ul_p = sys_parameter_ul.copy()
+
+    
+    #proposed
+    # method_ul = sys_parameter_ul.copy()
     # simu_end = time.time()
     # meth_start = time.time()
-    # sys_parameter_ul_p = method.initial_parameter(**sys_parameter_ul_p)
-    # sys_parameter_ul_p = method.phase1(**sys_parameter_ul_p)
-    # for i in range(sys_parameter_ul_p['numD2D']):
-    #     if sys_parameter_ul_p['powerD2DList'][i] != 0:
+    # method_ul = method.initial_parameter(**method_ul)
+    # method_ul = method.phase1(**method_ul)
+    # for i in range(method_ul['numD2D']):
+    #     if method_ul['powerD2DList'][i] != 0:
     #         t_m = t_m + data_d2d_ul[i]
     # meth_end = time.time()
 
@@ -186,12 +186,7 @@ for currentTime in range(0,1):
     #         # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
     #         # print()
     #         juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
-    
-    # sys_parameter_ul = proposed.find_d2d_root(**sys_parameter_ul)
-    # sys_parameter_ul = proposed.create_interference_graph(**sys_parameter_ul)
-    # sys_parameter_ul = proposed.find_longest_path(**sys_parameter_ul)
-    # sys_parameter_ul = proposed.phase2_power_configure(**sys_parameter_ul)
-    # sys_parameter_ul = proposed.phase3_power_configure(**sys_parameter_ul)
+
     
     #gcrs
     gcrs_ul = sys_parameter_ul.copy()
@@ -213,26 +208,23 @@ for currentTime in range(0,1):
 
         'currentTime' : currentTime
     }
-    # simu1_start = time.time()
-    # sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
+    simu1_start = time.time()
+    sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
 
-    # sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
-    # sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
-    # sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
+    sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
+    sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_OmniD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.Cell_in_DirectD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.BetweenD2D(**sys_parameter_dl)
+    sys_parameter_dl = measure.InterferenceD2D(**sys_parameter_dl)
+    
     # simu1_end = time.time()
     # #proposed
     # meth1_start = time.time()
     # method_dl = sys_parameter_dl.copy()
     # method_dl = method.initial_parameter(**method_dl)
     # method_dl = method.phase1(**method_dl)
-    # sys_parameter_dl = proposed.find_d2d_root(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.create_interference_graph(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.find_longest_path(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.phase2_power_configure(**sys_parameter_dl)
-    # sys_parameter_dl = proposed.phase3_power_configure(**sys_parameter_dl)
+
     # for i in range(method_dl['numD2D']):
     #     if method_dl['powerD2DList'][i] != 0:
     #         t_m = t_m + data_d2d_dl[i]
@@ -257,18 +249,20 @@ for currentTime in range(0,1):
     #         # print()
     #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
-
-
+    #gcrs
+    gcrs_dl = sys_parameter_dl.copy()
+    gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
+    gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
     
     # draw.drawCell(**{**initial, **environment})
 end = time.time()
 print("總執行時間：%f 秒" % (end - start))
 print("模擬器時間：%f 秒" % simu)
 print("方法的時間：%f 秒" % meth)
-print('Maximum throughput', np.sum(data_d2d_ul))
+print('Maximum throughput', total)
 print('prop_throughput',t_m)
 print('juad_throughput',juad_throughput)
-# draw.drawCell(**{**initial, **environment})
+draw.drawCell(**{**initial, **environment})
 
 # file1 = open('data1.txt', 'w')
 # for key in sys_parameter_ul_p:

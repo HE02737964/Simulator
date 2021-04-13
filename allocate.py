@@ -8,62 +8,53 @@ def cellAllocateUl(**parameter):
     
     minSINR = np.zeros(parameter['numCUE'])
     minCQI = np.zeros(parameter['numCUE'])
-    sinrList = np.zeros(parameter['numCUE'])
     rbList = np.zeros(parameter['numCUE'])
 
     power_prb = np.zeros((parameter['numCUE'], parameter['numRB']))
     powerList = np.zeros(parameter['numCUE'])
 
     #計算BS的最小SINR和CUE在每個RB上使用的power
-    upperCqi = 0
     deleteCandicate = []
     for i in candicate:
-        tbs, rb = tool.data_tbs_mapping(parameter['data_cue'][i], parameter['numRB'])
-        cqi = convert.TBS_CQI_mapping(tbs)
-        sinr = convert.CQI_SINR_mapping(cqi)
+        rb, cqi, sinr = get_ue_system_info(i, deleteCandicate, power_prb, **parameter)
         rbList[i] = rb
         minCQI[i] = cqi
-        minSINR[i] = convert.dB_to_mW(sinr)
-        if cqi >= 12:
-            upperCqi = 15
-        else:
-            upperCqi = cqi + parameter['cqiLevel']
-        upperSinr = convert.CQI_SINR_mapping(upperCqi)
-        upperSinr = convert.dB_to_mW(upperSinr)
-        upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
-        sinrList[i] = upperSinr
-        power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][i][0][0], parameter['N0'])
-        if power > parameter['Pmax']:
-            deleteCandicate.append(i)
-            continue
-        if power < parameter['Pmin']:
-            power = parameter['Pmin']
-        power_prb[i][rb] = power
+        minSINR[i] = sinr
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
+    sort_list = np.argsort(-rbList)
+
 
     #由候選UE依序分配擁有最小傳輸power的RB
     emptyRB = parameter['numRB']
-    for ue in candicate:
-        rbIndex = 0                 #RB索引
-        rb = rbList[ue]             #CUE需要多少個RB
-        if ue in deleteCandicate:
-            continue
-        if rbList[ue] > emptyRB:
-            deleteCandicate.append(ue)
-            continue
-        while rb > 0 and rbIndex < parameter['numRB']:
-            if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
-                assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
-                assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
-                #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
-                powerList[ue] = max(powerList[ue], power_prb[ue][sortPower[ue][rbIndex]])
-                emptyRB = emptyRB - 1
-                rb = rb - 1
-            else:
-                rbIndex = rbIndex + 1
+    for ue in sort_list:
+        if ue in candicate and emptyRB != 0:
+            rbIndex = 0                 #RB索引
+            if ue in deleteCandicate:
+                continue
+            if rbList[ue] > emptyRB:
+                tbs = 26
+                rbList[ue] == emptyRB
+                cqi = convert.TBS_CQI_mapping(tbs)
+                sinr = convert.CQI_SINR_mapping(cqi)
+                sinr = convert.dB_to_mW(sinr)
+                throughput = tool.TBS_Throughput_mapping(tbs, emptyRB)
+                minCQI[i] = cqi
+                minSINR[i] = sinr
+                parameter['data_cue'][ue] = throughput
+            rb = rbList[ue]             #CUE需要多少個RB
+            while rb > 0 and rbIndex < parameter['numRB']:
+                if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
+                    assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
+                    assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
+                    #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
+                    powerList[ue] = max(powerList[ue], power_prb[ue][sortPower[ue][rbIndex]])
+                    emptyRB = emptyRB - 1
+                    rb = rb - 1
+                else:
+                    rbIndex = rbIndex + 1
         if not any(assignmentUE[ue]):
             deleteCandicate.append(ue)
 
@@ -71,7 +62,6 @@ def cellAllocateUl(**parameter):
     for ue in deleteCandicate:
         minCQI[ue] = 0
         minSINR[ue] = 0
-        sinrList[ue] = 0
         power_prb[ue] = 0
 
     assignmentBS = np.reshape(assignmentRB, (-1, parameter['numRB'])) #BS使用RB接收資料的資料型態是1d array，np.reshape可以轉為2d array (-1會根據輸入的array推斷出新array的大小)
@@ -80,7 +70,6 @@ def cellAllocateUl(**parameter):
     parameter.update({'powerCUEList' : powerList})
     parameter.update({'assignmentTxCell' : assignmentUE})
     parameter.update({'assignmentRxCell' : assignmentBS})
-    
     return parameter
 
 def cellAllocateDl(**parameter):
@@ -96,55 +85,46 @@ def cellAllocateDl(**parameter):
     powerList = np.zeros(1)
 
     #計算CUE的最小SINR和BS在每個RB上使用的power
-    upperCqi = 0
     deleteCandicate = []
     for i in parameter['inSectorCUE']:
-        tbs, rb = tool.data_tbs_mapping(parameter['data_cue'][i], parameter['numRB'])
-        cqi = convert.TBS_CQI_mapping(tbs)
-        sinr = convert.CQI_SINR_mapping(cqi)
+        rb, cqi, sinr = get_ue_system_info(i, deleteCandicate, power_prb, **parameter)
         rbList[i] = rb
         minCQI[i] = cqi
-        minSINR[i] = convert.dB_to_mW(sinr)
-        if cqi >= 12:
-            upperCqi = 15
-        else:
-            upperCqi = cqi + parameter['cqiLevel']
-        upperSinr = convert.CQI_SINR_mapping(upperCqi)
-        upperSinr = convert.dB_to_mW(upperSinr)
-        upperSinr = convert.dB_to_mW(sinr) #set ue use minimun sinr
-        sinrList[i] = upperSinr
-        power = convert.SNR_to_Power(upperSinr, parameter['g_c2b'][0][i][0], parameter['N0'])
-        if power > parameter['Pmax']:
-            deleteCandicate.append(i)
-            continue
-        if power < parameter['Pmin']:
-            power = parameter['Pmin']
-        power_prb[i][rb] = power
+        minSINR[i] = sinr
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
     sortPower = power_prb.argsort(axis=1)       #每個UE根據在RB上使用的power由小到大排序
+    sort_list = np.argsort(-rbList)
     
     #由候選UE依序分配擁有最小傳輸power的RB
     emptyRB = parameter['numRB']
-    for ue in parameter['inSectorCUE']:
-        rbIndex = 0                 #RB索引
-        rb = rbList[ue]             #CUE需要多少個RB
-        if rbList[ue] > emptyRB:
-            deleteCandicate.append(ue)
-            continue
-        while rb > 0 and rbIndex < parameter['numRB']:
-            if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
-                assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
-                assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
-                #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
-                powerList[0] = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
-                emptyRB = emptyRB - 1
-                rb = rb - 1
-            else:
-                rbIndex = rbIndex + 1
-        if not any(assignmentUE[ue]):
-            deleteCandicate.append(ue)
+    for ue in sort_list:
+        if ue in parameter['inSectorCUE']:
+            rbIndex = 0                 #RB索引
+            if rbList[ue] > emptyRB:
+                tbs = 26
+                rbList[ue] == emptyRB
+                cqi = convert.TBS_CQI_mapping(tbs)
+                sinr = convert.CQI_SINR_mapping(cqi)
+                sinr = convert.dB_to_mW(sinr)
+                throughput = tool.TBS_Throughput_mapping(tbs, emptyRB)
+                minCQI[i] = cqi
+                minSINR[i] = sinr
+                parameter['data_cue'][ue] = throughput
+            rb = rbList[ue]             #CUE需要多少個RB
+            while rb > 0 and rbIndex < parameter['numRB']:
+                if assignmentRB[sortPower[ue][rbIndex]] == 0:       #判斷RB有無被使用
+                    assignmentRB[sortPower[ue][rbIndex]] = 1        #標記RB為已使用
+                    assignmentUE[ue][sortPower[ue][rbIndex]] = 1    #將該RB分配給CUE
+                    #為了使CUE使用的所有RB都能滿足其最小SINR,設置CUE使用的RB中最大的Power為CUE所使用
+                    powerList[0] = max(powerList, power_prb[ue][sortPower[ue][rbIndex]])
+                    emptyRB = emptyRB - 1
+                    rb = rb - 1
+                else:
+                    rbIndex = rbIndex + 1
+            if not any(assignmentUE[ue]):
+                deleteCandicate.append(ue)
 
     candicate = np.setdiff1d(parameter['inSectorCUE'], deleteCandicate)
     for ue in deleteCandicate:
@@ -160,6 +140,31 @@ def cellAllocateDl(**parameter):
     parameter.update({'assignmentTxCell' : assignmentBS})
     parameter.update({'assignmentRxCell' : assignmentUE})
     return parameter
+
+def get_ue_system_info(cue, deleteCandicate, power_prb, **parameter):
+    tx = 0
+    rx = 0
+    if parameter['numCellRx'] == 1:
+        tx = cue
+    else:
+        rx = cue
+        
+    tool = tools.Tool()
+    convert = tools.Convert()
+    tbs, rb = tool.data_tbs_mapping(parameter['data_cue'][cue], parameter['numRB'])
+    cqi = convert.TBS_CQI_mapping(tbs)
+    sinr = convert.CQI_SINR_mapping(cqi)
+    sinr = convert.dB_to_mW(sinr)
+
+    power = convert.SNR_to_Power(sinr, parameter['g_c2b'][tx][rx][0], parameter['N0'])
+    
+    if power < parameter['Pmin']:
+        power = parameter['Pmin']
+    if power > parameter['Pmax']:
+        power = 0
+        deleteCandicate.append(cue)
+    power_prb[cue] = power
+    return rb, cqi, sinr
 
 def getSectorPoint(radius, totalBeam):
     #得到所有波束的扇形座標

@@ -168,13 +168,21 @@ def phase1(**parameter):
             print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])
             print()
 
-    for cue in range(parameter['numCellTx']):
-        if parameter['powerCUEList'][cue] != 0:
-            sinr = cal_cue_sinr(cue, **parameter)
-            print('cue', cue, 'pwr', parameter['powerCUEList'][cue])
-            print('cue', cue, 'sinr', sinr)
-            print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
-            print()
+    for cue in parameter['candicateCUE']:
+        if parameter['numCellRx'] == 1:
+            if parameter['minCUEsinr'][cue] != 0:
+                sinr = cal_cue_sinr(cue, **parameter)
+                print('cue', cue, 'pwr', parameter['powerCUEList'][cue])
+                print('cue', cue, 'sinr', sinr)
+                print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
+                print()
+        else:
+            if parameter['minCUEsinr'][cue] != 0:
+                sinr = cal_cue_sinr(0, **parameter)
+                print('cue', 0, 'pwr', parameter['powerCUEList'][0])
+                print('cue', cue, 'sinr', sinr)
+                print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
+                print()
     print('num d2d assign',assign)
 
     return parameter
@@ -260,8 +268,8 @@ def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list,
 
 #得到d2d能使用的rb
 def get_d2d_use_rb(d2d, **parameter):
-    d2dUseRBList = np.ones(25, dtype=int)
-    cueUseRBList = np.zeros(25, dtype=int)
+    d2dUseRBList = np.ones(parameter['numRB'], dtype=int)
+    cueUseRBList = np.zeros(parameter['numRB'], dtype=int)
     for cue in range(parameter['numCellRx']):
         if d2d in parameter['i_d2c'][cue]:
             #CUE有使用的RB做or運算，找出所有rx cue會被d2d干擾的RB
