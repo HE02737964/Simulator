@@ -159,14 +159,14 @@ for currentTime in range(0,1):
 
     
     #proposed
-    # method_ul = sys_parameter_ul.copy()
-    # simu_end = time.time()
-    # meth_start = time.time()
-    # method_ul = method.initial_parameter(**method_ul)
-    # method_ul = method.phase1(**method_ul)
-    # for i in range(method_ul['numD2D']):
-    #     if method_ul['powerD2DList'][i] != 0:
-    #         t_m = t_m + data_d2d_ul[i]
+    method_ul = sys_parameter_ul.copy()
+    simu_end = time.time()
+    meth_start = time.time()
+    method_ul = method.initial_parameter(**method_ul)
+    method_ul = method.phase1(**method_ul)
+    for i in range(method_ul['numD2D']):
+        if method_ul['powerD2DList'][i] != 0:
+            t_m = t_m + data_d2d_ul[i]
     # meth_end = time.time()
 
     #juad
@@ -192,6 +192,7 @@ for currentTime in range(0,1):
     gcrs_ul = sys_parameter_ul.copy()
     gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
     gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
+    gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['throughput_rb'])
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -220,14 +221,13 @@ for currentTime in range(0,1):
     
     # simu1_end = time.time()
     # #proposed
-    # meth1_start = time.time()
-    # method_dl = sys_parameter_dl.copy()
-    # method_dl = method.initial_parameter(**method_dl)
-    # method_dl = method.phase1(**method_dl)
-
-    # for i in range(method_dl['numD2D']):
-    #     if method_dl['powerD2DList'][i] != 0:
-    #         t_m = t_m + data_d2d_dl[i]
+    meth1_start = time.time()
+    method_dl = sys_parameter_dl.copy()
+    method_dl = method.initial_parameter(**method_dl)
+    method_dl = method.phase1(**method_dl)
+    for i in range(method_dl['numD2D']):
+        if method_dl['powerD2DList'][i] != 0:
+            t_m = t_m + data_d2d_dl[i]
     # meth1_end = time.time()
 
     # simu = simu + (simu_end - simu_start) + (simu1_end - simu1_start)
@@ -253,6 +253,7 @@ for currentTime in range(0,1):
     gcrs_dl = sys_parameter_dl.copy()
     gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
     gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
+    gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['throughput_rb'])
     
     # draw.drawCell(**{**initial, **environment})
 end = time.time()
@@ -262,6 +263,7 @@ print("方法的時間：%f 秒" % meth)
 print('Maximum throughput', total)
 print('prop_throughput',t_m)
 print('juad_throughput',juad_throughput)
+print('gcrs_throughput',gcrs_throughput)
 draw.drawCell(**{**initial, **environment})
 
 # file1 = open('data1.txt', 'w')

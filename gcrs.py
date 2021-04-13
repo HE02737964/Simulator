@@ -63,15 +63,13 @@ def vertex_coloring(**parameter):
     tool = tools.Tool()
     convert = tools.Convert()
     
-    iterations = 1
+    iterations = 5
     for i in range(iterations):
         for rb in range(parameter['numRB']):
-            for cue in range(parameter['numCellTx']):
-                if parameter['assignmentTxCell'][cue][rb] == 1 and cue not in parameter['rb_use_status'][rb]['cue']:
-                    parameter['rb_use_status'][rb]['cue'].append(cue)
-            
+            cue_throughput = cal_Vt_cue(rb, **parameter)
+            parameter['throughput_rb'][rb] = cue_throughput
+
             subscript = []
-            new_Vt = []
             for d2d in range(parameter['numD2D']):
                 if d2d not in parameter['rb_use_status'][rb]['d2d']:
                     subscript.append(d2d)
@@ -83,55 +81,52 @@ def vertex_coloring(**parameter):
                 #記錄當前Vt, Vi
                 current_Vt = parameter['throughput_rb'][rb]
                 current_Vi = parameter['edge_rb'][rb]
+                current_vertex_list = parameter['rb_use_status'][rb]['d2d'].copy()
 
                 #將vertex放入Sk裡
                 parameter['rb_use_status'][rb]['d2d'].append(vertex)
 
                 #更新Vt
-                throughput = 0
-                for i in parameter['rb_use_status'][rb]['d2d']:
-                    sinr = cal_d2d_sinr(i, parameter['rb_use_status'][rb], **parameter)
-                    t = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
-                    throughput = throughput + t
+                cue_Vt = cal_Vt_cue(rb, **parameter)
+                d2d_Vt = cal_Vt_d2d(rb, **parameter)
+                new_Vt = cue_Vt + d2d_Vt
+                new_vertex_list = parameter['rb_use_status'][rb]['d2d'].copy()
                 
-                new_Vt.append(throughput) #算法更新accroding(22)
-                subscript.remove(vertex)
-            maxIndex = new_Vt.index(max(new_Vt))
-        #         if vertex in parameter['rb_use_status'][rb]['d2d']:
-        #             #vertex不能讓throughput增長
-        #             if parameter['throughput_rb'][rb] < current_Vt:
-        #                 #將vertex移除Sk
-        #                 parameter['rb_use_status'][rb]['d2d'].remove(vertex)
-        #                 parameter['throughput_rb'][rb] = current_Vt
-        #                 subscript.remove(vertex)
-        #             else:
-        #                 print('put vertex',vertex,'in rb',rb)
-        #                 subscript.remove(vertex)
-        # #計算每個RB上的Vi
-        # totalVi = 0
-        # for rb in range(parameter['numRB']):
-        #     weight = 0
-        #     for cue in parameter['rb_use_status'][rb]['cue']:
-        #         for d2d in parameter['rb_use_status'][rb]['d2d']:
-        #             weight = weight + cal_cue_edge_weight(cue, d2d, rb, **parameter)
-        #     for d2d_v in parameter['rb_use_status'][rb]['d2d']:
-        #         d2d_u = parameter['rb_use_status'][rb]['d2d'][-1]
-        #         if d2d_u != d2d_v:
-        #             weight = weight + cal_d2d_edge_weight(d2d_u, d2d_v, rb, **parameter)
-        #     parameter['edge_rb'][rb] = weight
-        #     totalVi = totalVi + weight
-        
-        # for rb in range(parameter['numRB']):
-        #     parameter['delta'][rb] = (1 / parameter['edge_rb'][rb]) / totalVi
-        #     for d2d in parameter['rb_use_status'][rb]['d2d']:
-        #         parameter['powerD2DList'][d2d] = max(parameter['powerD2DList'][d2d], parameter['delta'][rb] * parameter['Pmax'])
-    # t = np.sum()
-    print(parameter['throughput_rb'])
-    print(parameter['i_d2c'])
-    print('rb weight',parameter['edge_rb'])
-    print(totalVi)
-    print(parameter['rb_use_status'])
-    print()
+                #將vertex從Sk中移除
+                parameter['rb_use_status'][rb]['d2d'].remove(vertex)
+                
+                #挑選最大Vt的那組vertex組合
+                totalVi = 0
+                if current_Vt < new_Vt:
+                    parameter['rb_use_status'][rb]['d2d'] = new_vertex_list
+                    parameter['throughput_rb'][rb] = new_Vt
+                    subscript.remove(vertex)
+                else:
+                    parameter['rb_use_status'][rb]['d2d'] = current_vertex_list
+                    parameter['throughput_rb'][rb] = current_Vt
+                    subscript.remove(vertex)
+
+                for cue in parameter['rb_use_status'][rb]['cue']:
+                    for d2d in parameter['rb_use_status'][rb]['d2d']:
+                        totalVi = totalVi + cal_cue_edge_weight(cue, d2d, rb, **parameter)
+                for d2d_v in parameter['rb_use_status'][rb]['d2d']:
+                    d2d_u = parameter['rb_use_status'][rb]['d2d'][-1]
+                    if d2d_u != d2d_v:
+                        totalVi = totalVi + cal_d2d_edge_weight(d2d_u, d2d_v, rb, **parameter)
+                parameter['edge_rb'][rb] = totalVi
+        s = np.sum(parameter['edge_rb'])
+        for rb in range(parameter['numRB']):
+            parameter['delta'][rb] = (1 / parameter['edge_rb'][rb]) / s
+            for d2d in parameter['rb_use_status'][rb]['d2d']:
+                parameter['powerD2DList'][d2d] = max(parameter['powerD2DList'][d2d], parameter['delta'][rb] * parameter['Pmax'])
+
+    # t = np.sum(parameter['throughput_rb'])
+    # print('total th',t)
+    # print(parameter['throughput_rb'])
+    # print(parameter['i_d2c'])
+    # print('rb weight',parameter['edge_rb'])
+    # print(parameter['rb_use_status'])
+    # print()
     return parameter
 
 def judg_all_ue_sinr(vertex, rb, **parameter):
@@ -220,6 +215,28 @@ def cal_cue_edge_weight(u, v, rb, **parameter):
     
     #表示 v 會干擾 u
     if v in parameter['i_d2c'][rx]:
-        vu_weight_list[u] = parameter['powerD2DList'][v] * parameter['g_d2c'][v][rx][rb]
+        vu_weight_list[rx] = parameter['powerD2DList'][v] * parameter['g_d2c'][v][rx][rb]
     weight = np.max(uv_weight_list) + np.max(vu_weight_list)
     return weight
+
+def cal_Vt_d2d(rb, **parameter):
+    tool = tools.Tool()
+    convert = tools.Convert()
+    throughput = 0
+    for i in parameter['rb_use_status'][rb]['d2d']:
+        sinr = cal_d2d_sinr(i, parameter['rb_use_status'][rb], **parameter)
+        t = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+        throughput = throughput + t
+    return throughput
+
+def cal_Vt_cue(rb, **parameter):
+    tool = tools.Tool()
+    convert = tools.Convert()
+    throughput = 0
+    for cue in range(parameter['numCellTx']):
+        for rx in range(parameter['numCellRx']):
+            if parameter['assignmentTxCell'][cue][rb] == 1 and cue not in parameter['rb_use_status'][rb]['cue']:
+                parameter['rb_use_status'][rb]['cue'].append(cue)
+                sinr = cal_cue_sinr(cue, rx, parameter['rb_use_status'][rb], **parameter)
+                throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+    return throughput
