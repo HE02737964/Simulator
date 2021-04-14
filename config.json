@@ -19,7 +19,7 @@
 	"totalBeam" : 8,
 	"numScheduleBeam" : 3,
 
-	"numD2DCluster" : 1,
+	"numD2DCluster" : 5,
 	"clusterRadius" : 100,
 	"numDensity" : 70,
 

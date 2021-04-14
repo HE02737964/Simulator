@@ -164,16 +164,16 @@ for currentTime in range(0,1):
 
     
     #proposed
-    # method_ul = sys_parameter_ul.copy()
-    # simu_end = time.time()
-    # meth_start = time.time()
-    # method_ul = method.initial_parameter(**method_ul)
-    # method_ul = method.phase1(**method_ul)
-    # for i in range(method_ul['numD2D']):
-    #     if method_ul['powerD2DList'][i] != 0:
-    #         t_m = t_m + data_d2d_ul[i]
-    # p_assign = p_assign + method_ul['numAssignment']
-    # meth_end = time.time()
+    method_ul = sys_parameter_ul.copy()
+    simu_end = time.time()
+    meth_start = time.time()
+    method_ul = method.initial_parameter(**method_ul)
+    method_ul = method.phase1(**method_ul)
+    for i in range(method_ul['numD2D']):
+        if method_ul['powerD2DList'][i] != 0:
+            t_m = t_m + data_d2d_ul[i]
+    p_assign = p_assign + method_ul['numAssignment']
+    meth_end = time.time()
 
     #juad
     # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
@@ -196,13 +196,13 @@ for currentTime in range(0,1):
     
     #gcrs
     
-    # gcrs_ul = sys_parameter_ul.copy()
-    # gcrs_start = time.time()
-    # gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
-    # gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
-    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
-    # g_assign = g_assign + gcrs_ul['numAssignment']
-    # gcrs_end = time.time()
+    gcrs_ul = sys_parameter_ul.copy()
+    gcrs_start = time.time()
+    gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
+    gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
+    gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
+    g_assign = g_assign + gcrs_ul['numAssignment']
+    gcrs_end = time.time()
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -231,15 +231,15 @@ for currentTime in range(0,1):
     
     # # simu1_end = time.time()
     # # #proposed
-    meth1_start = time.time()
-    method_dl = sys_parameter_dl.copy()
-    method_dl = method.initial_parameter(**method_dl)
-    method_dl = method.phase1(**method_dl)
-    for i in range(method_dl['numD2D']):
-        if method_dl['powerD2DList'][i] != 0:
-            t_m = t_m + data_d2d_dl[i]
-    p_assign = p_assign + method_dl['numAssignment']
-    meth1_end = time.time()
+    # meth1_start = time.time()
+    # method_dl = sys_parameter_dl.copy()
+    # method_dl = method.initial_parameter(**method_dl)
+    # method_dl = method.phase1(**method_dl)
+    # for i in range(method_dl['numD2D']):
+    #     if method_dl['powerD2DList'][i] != 0:
+    #         t_m = t_m + data_d2d_dl[i]
+    # p_assign = p_assign + method_dl['numAssignment']
+    # meth1_end = time.time()
 
     # simu = simu + (simu_end - simu_start) + (simu1_end - simu1_start)
     # meth = meth + (meth_end - meth_start) #+ (meth1_end - meth1_start)
@@ -262,11 +262,11 @@ for currentTime in range(0,1):
     #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
     #gcrs
-    gcrs_dl = sys_parameter_dl.copy()
-    gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
-    gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
-    g_assign = g_assign + gcrs_dl['numAssignment']
-    gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
+    # gcrs_dl = sys_parameter_dl.copy()
+    # gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
+    # gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
+    # g_assign = g_assign + gcrs_dl['numAssignment']
+    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
     
     # draw.drawCell(**{**initial, **environment})
 end = time.time()
@@ -280,6 +280,8 @@ print('num assignment', p_assign)
 print('juad_throughput',juad_throughput)
 print('gcrs_throughput',gcrs_throughput)
 print('num assignment', g_assign)
+print(data_d2d_ul)
+print(data_d2d_dl)
 # draw.drawCell(**{**initial, **environment})
 
 # file1 = open('data1.txt', 'w')
