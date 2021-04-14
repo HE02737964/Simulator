@@ -55,3 +55,35 @@ def drawCell(**parameter):
                 plt.plot(xx, yy, color="#888888", zorder = 999, linewidth=1)
     axes.legend(loc="upper right")
     plt.show()
+
+def draw_test():
+    p_values = [25,37,46,29,38,29,38,29,38,29,38,38,29,29]
+    m_values = [18,29,38,29,38,29,38,29,38,29,38,29,38,29]
+    x_labels = [10,15,20,25,30,35,40,45,50,55,60,65,70,75]
+    
+    plt.plot(x_labels, p_values,'s-',color = 'r', label="Proposed")
+    plt.plot(x_labels, m_values,'o-',color = 'g', label="GCRS")
+
+    # plt.title("Python 畫折線圖(Line chart)範例", x=0.5, y=1.03)
+
+    # 设置刻度字体大小
+    # plt.xticks(fontsize=10)
+
+    # plt.yticks(fontsize=10)
+
+    # 標示x軸(labelpad代表與圖片的距離)
+
+    plt.xlabel("D2D pair", labelpad = 15)
+
+    # 標示y軸(labelpad代表與圖片的距離)
+
+    plt.ylabel("Throughput", labelpad = 20)
+
+    # 顯示出線條標記位置
+
+    plt.legend(loc = "best")
+
+    plt.tight_layout()
+    # 畫出圖片
+    plt.savefig("Test.eps")
+    plt.show()

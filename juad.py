@@ -14,6 +14,8 @@ def initial_parameter(**parameter):
 
     powerCUEList = np.zeros((parameter['numD2D'], parameter['numCUE']))
     powerD2DList = np.zeros((parameter['numD2D'], parameter['numCUE']))
+
+    assignmentD2D = np.zeros((parameter['numD2D'], parameter['numRB']))
     
     parameter.update({'weight_matrix' : weight_matrix})
     parameter.update({'weight_cue' : weight_cue})
@@ -22,6 +24,7 @@ def initial_parameter(**parameter):
     parameter.update({'powerD2DList' : powerD2DList})
     parameter.update({'sinrCUEList' : sinrCUEList})
     parameter.update({'sinrD2DList' : sinrD2DList})
+    parameter.update({'assignmentD2D' : assignmentD2D})
     return parameter
 
 #一個CUE和D2D的計算
@@ -265,6 +268,29 @@ def bipartite_matching(**parameter):
     parameter.update({'matching_index' : indexes})
     return parameter
 
+def throughput_rasing(**parameter):
+    assignmentD2D = [i[0] for i in parameter['matching_index']]
+    assignmentCUE = [i[1] for i in parameter['matching_index']]
+
+    for index in range(len(assignmentCUE)):
+        c_tx = 0
+        c_rx = 0
+        if parameter['numCellRx'] == 1:
+            c_tx = assignmentCUE[index]
+        else:
+            c_rx = assignmentCUE[index]
+        
+        subscript = []
+        for d2d in range(parameter['numD2D']):
+            if d2d != assignmentD2D[index]:
+                subscript.append(d2d)
+
+        d2d = subscript.pop(0)
+        if parameter['powerCUEList'][index][assignmentCUE[index]] != 0:
+            #d2d不干擾cue以及與cue配對的其他d2d
+            if d2d not in parameter['i_d2c'] and d2d not in parameter['i_d2d'][assignmentD2D[index]]['d2d']:
+                used_rb = parameter['assignmentD2D'][assignmentD2D[index]].copy()
+
 #主程式
 def maximum_matching(**parameter):
     for j in range(parameter['numD2D']):
@@ -272,4 +298,14 @@ def maximum_matching(**parameter):
             parameter = gp_method(i, j, **parameter)
 
     parameter = bipartite_matching(**parameter)
+    
+    #Assignment D2D RB
+    assignmentD2D = [i[0] for i in parameter['matching_index']]
+    assignmentCUE = [i[1] for i in parameter['matching_index']]
+    for index in range(len(assignmentCUE)):
+        if parameter['numCellRx'] == 1:
+            assignRB = parameter['assignmentTxCell'][assignmentCUE[index]].copy()
+        else:
+            assignRB = parameter['assignmentRxCell'][assignmentCUE[index]].copy()
+        parameter['assignmentD2D'][assignmentD2D[index]] = assignRB
     return parameter

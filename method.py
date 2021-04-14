@@ -184,7 +184,7 @@ def phase1(**parameter):
                 print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
                 print()
     print('num d2d assign',assign)
-
+    parameter['numAssignment'] = parameter['numAssignment'] + assign
     return parameter
 
 #計算D2D的干擾鄰居數量
@@ -358,9 +358,13 @@ def cal_d2d_interference(tx, rx, rb, **parameter):
 
 def cal_virtual_interference(tx, rx, rb, **parameter):
     interference = 0
+    count = 0
     for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
         if parameter['powerD2DList'][i] == 0:
-            interference = interference + ((parameter['Pmax'] / 10*parameter['numRB']) * parameter['g_dij'][i][tx][rx][rb])
+            count = count + 1
+    for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+        if parameter['powerD2DList'][i] == 0:
+            interference = interference + ((parameter['Pmax'] / count*parameter['numRB']) * parameter['g_dij'][i][tx][rx][rb])
     return interference
 
 #計算cue在每個rb上的干擾

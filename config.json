@@ -2,8 +2,8 @@
 	"radius" : 500,
 	"numBS" : 1,
 	"numCUE" : 25,
-	"numD2D" : 10,
-	"numRB" : 15,
+	"numD2D" : 75,
+	"numRB" : 25,
 	"maxReciver" : 1,
 	"d2dDistance" : 100,
 	"directCUE" : 50,
@@ -20,8 +20,8 @@
 	"numScheduleBeam" : 3,
 
 	"numD2DCluster" : 1,
-	"clusterRadius" : 10,
-	"numDensity" : 100,
+	"clusterRadius" : 100,
+	"numDensity" : 70,
 
 	"dataCUEMax" : 3752,
 	"dataCUEMin" : 16,
