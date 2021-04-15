@@ -164,16 +164,16 @@ for currentTime in range(0,1):
 
     
     #proposed
-    method_ul = sys_parameter_ul.copy()
-    simu_end = time.time()
-    meth_start = time.time()
-    method_ul = method.initial_parameter(**method_ul)
-    method_ul = method.phase1(**method_ul)
-    for i in range(method_ul['numD2D']):
-        if method_ul['powerD2DList'][i] != 0:
-            t_m = t_m + data_d2d_ul[i]
-    p_assign = p_assign + method_ul['numAssignment']
-    meth_end = time.time()
+    # method_ul = sys_parameter_ul.copy()
+    # simu_end = time.time()
+    # meth_start = time.time()
+    # method_ul = method.initial_parameter(**method_ul)
+    # method_ul = method.phase1(**method_ul)
+    # for i in range(method_ul['numD2D']):
+    #     if method_ul['powerD2DList'][i] != 0:
+    #         t_m = t_m + data_d2d_ul[i]
+    # p_assign = p_assign + method_ul['numAssignment']
+    # meth_end = time.time()
 
     #juad
     # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
@@ -195,11 +195,14 @@ for currentTime in range(0,1):
 
     
     #gcrs
-    
+
+    sys.stdout = open('gcrs_debug', 'w')
     gcrs_ul = sys_parameter_ul.copy()
     gcrs_start = time.time()
     gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
+    print('current time',time.ctime(time.time()))
     gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
+    print('data_d2d',gcrs_ul['data_d2d'])
     gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
     g_assign = g_assign + gcrs_ul['numAssignment']
     gcrs_end = time.time()
@@ -262,11 +265,11 @@ for currentTime in range(0,1):
     #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
     #gcrs
-    # gcrs_dl = sys_parameter_dl.copy()
-    # gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
-    # gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
-    # g_assign = g_assign + gcrs_dl['numAssignment']
-    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
+    gcrs_dl = sys_parameter_dl.copy()
+    gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
+    gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
+    g_assign = g_assign + gcrs_dl['numAssignment']
+    gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
     
     # draw.drawCell(**{**initial, **environment})
 end = time.time()
@@ -282,6 +285,7 @@ print('gcrs_throughput',gcrs_throughput)
 print('num assignment', g_assign)
 print(data_d2d_ul)
 print(data_d2d_dl)
+sys.stdout.close()
 # draw.drawCell(**{**initial, **environment})
 
 # file1 = open('data1.txt', 'w')
