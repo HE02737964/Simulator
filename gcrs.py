@@ -154,15 +154,15 @@ def check_some_value(**parameter):
         
         #紀錄會使CUE的sinr小於所需值的D2D
         deleteD2D = []
-        # for cue in parameter['rb_use_status'][rb]['cue']:
-        #     sinr = cal_cue_sinr(cue, rb, **parameter)
-        #     if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(sinr):
-        #         for d2d in parameter['i_d2c']:
-        #             if d2d in parameter['rb_use_status'][rb]['d2d']:
-        #                 sinr = cal_d2d_sinr(d2d, rb, **parameter)
-        #                 d_vt = convert_sinr_vt(sinr)
-        #                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-        #                 deleteD2D.append(d2d)
+        for cue in parameter['rb_use_status'][rb]['cue']:
+            sinr = cal_cue_sinr(cue, rb, **parameter)
+            if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(sinr):
+                for d2d in parameter['i_d2c']:
+                    if d2d in parameter['rb_use_status'][rb]['d2d']:
+                        sinr = cal_d2d_sinr(d2d, rb, **parameter)
+                        d_vt = convert_sinr_vt(sinr)
+                        parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
+                        deleteD2D.append(d2d)
         
         #紀錄sinr不滿足所需值的D2D
         for d2d in parameter['rb_use_status'][rb]['d2d']:
@@ -192,7 +192,6 @@ def check_some_value(**parameter):
         else:
             parameter['d2d_total_throughput'][d2d] = total
 
-    total_throughput = 0
     for d2d in range(parameter['numD2D']):
         s = np.zeros(parameter['numRB'])
         numRB = int(np.sum(parameter['assignmentD2D'][d2d]))
@@ -201,10 +200,15 @@ def check_some_value(**parameter):
         sinr = np.min(s)
         sinr = convert.mW_to_dB(sinr)
         d2d_throughput = tool.sinr_throughput_mapping(sinr, numRB)
-        if d2d_throughput > parameter['data_d2d'][d2d]:
+        if d2d_throughput >= parameter['data_d2d'][d2d]:
             d2d_throughput = parameter['data_d2d'][d2d]
+        else:
+            d2d_throughput = 0
+            parameter['powerD2DList'][d2d] = 0
+            for rb in range(parameter['numRB']):
+                if d2d in parameter['rb_use_status'][rb]['d2d']:
+                    parameter['rb_use_status'][rb]['d2d'].remove(d2d)
         parameter['d2d_total_throughput'][d2d] = d2d_throughput
-        total_throughput = total_throughput + d2d_throughput
 
     assignList = []
     for rb in range(parameter['numRB']):
@@ -212,16 +216,6 @@ def check_some_value(**parameter):
             if d2d not in assignList:
                 assignList.append(d2d)
     parameter['numAssignment'] = parameter['numAssignment'] + len(assignList)
-    # print(parameter['powerD2DList'])
-
-    print(parameter['rb_use_status'])
-    # t = np.sum(parameter['throughput_rb'])
-    print('total th',total_throughput)
-    print(parameter['d2d_total_throughput'])
-    # print(parameter['i_d2c'])
-    # print('rb weight',parameter['edge_rb'])
-    # print(parameter['rb_use_status'])
-    # print()
     return parameter
 
 def cal_d2d_sinr(tx, rb, **parameter):
@@ -241,9 +235,16 @@ def cal_d2d_interference(tx, rx, rb, **parameter):
             interference = interference + parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][0]
     return interference
 
-def cal_cue_sinr(tx, rb, **parameter):
+def cal_cue_sinr(cue, rb, **parameter):
     sinr = 0
     for rx in range(parameter['numCellRx']):
+        if parameter['numCellRx'] == 1:
+            tx = cue
+            rx = 0
+        else:
+            tx = 0
+            rx = cue
+
         if parameter['assignmentRxCell'][rx][rb] == 1:
             interference = cal_cue_interference(tx, rx, rb, **parameter)
             sinr = (parameter['powerCUEList'][tx] * parameter['g_c2b'][tx][rx][rb]) / (parameter['N0'] + interference)
@@ -304,7 +305,7 @@ def cal_Vt_d2d(rb, **parameter):
     throughput = 0
     for i in parameter['rb_use_status'][rb]['d2d']:
         sinr = cal_d2d_sinr(i, rb, **parameter)
-        print('d2d sinr',sinr)
+        # print('d2d sinr',sinr)
         t = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
         throughput = throughput + t
     return throughput
@@ -320,16 +321,16 @@ def cal_Vt_cue(rb, **parameter):
                     if cue not in parameter['rb_use_status'][rb]['cue']:
                         parameter['rb_use_status'][rb]['cue'].append(cue)
                     sinr = cal_cue_sinr(cue, rb, **parameter)
-                    print('cue',cue, 'sinr',sinr)
-                    print('cue min sinr',parameter['minCUEsinr'][cue])
+                    # print('cue',cue, 'sinr',sinr)
+                    # print('cue min sinr',parameter['minCUEsinr'][cue])
                     throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
             else:
                 if parameter['assignmentRxCell'][rx][rb] == 1:
                     if rx not in parameter['rb_use_status'][rb]['cue']:
                         parameter['rb_use_status'][rb]['cue'].append(rx)
                     sinr = cal_cue_sinr(cue, rb, **parameter)
-                    print('cue',rx, 'sinr',sinr)
-                    print('cue min sinr',parameter['minCUEsinr'][rx])
+                    # print('cue',rx, 'sinr',sinr)
+                    # print('cue min sinr',parameter['minCUEsinr'][rx])
                     throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
     return throughput
 

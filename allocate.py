@@ -105,7 +105,7 @@ def cellAllocateDl(**parameter):
     for ue in sort_list:
         if ue in parameter['inSectorCUE']:
             rbIndex = 0                 #RB索引
-            if rbList[ue] > emptyRB:
+            if rbList[ue] > emptyRB and emptyRB != 0:
                 tbs = 26
                 cqi, sinr = get_ue_system_info(tbs)
                 throughput = tool.TBS_Throughput_mapping(tbs, emptyRB)

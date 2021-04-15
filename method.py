@@ -76,8 +76,8 @@ def phase1(**parameter):
             
             print(node,'cal p1:',p1)
             if p1 == -1 and p3 <= parameter['Pmax']:
-                print('node',node,'p1',p1,'p3',p3,'set p2 power and assing rb')
                 p2 = set_power_in_max_min(p2, **parameter)
+                print('node',node,'p1',p1,'p3',p3,'set p2',p2, 'power and assing rb')
                 parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
                 parameter['powerD2DList'][node] = p2
                 print('assign', parameter['assignmentD2D'][node])
@@ -185,6 +185,7 @@ def phase1(**parameter):
                 print()
     print('num d2d assign',assign)
     parameter['numAssignment'] = parameter['numAssignment'] + assign
+    print('numAssignment',parameter['numAssignment'])
     return parameter
 
 #計算D2D的干擾鄰居數量
@@ -362,9 +363,12 @@ def cal_virtual_interference(tx, rx, rb, **parameter):
     for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
         if parameter['powerD2DList'][i] == 0:
             count = count + 1
-    for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-        if parameter['powerD2DList'][i] == 0:
-            interference = interference + ((parameter['Pmax'] / count*parameter['numRB']) * parameter['g_dij'][i][tx][rx][rb])
+    if count == 0:
+        interference = 0
+    else:
+        for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+            if parameter['powerD2DList'][i] == 0:
+                interference = interference + ((parameter['Pmax'] * parameter['numRB']) * (parameter['Pmax'] / (count*parameter['numRB'])) * parameter['g_dij'][i][tx][rx][rb])
     return interference
 
 #計算cue在每個rb上的干擾
