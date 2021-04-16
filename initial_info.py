@@ -17,8 +17,6 @@ class Initial:
         with open('%s.json'%self.setter, 'r') as f:
             config = json.load(f)
 
-        maxReciver = config['maxReciver']
-        d2dDistance = config['d2dDistance']
         directCUE = config['directCUE']
         directD2D = config['directD2D']
         N_dBm = config['N_dBm']
@@ -32,6 +30,8 @@ class Initial:
             'numD2D' : config['numD2D'],
             'numRB' : config['numRB'],
             'numBS' : config['numBS'],
+            'maxReciver' : config['maxReciver'],
+            'd2dDistance' : config['d2dDistance'],
             'perScheduleCUE' : config['perScheduleCUE'],
             'N0' : N0,
             'Pmax' : config['Pmax'],
@@ -49,15 +49,15 @@ class Initial:
             'dataD2DMin' : config['dataD2DMin'],
         }
 
-        numD2DReciver = np.random.randint(low=1, high=maxReciver+1, size=initial['numD2D'])
+        numD2DReciver = np.random.randint(low=1, high=initial['maxReciver']+1, size=initial['numD2D'])
 
         g = genrator.Genrator(initial['radius'])
 
         bs_point = [[0,0]]
         ue_point = g.generateTxPoint(initial['numCUE'])
-        # tx_point = g.generateTxPoint(initial['numD2D'])
-        tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
-        rx_point = g.generateRxPoint(tx_point, d2dDistance, numD2DReciver)
+        tx_point = g.generateTxPoint(initial['numD2D'])
+        # tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
+        rx_point = g.generateRxPoint(tx_point, initial['d2dDistance'], numD2DReciver)
 
         dist_c2b = g.distanceTx2Cell(ue_point, bs_point)
         dist_b2c = g.distanceTx2Cell(bs_point, ue_point)

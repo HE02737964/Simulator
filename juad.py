@@ -149,10 +149,10 @@ def gp_method(cue, d2d, **parameter):
     R_sum = np.zeros((5,3))
     for point in range(5):
         sinr_cue = (point_cue[point] * g_c2b) / (flag_d2d * point_d2d[point] * g_d2c +  parameter['N0'])
-        R_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
+        R_cue = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr_cue), numCUERB)
 
         sinr_d2d = (point_d2d[point] * g_d2d) / (flag_cue * point_cue[point] * g_c2d + parameter['N0'])
-        R_d2d = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_d2d), numD2DRB)
+        R_d2d = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr_d2d), numD2DRB)
 
         sum = R_cue + R_d2d
         R_sum[point][0] = sum
@@ -195,11 +195,11 @@ def gp_method(cue, d2d, **parameter):
 
     #計算最大throughput組合的d2d sinr和cue throughput
     sinr_d2d = (point_d2d[index_d2d] * g_d2d) / (flag_cue * point_cue[index_d2d] * g_c2d + parameter['N0'])
-    throughput_d2d = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_d2d), numD2DRB)
+    throughput_d2d = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr_d2d), numD2DRB)
 
     #計算最大throughput組合的cue sinr和cue throughput
     sinr_cue = (point_cue[index_cue] * g_c2b) / (flag_d2d * point_d2d[index_d2d] * g_d2c + parameter['N0'])
-    throughput_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
+    throughput_cue = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr_cue), numCUERB)
 
     #設置cue和d2d的傳輸功率 
     power_cue = point_cue[index_d2d]
@@ -224,7 +224,7 @@ def gp_method(cue, d2d, **parameter):
         power_d2d = 0
         sinr_d2d = 0
 
-        throughput_cue = tool.sinr_throughput_mapping(convert.dB_to_mW(sinr_cue), numCUERB)
+        throughput_cue = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr_cue), numCUERB)
         throughput_d2d = 0
 
     if throughput_cue > r_cue:
@@ -264,7 +264,6 @@ def bipartite_matching(**parameter):
     for row, column in indexes:
         value = cost_matrix[row][column]
         cost = cost + value
-    print('cost',cost)
     parameter.update({'matching_index' : indexes})
     return parameter
 

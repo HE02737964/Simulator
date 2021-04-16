@@ -1,6 +1,8 @@
 import numpy as np
 import tools
 
+np.seterr(divide='ignore')
+
 def initial_parameter(**parameter):
     parameter.update({'powerD2DList' : np.zeros(parameter['numD2D'])})
     parameter.update({'nStartD2D' : np.asarray([])})
@@ -183,6 +185,13 @@ def phase1(**parameter):
                 print('cue', cue, 'sinr', sinr)
                 print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
                 print()
+
+    assignList = []
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            assignList.append(d2d)
+    print('assignment list',assignList)
+    print('len assignment', len(assignList))
     print('num d2d assign',assign)
     parameter['numAssignment'] = parameter['numAssignment'] + assign
     print('numAssignment',parameter['numAssignment'])

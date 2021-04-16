@@ -165,37 +165,69 @@ def check_some_value(**parameter):
         parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - parameter['throughput_cue'][rb]
         print('rb',rb,'total throughput',parameter['throughput_rb'][rb],'cue throughput',parameter['throughput_cue'][rb])
         print('cal cue vt in rb',rb, cal_Vt_cue(rb, **parameter))
-        print('In parameter cue throughput',parameter['data_cue'][parameter['rb_use_status'][rb]['cue'][0]])
 
-        #紀錄會使CUE的sinr小於所需值的D2D
-        deleteD2D = []
-        for cue in parameter['rb_use_status'][rb]['cue']:
-            sinr = cal_cue_sinr(cue, rb, **parameter)
-            if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(sinr):
-                for d2d in parameter['i_d2c']:
-                    if d2d in parameter['rb_use_status'][rb]['d2d']:
-                        sinr = cal_d2d_sinr(d2d, rb, **parameter)
-                        d_vt = convert_sinr_vt(sinr)
-                        parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-                        deleteD2D.append(d2d)
-                        print('d2d',d2d,'interference cue',cue)
-        
-        #紀錄sinr不滿足所需值的D2D
-        for d2d in parameter['rb_use_status'][rb]['d2d']:
-            sinr = cal_d2d_sinr(d2d, rb, **parameter)
-            d_vt = convert_sinr_vt(sinr)
-            if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(sinr) and d2d not in deleteD2D:
+        #移除會使CUE的sinr小於所需值的d2d
+        cue_list = parameter['rb_use_status'][rb]['cue'] #有使用rb的cue list
+        if cue_list:
+            cue = cue_list[0]
+            for d2d in parameter['i_d2c']:
+                cue_sinr = cal_cue_sinr(cue, rb, **parameter)
+                if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(cue_sinr) and d2d in parameter['rb_use_status'][rb]['d2d']:
+                    #將d2d從rb_use_status中移除並設置該rb上的power為0
+                    parameter['rb_use_status'][rb]['d2d'].remove(d2d)
+                    parameter['powerD2DList'][d2d][rb] = 0
+                    #扣除掉d2d在該rb上的throughput
+                    d2d_sinr = cal_d2d_sinr(d2d, rb, **parameter)
+                    d_vt = convert_sinr_vt(d2d_sinr)
+                    parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
+
+        #移除rb上不滿足所需sinr的d2d
+        index = len(parameter['rb_use_status'][rb]['d2d']) - 1
+        point = 0
+        while point <= index:
+            d2d = parameter['rb_use_status'][rb]['d2d'][point]
+            d2d_sinr = cal_d2d_sinr(d2d, rb, **parameter)
+            d_vt = convert_sinr_vt(d2d_sinr)
+            if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(d2d_sinr):
+                parameter['rb_use_status'][rb]['d2d'].remove(d2d)
+                parameter['powerD2DList'][d2d][rb] = 0
+                #扣除掉d2d在該rb上的throughput
                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-                deleteD2D.append(d2d)
+                index = len(parameter['rb_use_status'][rb]['d2d']) - 1
+                point = 0
                 print('d2d',d2d,'sinr not enough')
+            else:
+                point = point + 1
 
-        #將先前紀錄起來的D2D從RB使用列表中移除
-        for d2d in deleteD2D:
-            parameter['rb_use_status'][rb]['d2d'].remove(d2d)
+        # #移除會使CUE的sinr小於所需值的d2d
+        # deleteD2D = []
+        # for cue in parameter['rb_use_status'][rb]['cue']:
+        #     sinr = cal_cue_sinr(cue, rb, **parameter)
+        #     if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(sinr):
+        #         for d2d in parameter['i_d2c']:
+        #             if d2d in parameter['rb_use_status'][rb]['d2d']:
+        #                 sinr = cal_d2d_sinr(d2d, rb, **parameter)
+        #                 d_vt = convert_sinr_vt(sinr)
+        #                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
+        #                 deleteD2D.append(d2d)
+        #                 print('d2d',d2d,'interference cue',cue)
+        
+        # #紀錄sinr不滿足所需值的D2D
+        # for d2d in parameter['rb_use_status'][rb]['d2d']:
+        #     sinr = cal_d2d_sinr(d2d, rb, **parameter)
+        #     d_vt = convert_sinr_vt(sinr)
+        #     if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(sinr) and d2d not in deleteD2D:
+        #         parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
+        #         deleteD2D.append(d2d)
+        #         print('d2d',d2d,'sinr not enough')
+
+        # #將先前紀錄起來的D2D從RB使用列表中移除
+        # for d2d in deleteD2D:
+        #     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
     print('d2d rb status',parameter['rb_use_status'])
+
     #更新每個D2D使用的RB和Vt
     np.zeros_like(parameter['throughput_d2d'])
-    np.zeros_like(parameter['assignmentD2D'])
     print('set d2d throughput zero',parameter['throughput_d2d'])
     print('set assignemnt d2d zero',parameter['assignmentD2D'])
     for rb in range(parameter['numRB']):
@@ -214,8 +246,9 @@ def check_some_value(**parameter):
             parameter['d2d_total_throughput'][d2d] = total
     print('d2d in each rb throughput',parameter['d2d_total_throughput'])
 
+    #修正d2d的throughput
     for d2d in range(parameter['numD2D']):
-        s = np.zeros(parameter['numRB'])
+        sinr_list = np.zeros(parameter['numRB'])
         numRB = int(np.sum(parameter['assignmentD2D'][d2d]))
         print('d2d',d2d,'total use rb',np.sum(parameter['assignmentD2D'][d2d]))
         if numRB == 0:
@@ -227,8 +260,8 @@ def check_some_value(**parameter):
                     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
             continue
         for rb in range(parameter['numRB']):
-            s[rb] = cal_d2d_sinr(d2d, rb, **parameter)
-        sinr = np.min(s)
+            sinr_list[rb] = cal_d2d_sinr(d2d, rb, **parameter)
+        sinr = np.min(sinr_list)
         sinr = convert.mW_to_dB(sinr)
         d2d_throughput = tool.sinr_throughput_mapping(sinr, numRB)
         if d2d_throughput >= parameter['data_d2d'][d2d]:
@@ -240,7 +273,8 @@ def check_some_value(**parameter):
                 if d2d in parameter['rb_use_status'][rb]['d2d']:
                     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
         parameter['d2d_total_throughput'][d2d] = d2d_throughput
-    print('d2d update in each rb throughput',parameter['d2d_total_throughput'])
+    print('d2d update throughput',parameter['d2d_total_throughput'])
+    
     assignList = []
     for rb in range(parameter['numRB']):
         for d2d in parameter['rb_use_status'][rb]['d2d']:
@@ -249,6 +283,10 @@ def check_some_value(**parameter):
     parameter['numAssignment'] = parameter['numAssignment'] + len(assignList)
     print('d2d assign list',assignList)
     print('rb use status',parameter['rb_use_status'])
+    pwr = np.zeros(parameter['numD2D'])
+    for d2d in range(parameter['numD2D']):
+        pwr[d2d] = np.max(parameter['powerD2DList'][d2d])
+    print('gcrs d2d power',pwr)
     return parameter
 
 def cal_d2d_sinr(tx, rb, **parameter):

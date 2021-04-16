@@ -19,12 +19,11 @@ def run_method_ul(simu_time):
     total = 0
     method_ul = generator.initial_ul()
     # method_ul = UL.copy()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
 
         # method_ul = initial_info.get_ul_system_info(cTime, **method_ul)
@@ -49,12 +48,11 @@ def run_method_dl(simu_time):
     p_assign = 0
     total = 0
     method_dl = generator.initial_dl()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
 
         method_dl = generator.get_dl_system_info(cTime, **method_dl)
@@ -80,12 +78,11 @@ def run_juad_ul(simu_time):
     juad_throughput = 0
     j_assign = 0
     juad_ul = generator.initial_ul()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("juad ul[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
         
         juad_ul = generator.get_ul_system_info(cTime, **juad_ul)
@@ -104,6 +101,7 @@ def run_juad_ul(simu_time):
                 juad_throughput = juad_throughput + juad_ul['weight_d2d'][i][assignmentCUE[i]]
     
         exe_time = exe_time + (juad_end - juad_start)
+    sys.stdout.write("\r")
     j_assign = j_assign / simu_time
     return exe_time, juad_throughput, (((juad_throughput / simu_time)*1000)/1e6), j_assign
 
@@ -112,12 +110,11 @@ def run_juad_dl(simu_time):
     juad_throughput = 0
     j_assign = 0
     juad_dl = generator.initial_dl()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("juad dl[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
         
         juad_dl = generator.get_dl_system_info(cTime, **juad_dl)
@@ -136,6 +133,7 @@ def run_juad_dl(simu_time):
                 juad_throughput = juad_throughput + juad_dl['weight_d2d'][i][assignmentCUE[i]]
     
         exe_time = exe_time + (juad_end - juad_start)
+    sys.stdout.write("\r")
     j_assign = j_assign / simu_time
     return exe_time, juad_throughput, (((juad_throughput / simu_time)*1000)/1e6), j_assign
 
@@ -146,12 +144,11 @@ def run_gcrs_ul(simu_time):
     gcrs_throughput = 0
     g_assign = 0
     gcrs_ul = generator.initial_ul()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
 
         gcrs_ul = generator.get_ul_system_info(cTime, **gcrs_ul)
@@ -173,12 +170,11 @@ def run_gcrs_dl(simu_time):
     gcrs_throughput = 0
     g_assign = 0
     gcrs_dl = generator.initial_dl()
-    for cTime in range(simu_time):
+    for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time)
+        percent = int(progress/10)
+        sys.stdout.write("[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
 
         gcrs_dl = generator.get_dl_system_info(cTime, **gcrs_dl)
@@ -214,10 +210,9 @@ def merge(args):
 
     for cTime in range(simu_time):
         sys.stdout.write("\r")
-        progress = int(100 * ((cTime / simu_time)))
-        percent = "{:2}".format(progress)
-        sys.stdout.write(" " + percent + " % ")
-        [sys.stdout.write("#") for x in range(int(cTime / simu_time))]
+        progress = 100 * (cTime / simu_time) + 1
+        percent = int(progress/10)
+        sys.stdout.write("[%-10s] %d%%" % ('#'*percent, progress))
         sys.stdout.flush()
         
         data_ul = generator.get_data_ul(cTime)
@@ -230,7 +225,7 @@ def merge(args):
         m_dl = {**m_dl, **data_dl}
         j_dl = {**j_dl, **data_dl}
         g_dl = {**g_dl, **data_dl}
-
+        sys.stdout = open('total_debug', 'w')
         m_ul = generator.data_to_alloc_ul(**m_ul)
         j_ul = generator.data_to_alloc_ul(**j_ul)
         g_ul = generator.data_to_alloc_ul(**g_ul)
