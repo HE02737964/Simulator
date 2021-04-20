@@ -67,6 +67,7 @@ def initial_parameter(**parameter):
     return parameter
 
 def vertex_coloring(**parameter):
+    parameter = initial_parameter(**parameter)
     #先更新每個RB裏頭CUE的throughput
     for rb in range(parameter['numRB']):
         cue_throughput = cal_Vt_cue(rb, **parameter)
@@ -76,22 +77,22 @@ def vertex_coloring(**parameter):
     iterations = 1
     for i in range(iterations):
         for rb in range(parameter['numRB']):
-            print('rb',rb)
+            # print('rb',rb)
             subscript = []
             for d2d in range(parameter['numD2D']):
                 if d2d not in parameter['rb_use_status'][rb]['d2d']:
                     subscript.append(d2d)
-            print('subscript',subscript)
+            # print('subscript',subscript)
             while subscript:
                 #選擇一個未著色的頂點
                 vertex = subscript[0]
-                print('vertex',vertex)
+                # print('vertex',vertex)
 
                 #記錄當前Vt, Vi
                 current_Vt = parameter['throughput_rb'][rb]
                 current_Vi = parameter['edge_rb'][rb]
                 current_vertex_list = parameter['rb_use_status'][rb]['d2d'].copy()
-                print('current Vt', current_Vt)
+                # print('current Vt', current_Vt)
 
                 #將vertex放入Sk裡
                 parameter['rb_use_status'][rb]['d2d'].append(vertex)
@@ -101,7 +102,7 @@ def vertex_coloring(**parameter):
                 d2d_Vt = cal_Vt_d2d(rb, **parameter)
                 new_Vt = cue_Vt + d2d_Vt
                 new_vertex_list = parameter['rb_use_status'][rb]['d2d'].copy()
-                print('new Vt',new_Vt)
+                # print('new Vt',new_Vt)
                 
                 #將vertex從Sk中移除
                 parameter['rb_use_status'][rb]['d2d'].remove(vertex)
@@ -112,12 +113,12 @@ def vertex_coloring(**parameter):
                     parameter['rb_use_status'][rb]['d2d'] = new_vertex_list
                     parameter['throughput_rb'][rb] = new_Vt
                     subscript.remove(vertex)
-                    print('put vertex in rb')
+                    # print('put vertex in rb')
                 else:
                     parameter['rb_use_status'][rb]['d2d'] = current_vertex_list
                     parameter['throughput_rb'][rb] = current_Vt
                     subscript.remove(vertex)
-                    print('vertex can not throughput rasing')
+                    # print('vertex can not throughput rasing')
                 
                 #更新Vi
                 for cue in parameter['rb_use_status'][rb]['cue']:
@@ -130,7 +131,7 @@ def vertex_coloring(**parameter):
                         dij_weight = cal_d2d_edge_weight(d2d_u, d2d_v, rb, **parameter)
                         totalVi = totalVi + dij_weight
                 parameter['edge_rb'][rb] = totalVi
-                print('update Vi',totalVi)
+                # print('update Vi',totalVi)
 
         #每個RB的Vi總和
         s = np.sum(parameter['edge_rb'])
@@ -138,7 +139,7 @@ def vertex_coloring(**parameter):
         #計算每個RB上的功率分配因子(delta)
         for rb in range(parameter['numRB']):
             parameter['delta'][rb] = (1 / s*parameter['edge_rb'][rb])
-            print('calculate rb',rb,'power factor',parameter['delta'][rb])
+            # print('calculate rb',rb,'power factor',parameter['delta'][rb])
             #計算每個D2D在每個RB上的傳輸功率
             for d2d in range(parameter['numD2D']):
                 if d2d in parameter['rb_use_status'][rb]['d2d']:
@@ -150,10 +151,10 @@ def vertex_coloring(**parameter):
                     parameter['powerD2DList'][d2d][rb] = power
                 else:
                     parameter['powerD2DList'][d2d][rb] = 0
-                print('set d2d',d2d,'power',parameter['powerD2DList'][d2d][rb],'in rb',rb)
-    print('check some value start',time.ctime(time.time()))
+                # print('set d2d',d2d,'power',parameter['powerD2DList'][d2d][rb],'in rb',rb)
+    # print('check some value start',time.ctime(time.time()))
     parameter = check_some_value(**parameter)
-    print('check some value end',time.ctime(time.time()))
+    # print('check some value end',time.ctime(time.time()))
     return parameter
 
 def check_some_value(**parameter):
@@ -163,8 +164,8 @@ def check_some_value(**parameter):
     for rb in range(parameter['numRB']):
         #扣除掉CUE的throughput
         parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - parameter['throughput_cue'][rb]
-        print('rb',rb,'total throughput',parameter['throughput_rb'][rb],'cue throughput',parameter['throughput_cue'][rb])
-        print('cal cue vt in rb',rb, cal_Vt_cue(rb, **parameter))
+        # print('rb',rb,'total throughput',parameter['throughput_rb'][rb],'cue throughput',parameter['throughput_cue'][rb])
+        # print('cal cue vt in rb',rb, cal_Vt_cue(rb, **parameter))
 
         #移除會使CUE的sinr小於所需值的d2d
         cue_list = parameter['rb_use_status'][rb]['cue'] #有使用rb的cue list
@@ -195,7 +196,7 @@ def check_some_value(**parameter):
                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
                 index = len(parameter['rb_use_status'][rb]['d2d']) - 1
                 point = 0
-                print('d2d',d2d,'sinr not enough')
+                # print('d2d',d2d,'sinr not enough')
             else:
                 point = point + 1
 
@@ -210,7 +211,7 @@ def check_some_value(**parameter):
         #                 d_vt = convert_sinr_vt(sinr)
         #                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
         #                 deleteD2D.append(d2d)
-        #                 print('d2d',d2d,'interference cue',cue)
+                        # print('d2d',d2d,'interference cue',cue)
         
         # #紀錄sinr不滿足所需值的D2D
         # for d2d in parameter['rb_use_status'][rb]['d2d']:
@@ -219,24 +220,24 @@ def check_some_value(**parameter):
         #     if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(sinr) and d2d not in deleteD2D:
         #         parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
         #         deleteD2D.append(d2d)
-        #         print('d2d',d2d,'sinr not enough')
+                # print('d2d',d2d,'sinr not enough')
 
         # #將先前紀錄起來的D2D從RB使用列表中移除
         # for d2d in deleteD2D:
         #     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
-    print('d2d rb status',parameter['rb_use_status'])
+    # print('d2d rb status',parameter['rb_use_status'])
 
     #更新每個D2D使用的RB和Vt
     np.zeros_like(parameter['throughput_d2d'])
-    print('set d2d throughput zero',parameter['throughput_d2d'])
-    print('set assignemnt d2d zero',parameter['assignmentD2D'])
+    # print('set d2d throughput zero',parameter['throughput_d2d'])
+    # print('set assignemnt d2d zero',parameter['assignmentD2D'])
     for rb in range(parameter['numRB']):
         for d2d in parameter['rb_use_status'][rb]['d2d']:
             sinr = cal_d2d_sinr(d2d, rb, **parameter)
             d_vt = convert_sinr_vt(sinr)
             parameter['throughput_d2d'][d2d][rb] = d_vt
             parameter['assignmentD2D'][d2d][rb] = 1
-    print('update Vt rb status', parameter['rb_use_status'])
+    # print('update Vt rb status', parameter['rb_use_status'])
     #紀錄每個D2D的總throughput
     for d2d in range(parameter['numD2D']):
         total = np.sum(parameter['throughput_d2d'][d2d])
@@ -244,15 +245,15 @@ def check_some_value(**parameter):
             parameter['d2d_total_throughput'][d2d] = parameter['data_d2d'][d2d]
         else:
             parameter['d2d_total_throughput'][d2d] = total
-    print('d2d in each rb throughput',parameter['d2d_total_throughput'])
+    # print('d2d in each rb throughput',parameter['d2d_total_throughput'])
 
     #修正d2d的throughput
     for d2d in range(parameter['numD2D']):
         sinr_list = np.zeros(parameter['numRB'])
         numRB = int(np.sum(parameter['assignmentD2D'][d2d]))
-        print('d2d',d2d,'total use rb',np.sum(parameter['assignmentD2D'][d2d]))
+        # print('d2d',d2d,'total use rb',np.sum(parameter['assignmentD2D'][d2d]))
         if numRB == 0:
-            print('d2d',d2d,'use rb',numRB)
+            # print('d2d',d2d,'use rb',numRB)
             d2d_throughput = 0
             parameter['powerD2DList'][d2d] = 0
             for rb in range(parameter['numRB']):
@@ -273,7 +274,7 @@ def check_some_value(**parameter):
                 if d2d in parameter['rb_use_status'][rb]['d2d']:
                     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
         parameter['d2d_total_throughput'][d2d] = d2d_throughput
-    print('d2d update throughput',parameter['d2d_total_throughput'])
+    # print('d2d update throughput',parameter['d2d_total_throughput'])
     
     assignList = []
     for rb in range(parameter['numRB']):
@@ -281,12 +282,12 @@ def check_some_value(**parameter):
             if d2d not in assignList:
                 assignList.append(d2d)
     parameter['numAssignment'] = parameter['numAssignment'] + len(assignList)
-    print('d2d assign list',assignList)
-    print('rb use status',parameter['rb_use_status'])
+    # print('d2d assign list',assignList)
+    # print('rb use status',parameter['rb_use_status'])
     pwr = np.zeros(parameter['numD2D'])
     for d2d in range(parameter['numD2D']):
         pwr[d2d] = np.max(parameter['powerD2DList'][d2d])
-    print('gcrs d2d power',pwr)
+    # print('gcrs d2d power',pwr)
     return parameter
 
 def cal_d2d_sinr(tx, rb, **parameter):

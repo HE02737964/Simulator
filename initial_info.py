@@ -9,8 +9,9 @@ class Initial:
     def __init__(self, argv):
         self.method = argv[1]
         self.simuTime = argv[2]
-        self.x_label = argv[3]
-        self.setter = argv[4]
+        self.x_label_name = argv[3]
+        self.x_label = int(argv[4])
+        self.setter = argv[5]
         self.parameter = self.get_initial()
 
     def get_initial(self):
@@ -47,6 +48,7 @@ class Initial:
             'dataCUEMin' : config['dataCUEMin'],
             'dataD2DMax' : config['dataD2DMax'],
             'dataD2DMin' : config['dataD2DMin'],
+            '%s'%self.x_label_name : self.x_label,
         }
 
         numD2DReciver = np.random.randint(low=1, high=initial['maxReciver']+1, size=initial['numD2D'])
@@ -55,8 +57,8 @@ class Initial:
 
         bs_point = [[0,0]]
         ue_point = g.generateTxPoint(initial['numCUE'])
-        tx_point = g.generateTxPoint(initial['numD2D'])
-        # tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
+        # tx_point = g.generateTxPoint(initial['numD2D'])
+        tx_point = g.generateGroupTxPoint(initial['numD2D'], initial['clusterRadius'], initial['numD2DCluster'], initial['numDensity'])
         rx_point = g.generateRxPoint(tx_point, initial['d2dDistance'], numD2DReciver)
 
         dist_c2b = g.distanceTx2Cell(ue_point, bs_point)

@@ -285,13 +285,14 @@ def throughput_rasing(**parameter):
                 subscript.append(d2d)
 
         d2d = subscript.pop(0)
-        if parameter['powerCUEList'][index][assignmentCUE[index]] != 0:
+        if parameter['powerCUEList'][assignmentCUE[index]] != 0:
             #d2d不干擾cue以及與cue配對的其他d2d
             if d2d not in parameter['i_d2c'] and d2d not in parameter['i_d2d'][assignmentD2D[index]]['d2d']:
                 used_rb = parameter['assignmentD2D'][assignmentD2D[index]].copy()
 
 #主程式
 def maximum_matching(**parameter):
+    parameter = initial_parameter(**parameter)
     for j in range(parameter['numD2D']):
         for i in parameter['candicateCUE']:
             parameter = gp_method(i, j, **parameter)
