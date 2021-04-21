@@ -159,16 +159,16 @@ for currentTime in range(0,1):
 
     
     #proposed
-    # method_ul = sys_parameter_ul.copy()
-    # simu_end = time.time()
-    # meth_start = time.time()
-    # method_ul = method.initial_parameter(**method_ul)
-    # method_ul = method.phase1(**method_ul)
-    # for i in range(method_ul['numD2D']):
-    #     if method_ul['powerD2DList'][i] != 0:
-    #         t_m = t_m + data_d2d_ul[i]
-    # p_assign = p_assign + method_ul['numAssignment']
-    # meth_end = time.time()
+    method_ul = sys_parameter_ul.copy()
+    simu_end = time.time()
+    meth_start = time.time()
+    method_ul = method.initial_parameter(**method_ul)
+    method_ul = method.phase1(**method_ul)
+    for i in range(method_ul['numD2D']):
+        if method_ul['powerD2DList'][i] != 0:
+            t_m = t_m + data_d2d_ul[i]
+    p_assign = p_assign + method_ul['numAssignment']
+    meth_end = time.time()
 
     #juad
     sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
@@ -178,7 +178,9 @@ for currentTime in range(0,1):
     assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
 
     for i in range(len(assignmentCUE)):
-        if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+        d2d = assignmentD2D[i]
+        cue = assignmentCUE[i]
+        if sys_parameter_ul['powerCUEList'][d2d][cue] != 0 and sys_parameter_ul['powerD2DList'][d2d][cue] != 0:
             # print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
             # print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
             # print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
@@ -186,7 +188,7 @@ for currentTime in range(0,1):
             # print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
             # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
             # print()
-            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
+            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][d2d][cue]
 
     
     #gcrs
@@ -273,7 +275,7 @@ end = time.time()
 # print("方法的時間：%f 秒" % meth)
 # print("GCRS的時間：%f 秒" % gcrt)
 # print('Maximum throughput', total)
-# print('prop_throughput',t_m)
+print('prop_throughput',t_m)
 # print('num assignment', p_assign)
 print('juad_throughput',juad_throughput)
 # print('gcrs_throughput',gcrs_throughput)
