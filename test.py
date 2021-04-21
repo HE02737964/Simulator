@@ -129,12 +129,7 @@ p_assign = 0
 g_assign = 0
 for currentTime in range(0,1):
     simu_start = time.time()
-    sys.stdout.write("\r")
-    progress = int(100 * ((currentTime / 100)))
-    percent = "{:2}".format(progress)
-    sys.stdout.write(" " + percent + " % ")
-    [sys.stdout.write("#") for x in range(int(currentTime / 10))]
-    sys.stdout.flush()
+    
     beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])
     inSectorCUE = allocate.allSectorCUE(beamPoint, ue_point) #有在波束範圍內的CUE
 
@@ -176,36 +171,36 @@ for currentTime in range(0,1):
     # meth_end = time.time()
 
     #juad
-    # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
-    # sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
+    sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
+    sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
     
-    # assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
-    # assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
+    assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
+    assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
 
-    # for i in range(len(assignmentCUE)):
-    #     if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
-    #         # print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
-    #         # print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
-    #         # print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
-    #         # print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
-    #         # print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
-    #         # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
-    #         # print()
-    #         juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
+    for i in range(len(assignmentCUE)):
+        if sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+            # print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
+            # print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
+            # print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
+            # print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
+            # print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
+            # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
+            # print()
+            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][i][assignmentCUE[i]]
 
     
     #gcrs
 
-    sys.stdout = open('gcrs_debug', 'w')
-    gcrs_ul = sys_parameter_ul.copy()
-    gcrs_start = time.time()
-    gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
-    print('current time',time.ctime(time.time()))
-    gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
-    print('data_d2d',gcrs_ul['data_d2d'])
-    gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
-    g_assign = g_assign + gcrs_ul['numAssignment']
-    gcrs_end = time.time()
+    # sys.stdout = open('gcrs_debug', 'w')
+    # gcrs_ul = sys_parameter_ul.copy()
+    # gcrs_start = time.time()
+    # gcrs_ul = gcrs.initial_parameter(**gcrs_ul)
+    # print('current time',time.ctime(time.time()))
+    # gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
+    # print('data_d2d',gcrs_ul['data_d2d'])
+    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
+    # g_assign = g_assign + gcrs_ul['numAssignment']
+    # gcrs_end = time.time()
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -265,26 +260,26 @@ for currentTime in range(0,1):
     #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
     #gcrs
-    gcrs_dl = sys_parameter_dl.copy()
-    gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
-    gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
-    g_assign = g_assign + gcrs_dl['numAssignment']
-    gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
+    # gcrs_dl = sys_parameter_dl.copy()
+    # gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
+    # gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
+    # g_assign = g_assign + gcrs_dl['numAssignment']
+    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
     
     # draw.drawCell(**{**initial, **environment})
 end = time.time()
-print("總執行時間：%f 秒" % (end - start))
-print("模擬器時間：%f 秒" % simu)
-print("方法的時間：%f 秒" % meth)
-print("GCRS的時間：%f 秒" % gcrt)
-print('Maximum throughput', total)
-print('prop_throughput',t_m)
-print('num assignment', p_assign)
+# print("總執行時間：%f 秒" % (end - start))
+# print("模擬器時間：%f 秒" % simu)
+# print("方法的時間：%f 秒" % meth)
+# print("GCRS的時間：%f 秒" % gcrt)
+# print('Maximum throughput', total)
+# print('prop_throughput',t_m)
+# print('num assignment', p_assign)
 print('juad_throughput',juad_throughput)
-print('gcrs_throughput',gcrs_throughput)
-print('num assignment', g_assign)
-print(data_d2d_ul)
-print(data_d2d_dl)
+# print('gcrs_throughput',gcrs_throughput)
+# print('num assignment', g_assign)
+# print(data_d2d_ul)
+# print(data_d2d_dl)
 sys.stdout.close()
 # draw.drawCell(**{**initial, **environment})
 

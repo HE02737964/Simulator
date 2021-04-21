@@ -16,6 +16,8 @@ def initial_parameter(**parameter):
     powerD2DList = np.zeros((parameter['numD2D'], parameter['numCUE']))
 
     assignmentD2D = np.zeros((parameter['numD2D'], parameter['numRB']))
+
+    matching_pair = [[] for i in range(parameter['numCUE'])]
     
     parameter.update({'weight_matrix' : weight_matrix})
     parameter.update({'weight_cue' : weight_cue})
@@ -25,6 +27,7 @@ def initial_parameter(**parameter):
     parameter.update({'sinrCUEList' : sinrCUEList})
     parameter.update({'sinrD2DList' : sinrD2DList})
     parameter.update({'assignmentD2D' : assignmentD2D})
+    parameter.update({'matching_pair' : matching_pair})
     return parameter
 
 #一個CUE和D2D的計算
@@ -240,10 +243,9 @@ def gp_method(cue, d2d, **parameter):
     parameter['sinrD2DList'][d2d][cue] = sinr_d2d
 
 
-    parameter.update({'throughputRasing' : solution})
-    parameter.update({'throughputCUE' : throughput_cue})
-    parameter.update({'maxThroughputCUE' : t_cue})
-    parameter.update({'throughputD2D' : throughput_d2d})
+    # parameter.update({'throughputRasing' : solution})
+    # parameter.update({'throughputCUE' : throughput_cue})
+    # parameter.update({'maxThroughputCUE' : t_cue})
     
     parameter['weight_matrix'][d2d][cue] = solution
     parameter['weight_cue'][d2d][cue] = throughput_cue
@@ -265,30 +267,49 @@ def bipartite_matching(**parameter):
         value = cost_matrix[row][column]
         cost = cost + value
     parameter.update({'matching_index' : indexes})
+    print('matching index',indexes)
     return parameter
 
 def throughput_rasing(**parameter):
+    # parameter.pop('throughputRasing')
+    # parameter.pop('throughputCUE')
+    # parameter.pop('maxThroughputCUE')
+    
+    parameter['weight_matrix'].fill(0)
+
+    #每個cue找出可配對的d2d list(可配對的規則是不能干擾已經與cue配對之d2d)
     assignmentD2D = [i[0] for i in parameter['matching_index']]
     assignmentCUE = [i[1] for i in parameter['matching_index']]
 
     for index in range(len(assignmentCUE)):
+        cue = assignmentCUE[index]
         c_tx = 0
         c_rx = 0
         if parameter['numCellRx'] == 1:
-            c_tx = assignmentCUE[index]
+            c_tx = cue
         else:
-            c_rx = assignmentCUE[index]
+            c_rx = cue
         
         subscript = []
-        for d2d in range(parameter['numD2D']):
-            if d2d != assignmentD2D[index]:
-                subscript.append(d2d)
+        if parameter['powerCUEList'][index][c_tx] != 0:
+            for d2d in range(parameter['numD2D']):
+                flag = False
+                #d2d不在配對列表裡
+                if d2d not in parameter['matching_pair'][c_tx] and d2d not in assignmentD2D:
+                    flag = True
+                    for i in parameter['matching_pair'][c_tx]:
+                        #d2d與配對列表裡的裝置都不能互相干擾
+                        if d2d in parameter['i_d2d'][i]['d2d'] or i in parameter['i_d2d'][i]['d2d']:
+                            flag = False
+                    if flag:
+                        subscript.append(d2d)
 
-        d2d = subscript.pop(0)
-        if parameter['powerCUEList'][assignmentCUE[index]] != 0:
-            #d2d不干擾cue以及與cue配對的其他d2d
-            if d2d not in parameter['i_d2c'] and d2d not in parameter['i_d2d'][assignmentD2D[index]]['d2d']:
-                used_rb = parameter['assignmentD2D'][assignmentD2D[index]].copy()
+        for d2d in subscript:
+            parameter = gp_method(cue, d2d, **parameter)
+    
+    parameter.pop('matching_index')
+    parameter = bipartite_matching(**parameter)
+    return parameter
 
 #主程式
 def maximum_matching(**parameter):
@@ -303,9 +324,45 @@ def maximum_matching(**parameter):
     assignmentD2D = [i[0] for i in parameter['matching_index']]
     assignmentCUE = [i[1] for i in parameter['matching_index']]
     for index in range(len(assignmentCUE)):
+        d2d = assignmentD2D[index]
+        cue = assignmentCUE[index]
         if parameter['numCellRx'] == 1:
-            assignRB = parameter['assignmentTxCell'][assignmentCUE[index]].copy()
+            assignRB = parameter['assignmentTxCell'][cue].copy()
         else:
-            assignRB = parameter['assignmentRxCell'][assignmentCUE[index]].copy()
-        parameter['assignmentD2D'][assignmentD2D[index]] = assignRB
+            assignRB = parameter['assignmentRxCell'][cue].copy()
+        parameter['assignmentD2D'][d2d] = assignRB
+        parameter['matching_pair'][cue].append(d2d)
+
+    iteration = int(len(parameter['candicateCUE']) / parameter['numD2D'])
+    parameter = throughput_rasing(**parameter)
+    
+    assignmentD2D = [i[0] for i in parameter['matching_index']]
+    assignmentCUE = [i[1] for i in parameter['matching_index']]
+    for index in range(len(assignmentCUE)):
+        d2d = assignmentD2D[index]
+        cue = assignmentCUE[index]
+        if parameter['numCellRx'] == 1:
+            assignRB = parameter['assignmentTxCell'][cue].copy()
+        else:
+            assignRB = parameter['assignmentRxCell'][cue].copy()
+        parameter['assignmentD2D'][d2d] = assignRB
+        parameter['matching_pair'][cue].append(d2d)
+    print('mathcing pair',parameter['matching_pair'])
+    # print(parameter['weight_d2d'])
+    
+    t = 0
+    assignment1D2D = [i[0] for i in parameter['matching_index']]
+    assignment1CUE = [i[1] for i in parameter['matching_index']]
+    for i in range(len(assignmentCUE)):
+        d2d = assignment1D2D[i]
+        cue = assignment1CUE[i]
+        if parameter['powerCUEList'][i][cue] != 0 and parameter['powerD2DList'][i][cue] != 0:
+            print('mathcing ppair',i,parameter['matching_pair'][i])
+            for d2d in parameter['matching_pair'][i]:
+                print('d2d th',parameter['weight_d2d'][d2d][cue])
+                print('d2d po',parameter['powerD2DList'][d2d][cue])
+                t = t + parameter['weight_d2d'][d2d][cue]
+                print()
+
+    print('th',t)
     return parameter
