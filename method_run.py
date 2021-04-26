@@ -330,7 +330,7 @@ def m(args):
     m_t = 0
     m_assign = 0
     total = 0
-    sys.stdout = open('raw_data', 'w')
+    # sys.stdout = open('raw_data', 'w')
 
     m_exe_time_ul, m_total_t_ul, m_t_ul, m_assign_ul, total_ul =  run_method_ul(simu_time)
     m_exe_time_dl, m_total_t_dl, m_t_dl, m_assign_dl, total_dl = run_method_dl(simu_time)

@@ -253,9 +253,12 @@ def find_longest_path(root, **parameter):
     if not vis[root]:
         path = []
         longestPath = dfs(root, parameter['d2d_no_cell_interference_graph'], not_visit_point, vis, path, longestPath, power_assign_list, **parameter)
-        # print(longestPath)
-    if parameter['longestPath_type'] == "priority":
-        return longestPath[0]
+        print('llllllong',longestPath)
+        longestList = max(longestPath, key=len)
+        print('longestList',longestList)
+    return longestList
+    # if parameter['longestPath_type'] == "priority":
+    #     return longestPath[0]
 
 #DFS算法(所有可能都找出來)
 def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list, **parameter):
@@ -274,7 +277,7 @@ def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list,
         p = path.copy()
         longestPath.append(p)
         path.pop()
-        # vis[node] = False
+        vis[node] = False
     return longestPath
 
 #得到d2d能使用的rb
