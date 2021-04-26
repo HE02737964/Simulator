@@ -44,7 +44,7 @@ def phase1(**parameter):
         d2dSinr = cal_d2d_sinr(d2d, **parameter)
 
         parameter['powerD2DList'][d2d] = 0
-        parameter['assignmentD2D'][d2d] = 0
+        parameter['assignmentD2D'][d2d].fill(0)
         if np.sum(parameter['d2d_use_rb_List'][d2d]) == 0:
             d2dSinr = 0
        
@@ -103,7 +103,7 @@ def phase1(**parameter):
                 for i in range(iterations):
                     # print('i', i)
                     d2d = longestPath[-1]
-                    parameter['assignmentD2D'][d2d] = 0
+                    parameter['assignmentD2D'][d2d].fill(0)
                     # print('set',d2d,'rb 0',parameter['assignmentD2D'][d2d])
                     parameter['powerD2DList'][d2d] = 0
                     longestPath.pop()
@@ -116,7 +116,7 @@ def phase1(**parameter):
                 # print('node',node,'p3',p3,'p',p,'it',iterations)
                 deleteNode = np.where(node == candicate)[0]
                 # print('remove',candicate[deleteNode])
-                parameter['assignmentD2D'][node] = 0
+                parameter['assignmentD2D'][node].fill(0)
                 # print('set',node,'rb 0',parameter['assignmentD2D'][node])
                 parameter['powerD2DList'][node] = 0
                 candicate = np.delete(candicate, deleteNode)
@@ -304,7 +304,7 @@ def cal_need_power(d2d, **parameter):
             p2_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference + virtual_interference)) / parameter['g_d2d'][d2d][rx][rb]
     p3 = np.max(p3_need_power)
     p2 = np.max(p2_need_power)
-    parameter['assignmentD2D'][d2d] = 0
+    parameter['assignmentD2D'][d2d].fill(0)
     return p3, p2
 
 #計算能對其他裝置造成的最小干擾功率(p1)
@@ -349,7 +349,7 @@ def cal_min_interference_power(d2d, **parameter):
     #         d2d_nonzero_min_power = d2d_min_power[np.nonzero(d2d_min_power)]
     #         if d2d_nonzero_min_power.size > 0 and np.min(d2d_min_power) < Pmin:
     #             Pmin = np.min(d2d_min_power)
-    parameter['assignmentD2D'][d2d] = 0
+    parameter['assignmentD2D'][d2d].fill(0)
 
     if not flag:
         return -1
@@ -369,16 +369,29 @@ def cal_d2d_interference(tx, rx, rb, **parameter):
 
 def cal_virtual_interference(tx, rx, rb, **parameter):
     interference = 0
-    count = 0
+    count = 0    #未被assign的干擾鄰居數量
+    avgCount = 0 #有被assign的干擾鄰居數量
+    avgPower = 0
     for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+        #d2d的干擾鄰居尚未被assign
         if parameter['powerD2DList'][i] == 0:
             count = count + 1
+        #d2d的干擾鄰居已被assign
+        else:
+            avgCount = avgCount + 1
+            avgPower = avgPower + parameter['powerD2DList'][i]
+    
+    #d2d的干擾鄰居都被assign或沒有干擾鄰居
     if count == 0:
         interference = 0
     else:
-        for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
-            if parameter['powerD2DList'][i] == 0:
-                interference = interference + ((parameter['Pmax'] * parameter['numRB']) * (parameter['Pmax'] / (count*parameter['numRB'])) * parameter['g_dij'][i][tx][rx][rb])
+        if avgCount == 0:
+            interference = ((parameter['Pmax'] / (count * parameter['numRB'])) * parameter['g_dij'][i][tx][rx][rb])
+        else:
+            avgPower = avgPower / avgCount
+            for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
+                if parameter['powerD2DList'][i] == 0:
+                    interference = interference + (avgPower * parameter['g_dij'][i][tx][rx][rb])
     return interference
 
 #計算cue在每個rb上的干擾

@@ -15,7 +15,8 @@ def UplinkCUE(**parameter):
                 #以CUE為圓心，BS為半徑，判斷D2D Rx是否在圓形範圍裡，表示rx會被cue干擾
                 if cue in parameter['omnidirectCUE'] and parameter['d_c2b'][cue][0] >= parameter['d_c2d'][cue][d2d][rx] and d2d not in t_c2d[cue]:
                     i_rx['cue'].append(cue)
-                    t_c2d[cue].append(d2d)
+                    if d2d not in t_c2d[cue]:
+                        t_c2d[cue].append(d2d)
                 #以CUE和BS兩點,判斷D2D Rx是否在矩形範圍裡
                 elif cue in parameter['directCUE']:
                     #先求出CUE與BS的方位角
@@ -25,7 +26,8 @@ def UplinkCUE(**parameter):
                     #判斷D2D Rx(p點)是否在矩形的4個頂點(p1,p2,p3,p4)內
                     if tool.IsPointInMatrix(p1, p2, p3, p4, p):
                         i_rx['cue'].append(cue)
-                        t_c2d[cue].append(d2d)
+                        if d2d not in t_c2d[cue]:
+                            t_c2d[cue].append(d2d)
             i_rx_list.update(i_rx)
             i_d2d_list.append(i_rx_list)
         i_d2d_rx.append(i_d2d_list)
@@ -46,7 +48,8 @@ def DownlinkBS(**parameter):
             for beam in parameter['beamPoint']:
                 if tool.IsPointInSector(beam, parameter['rx_point'][d2d][rx]) and d2d not in t_c2d[0]:
                     i_rx['cue'].append(0) #rx有在beam波束裡
-                    t_c2d[0].append(d2d)
+                    if d2d not in t_c2d[0]:
+                        t_c2d[0].append(d2d)
             i_rx_list.update(i_rx)
             i_d2d_list.append(i_rx_list)
         i_d2d_rx.append(i_d2d_list)
@@ -65,12 +68,12 @@ def Cell_in_OmniD2D(**parameter):
                 #cue會被d2d tx干擾
                 if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell in parameter['candicateCUE'] and cell not in t_d2c[d2d]:
                     i_c.append(d2d)
-                    t_d2c.append(cell)
+                    t_d2c[d2d].append(cell)
 
             else:
                 if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_d2c'][d2d][cell] and d2d not in i_c and cell not in t_d2c[d2d]:
                     i_c.append(d2d)
-                    t_d2c.append(cell)
+                    t_d2c[d2d].append(cell)
         i_d2c.append(i_c)
     parameter.update({'i_d2c' : i_d2c})
     parameter.update({'t_d2c' : t_d2c})

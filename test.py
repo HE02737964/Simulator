@@ -9,6 +9,7 @@ import proposed
 import method
 import juad
 import gcrs
+import greedy
 import time
 import sys
 
@@ -159,36 +160,36 @@ for currentTime in range(0,1):
 
     
     #proposed
-    method_ul = sys_parameter_ul.copy()
-    simu_end = time.time()
-    meth_start = time.time()
-    method_ul = method.initial_parameter(**method_ul)
-    method_ul = method.phase1(**method_ul)
-    for i in range(method_ul['numD2D']):
-        if method_ul['powerD2DList'][i] != 0:
-            t_m = t_m + data_d2d_ul[i]
-    p_assign = p_assign + method_ul['numAssignment']
-    meth_end = time.time()
+    # method_ul = sys_parameter_ul.copy()
+    # simu_end = time.time()
+    # meth_start = time.time()
+    # method_ul = method.initial_parameter(**method_ul)
+    # method_ul = method.phase1(**method_ul)
+    # for i in range(method_ul['numD2D']):
+    #     if method_ul['powerD2DList'][i] != 0:
+    #         t_m = t_m + data_d2d_ul[i]
+    # p_assign = p_assign + method_ul['numAssignment']
+    # meth_end = time.time()
 
     #juad
-    sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
-    sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
+    # sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
+    # sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
     
-    assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
-    assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
+    # assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
+    # assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
 
-    for i in range(len(assignmentCUE)):
-        d2d = assignmentD2D[i]
-        cue = assignmentCUE[i]
-        if sys_parameter_ul['powerCUEList'][d2d][cue] != 0 and sys_parameter_ul['powerD2DList'][d2d][cue] != 0:
-            # print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
-            # print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
-            # print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
-            # print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
-            # print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
-            # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
-            # print()
-            juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][d2d][cue]
+    # for i in range(len(assignmentCUE)):
+    #     d2d = assignmentD2D[i]
+    #     cue = assignmentCUE[i]
+    #     if sys_parameter_ul['powerCUEList'][d2d][cue] != 0 and sys_parameter_ul['powerD2DList'][d2d][cue] != 0:
+    #         # print('cal powr cue', assignmentCUE[i], sys_parameter_ul['powerCUEList'][i][assignmentCUE[i]])
+    #         # print('min sinr cue', assignmentCUE[i], sys_parameter_ul['minCUEsinr'][assignmentCUE[i]])
+    #         # print('cal sinr cue', assignmentCUE[i], sys_parameter_ul['sinrCUEList'][i][assignmentCUE[i]])
+    #         # print('cal powr d2d', i, sys_parameter_ul['powerD2DList'][i][assignmentCUE[i]])
+    #         # print('min sinr d2d', i,  sys_parameter_ul['minD2Dsinr'][i])
+    #         # print('cal sinr d2d', i, sys_parameter_ul['sinrD2DList'][i][assignmentCUE[i]])
+    #         # print()
+    #         juad_throughput = juad_throughput + sys_parameter_ul['weight_d2d'][d2d][cue]
 
     
     #gcrs
@@ -203,6 +204,17 @@ for currentTime in range(0,1):
     # gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
     # g_assign = g_assign + gcrs_ul['numAssignment']
     # gcrs_end = time.time()
+
+    #greedy
+    greedy_ul = sys_parameter_ul.copy()
+    greedy_ul = greedy.greedy(**greedy_ul)
+    print(greedy_ul['priority_sort_index'])
+    print('nStartD2D',greedy_ul['nStartD2D'])
+    print('sum nstartD2D',len(greedy_ul['nStartD2D']))
+    for i in range(greedy_ul['numD2D']):
+        print(greedy_ul['assignmentD2D'][i])
+        print('d2d',i,greedy_ul['powerD2DList'][i])
+    print(greedy_ul['powerD2DList'])
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 

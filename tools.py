@@ -188,7 +188,7 @@ class Tool:
         tbs = self.TBS()
         for rb in range(numRB):     #用較少RB,較高的TBS index
             for index in tbs:
-                if index == "26":
+                if index == "26A":
                     break
                 if tbs[index][rb] >= data:
                     return int(index), rb+1

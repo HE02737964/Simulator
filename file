@@ -23969,3 +23969,111 @@ gcrs   dl吞吐量 580327969.0 bits
 gcrs   總吞吐量 851442217.0 bits
 gcrs   平均吞吐 170.2884434 Mbps
 gcrs   平均排程 11.9955 個/輪
+模擬時間        100 毫秒
+D2D總吞吐量     1429.63337 = 71328454 + 71634883 Mbps
+Method 執行時間 62.669296979904175 秒
+Method ul吞吐量 24386409 bits
+Method dl吞吐量 30261906 bits
+Method 總吞吐量 54648315 bits
+Method 平均吞吐 546.48315 Mbps
+Method 平均排程 27.634999999999998 個/輪
+Method numD2D 75 個
+模擬時間        100 毫秒
+D2D總吞吐量     1431.36857 = 71500158 + 71636699 Mbps
+Method 執行時間 211.4877028465271 秒
+Method ul吞吐量 3378682 bits
+Method dl吞吐量 5494560 bits
+Method 總吞吐量 8873242 bits
+Method 平均吞吐 88.73241999999999 Mbps
+Method 平均排程 4.925 個/輪
+Method numD2D 75 個
+模擬時間        100 毫秒
+D2D總吞吐量     1421.73778 = 71057288 + 71116490 Mbps
+Method 執行時間 67.41293096542358 秒
+Method ul吞吐量 26903955 bits
+Method dl吞吐量 30178066 bits
+Method 總吞吐量 57082021 bits
+Method 平均吞吐 570.8202100000001 Mbps
+Method 平均排程 28.89 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1373.932 = 696656 + 677276 Mbps
+Method 執行時間 1.3640148639678955 秒
+Method ul吞吐量 100993 bits
+Method dl吞吐量 70368 bits
+Method 總吞吐量 171361 bits
+Method 平均吞吐 171.361 Mbps
+Method 平均排程 11.5 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1473.621 = 748992 + 724629 Mbps
+Method 執行時間 1.6053428649902344 秒
+Method ul吞吐量 53712 bits
+Method dl吞吐量 59313 bits
+Method 總吞吐量 113025 bits
+Method 平均吞吐 113.025 Mbps
+Method 平均排程 9.0 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1472.896 = 700982 + 771914 Mbps
+Method 執行時間 0.664794921875 秒
+Method ul吞吐量 158592 bits
+Method dl吞吐量 322733 bits
+Method 總吞吐量 481325 bits
+Method 平均吞吐 481.32500000000005 Mbps
+Method 平均排程 26.0 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1462.578 = 706515 + 756063 Mbps
+Method 執行時間 0.695655107498169 秒
+Method ul吞吐量 245289 bits
+Method dl吞吐量 295377 bits
+Method 總吞吐量 540666 bits
+Method 平均吞吐 540.6659999999999 Mbps
+Method 平均排程 30.5 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1323.947 = 716541 + 607406 Mbps
+Method 執行時間 0.765885591506958 秒
+Method ul吞吐量 197235 bits
+Method dl吞吐量 242370 bits
+Method 總吞吐量 439605 bits
+Method 平均吞吐 439.605 Mbps
+Method 平均排程 28.0 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1480.495 = 731489 + 749006 Mbps
+Method 執行時間 0.7383201122283936 秒
+Method ul吞吐量 205337 bits
+Method dl吞吐量 324614 bits
+Method 總吞吐量 529951 bits
+Method 平均吞吐 529.951 Mbps
+Method 平均排程 28.0 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1373.291 = 661099 + 712192 Mbps
+Method 執行時間 0.7031905651092529 秒
+Method ul吞吐量 239265 bits
+Method dl吞吐量 277785 bits
+Method 總吞吐量 517050 bits
+Method 平均吞吐 517.05 Mbps
+Method 平均排程 31.0 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1391.119 = 694954 + 696165 Mbps
+Method 執行時間 0.7276809215545654 秒
+Method ul吞吐量 276542 bits
+Method dl吞吐量 341497 bits
+Method 總吞吐量 618039 bits
+Method 平均吞吐 618.039 Mbps
+Method 平均排程 34.5 個/輪
+Method numD2D 75 個
+模擬時間        1 毫秒
+D2D總吞吐量     1461.046 = 664242 + 796804 Mbps
+Method 執行時間 0.840364933013916 秒
+Method ul吞吐量 198940 bits
+Method dl吞吐量 357103 bits
+Method 總吞吐量 556043 bits
+Method 平均吞吐 556.043 Mbps
+Method 平均排程 29.0 個/輪
+Method numD2D 75 個
