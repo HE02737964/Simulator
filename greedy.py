@@ -167,4 +167,5 @@ def greedy(**parameter):
             if sinr < parameter['minD2Dsinr'][d2d]:
                 print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
     print('throughput',parameter['throughput'])
+    print('power list greedy',parameter['powerD2DList'])
     return parameter
