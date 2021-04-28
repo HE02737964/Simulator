@@ -27,7 +27,11 @@ def phase1(**parameter):
 
     print(parameter['powerCUEList'])
     print(parameter['powerD2DList'])
-    
+    for d2d in range(parameter['numD2D']):
+        print('d2d gain:',parameter['g_d2d'][d2d])
+        for j in range(parameter['numD2D']):
+            if d2d != j and d2d in parameter['i_d2d'][j]['d2d']:
+                print('d2d',d2d,'to d2d',j,'gain:',parameter['g_dij'][d2d][j])
     #找出d2d所有可用的RB以及所需sinr
     for d2d in range(parameter['numD2D']):
         #得到d2d能使用的rb list
@@ -280,7 +284,7 @@ def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list,
         p = path.copy()
         longestPath.append(p)
         path.pop()
-        vis[node] = False
+        # vis[node] = False
     return longestPath
 
 #得到d2d能使用的rb
@@ -310,6 +314,7 @@ def cal_need_power(d2d, **parameter):
             p3_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference)) / parameter['g_d2d'][d2d][rx][rb]
             print('d2d',d2d,'p3 need power rx',rx,'in rb',rb,'= ',p3_need_power[rx][rb])
             print('calculation : (min sinr',parameter['minD2Dsinr'][d2d] ,'* (N0', parameter['N0'] ,'+ interference',interference, ')) / gain', parameter['g_d2d'][d2d][rx][rb])
+            print('type',type(p3_need_power[rx][rb]))
             p2_need_power[rx][rb] = (parameter['minD2Dsinr'][d2d] * (parameter['N0'] + interference + virtual_interference)) / parameter['g_d2d'][d2d][rx][rb]
             print('d2d',d2d,'p2 virt power rx',rx,'in rb',rb,'= ',p2_need_power[rx][rb])
             print('calculation : (min sinr',parameter['minD2Dsinr'][d2d] ,'* (N0', parameter['N0'] ,'+ interference',interference, '+ virtual interference',virtual_interference, ')) / gain', parameter['g_d2d'][d2d][rx][rb])

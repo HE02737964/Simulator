@@ -38,3 +38,171 @@ gcrs   執行時間 95.08977270126343 秒
 gcrs   總吞吐量 509290.0 bits
 gcrs   平均吞吐 50.929 Mbps
 gcrs   平均排程 3.6 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1366.367 Mbps
+
+Method 執行時間 1.9667332172393799 秒
+Method 總吞吐量 738491 bits
+Method 平均吞吐 738.491 Mbps
+Method 平均排程 32.5 個/輪
+
+juad   執行時間 116.40739941596985 秒
+juad   總吞吐量 4688.0 bits
+juad   平均吞吐 4.688 Mbps
+juad   平均排程 4.0 個/輪
+
+gcrs   執行時間 63.582196950912476 秒
+gcrs   總吞吐量 182490.0 bits
+gcrs   平均吞吐 182.49 Mbps
+gcrs   平均排程 11.5 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 169162 bits
+gred   平均吞吐 169.162 Mbps
+gred   平均排程 23.5 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1431.439 Mbps
+
+Method 執行時間 2.192547082901001 秒
+Method 總吞吐量 827967 bits
+Method 平均吞吐 1655.934 Mbps
+Method 平均排程 30.5 個/輪
+
+juad   執行時間 33.77005219459534 秒
+juad   總吞吐量 2104.0 bits
+juad   平均吞吐 4.208 Mbps
+juad   平均排程 2.0 個/輪
+
+gcrs   執行時間 57.07330393791199 秒
+gcrs   總吞吐量 24141.0 bits
+gcrs   平均吞吐 48.282 Mbps
+gcrs   平均排程 2.0 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 147056 bits
+gred   平均吞吐 294.112 Mbps
+gred   平均排程 19.5 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1335.977 Mbps
+
+Method 執行時間 2.4284489154815674 秒
+Method 總吞吐量 622265 bits
+Method 平均吞吐 1244.53 Mbps
+Method 平均排程 25.5 個/輪
+
+juad   執行時間 35.693026065826416 秒
+juad   總吞吐量 2648.0 bits
+juad   平均吞吐 5.296 Mbps
+juad   平均排程 3.5 個/輪
+
+gcrs   執行時間 58.133498191833496 秒
+gcrs   總吞吐量 162103.0 bits
+gcrs   平均吞吐 324.206 Mbps
+gcrs   平均排程 14.5 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 102654 bits
+gred   平均吞吐 205.308 Mbps
+gred   平均排程 14.5 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1486.03 Mbps
+
+Method 執行時間 2.129430055618286 秒
+Method 總吞吐量 875842 bits
+Method 平均吞吐 437.921 Mbps
+Method 平均排程 31.0 個/輪
+
+juad   執行時間 30.98445701599121 秒
+juad   總吞吐量 0 bits
+juad   平均吞吐 0.0 Mbps
+juad   平均排程 0.0 個/輪
+
+gcrs   執行時間 66.36259579658508 秒
+gcrs   總吞吐量 16526.0 bits
+gcrs   平均吞吐 8.263 Mbps
+gcrs   平均排程 3.0 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 210050 bits
+gred   平均吞吐 105.025 Mbps
+gred   平均排程 23.0 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1389.847 Mbps
+
+Method 執行時間 1.8379559516906738 秒
+Method 總吞吐量 762009 bits
+Method 平均吞吐 381.0045 Mbps
+Method 平均排程 30.0 個/輪
+
+juad   執行時間 30.96624994277954 秒
+juad   總吞吐量 4400.0 bits
+juad   平均吞吐 2.2 Mbps
+juad   平均排程 3.0 個/輪
+
+gcrs   執行時間 65.04859328269958 秒
+gcrs   總吞吐量 213476.0 bits
+gcrs   平均吞吐 106.738 Mbps
+gcrs   平均排程 15.0 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 240023 bits
+gred   平均吞吐 120.0115 Mbps
+gred   平均排程 27.0 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1399.15 Mbps
+
+Method 執行時間 1.8240811824798584 秒
+Method 總吞吐量 741558 bits
+Method 平均吞吐 370.779 Mbps
+Method 平均排程 31.5 個/輪
+
+juad   執行時間 35.61042261123657 秒
+juad   總吞吐量 376.0 bits
+juad   平均吞吐 0.188 Mbps
+juad   平均排程 1.5 個/輪
+
+gcrs   執行時間 67.03780102729797 秒
+gcrs   總吞吐量 197373.0 bits
+gcrs   平均吞吐 98.6865 Mbps
+gcrs   平均排程 12.5 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 161516 bits
+gred   平均吞吐 80.758 Mbps
+gred   平均排程 20.0 個/輪
+
+模擬時間        0.002 秒
+變數 numD2D = 75
+D2D總吞吐量     1480.98 Mbps
+
+Method 執行時間 2.5942611694335938 秒
+Method 總吞吐量 742787 bits
+Method 平均吞吐 742.787 Mbps
+Method 平均排程 30.0 個/輪
+
+juad   執行時間 194.90277981758118 秒
+juad   總吞吐量 2736.0 bits
+juad   平均吞吐 2.736 Mbps
+juad   平均排程 4.0 個/輪
+
+gcrs   執行時間 56.790282011032104 秒
+gcrs   總吞吐量 182205.0 bits
+gcrs   平均吞吐 182.205 Mbps
+gcrs   平均排程 16.0 個/輪
+
+gred   執行時間 0 秒
+gred   總吞吐量 203650 bits
+gred   平均吞吐 203.65 Mbps
+gred   平均排程 23.0 個/輪

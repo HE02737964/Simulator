@@ -7,6 +7,7 @@ import initial_info
 import method
 import juad
 import gcrs
+import greedy
 
 # parameter = initial_info.get_initial(sys.argv)
 # UL = initial_info.initial_ul(**parameter)
@@ -188,17 +189,19 @@ def run_gcrs_dl(simu_time):
 def merge(args):
     simu_time = int(args)
     total = 0
-    m_throughput = j_throughput = g_throughput = 0
-    m_assign = j_assign = g_assign = 0
+    m_throughput = j_throughput = g_throughput = t_throughput = 0
+    m_assign = j_assign = g_assign = t_assign = 0
     m_time = j_time = g_time = 0
 
     m_ul = generator.initial_ul()
     j_ul = generator.initial_ul()
     g_ul = generator.initial_ul()
+    t_ul = generator.initial_ul()
 
     m_dl = generator.initial_dl()
     j_dl = generator.initial_dl()
     g_dl = generator.initial_dl()
+    t_dl = generator.initial_dl()
 
     for cTime in range(1, simu_time+1):
         sys.stdout.write("\r")
@@ -213,18 +216,23 @@ def merge(args):
         m_ul = {**m_ul, **data_ul}
         j_ul = {**j_ul, **data_ul}
         g_ul = {**g_ul, **data_ul}
+        t_ul = {**t_ul, **data_ul}
 
         m_dl = {**m_dl, **data_dl}
         j_dl = {**j_dl, **data_dl}
         g_dl = {**g_dl, **data_dl}
+        t_dl = {**t_dl, **data_dl}
+
         sys.stdout = open('total_debug', 'w')
         m_ul = generator.data_to_alloc_ul(**m_ul)
         j_ul = generator.data_to_alloc_ul(**j_ul)
         g_ul = generator.data_to_alloc_ul(**g_ul)
+        t_ul = generator.data_to_alloc_ul(**t_ul)
 
         m_dl = generator.data_to_alloc_dl(**m_dl)
         j_dl = generator.data_to_alloc_dl(**j_dl)
         g_dl = generator.data_to_alloc_dl(**g_dl)
+        t_dl = generator.data_to_alloc_dl(**t_dl)
 
 
 
@@ -258,6 +266,13 @@ def merge(args):
         g_throughput = g_throughput + np.sum(g_ul['d2d_total_throughput'])
         g_time = g_time + (gcrs_end - gcrs_start)
 
+        #greedy ul
+        t_ul = greedy.greedy(**t_ul)
+        for i in range(t_ul['numD2D']):
+            if m_ul['powerD2DList'][i] != 0:
+                m_throughput = m_throughput + m_ul['data_d2d'][i]
+        t_assign = t_assign + (t_ul['numD2D'] - len(t_ul['nStartD2D']))
+
         #meth dl
         meth_start = time.time()
         m_dl = method.phase1(**m_dl)
@@ -287,14 +302,22 @@ def merge(args):
         g_throughput = g_throughput + np.sum(g_dl['d2d_total_throughput'])
         g_time = g_time + (gcrs_end - gcrs_start)
 
+        #greedy dl
+        t_dl = greedy.greedy(**t_dl)
+        for i in range(t_dl['numD2D']):
+            if t_dl['powerD2DList'][i] != 0:
+                t_throughput = t_throughput + t_dl['data_d2d'][i]
+        t_assign = t_assign + (t_dl['numD2D'] - len(t_dl['nStartD2D']))
 
     m_assign = ((m_ul['numAssignment'] + m_dl['numAssignment']) / (simu_time * 2))
     j_assign = j_assign / (simu_time * 2)
     g_assign = ((g_ul['numAssignment'] + g_dl['numAssignment']) / (simu_time * 2))
+    t_assign = t_assign / (simu_time * 2)
 
     m = (((m_throughput / simu_time) * 1000) / 1e6)
     j = (((j_throughput / simu_time) * 1000) / 1e6)
     g = (((g_throughput / simu_time) * 1000) / 1e6)
+    t = (((t_throughput / simu_time) * 1000) / 1e6)
 
     Total = (((total/simu_time)*1000)/1e6)
     f = open("file_merge",'a')
@@ -320,6 +343,12 @@ def merge(args):
     f.write("gcrs   總吞吐量 {} bits\n".format(g_throughput))
     f.write("gcrs   平均吞吐 {} Mbps\n".format(g))
     f.write("gcrs   平均排程 {} 個/輪\n".format(g_assign))
+
+    f.write("\n")
+    f.write("gred   執行時間 {} 秒\n".format('0'))
+    f.write("gred   總吞吐量 {} bits\n".format(t_throughput))
+    f.write("gred   平均吞吐 {} Mbps\n".format(t))
+    f.write("gred   平均排程 {} 個/輪\n".format(t_assign))
 
     sys.stdout.close()
 
