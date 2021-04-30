@@ -291,18 +291,18 @@ def throughput_rasing(**parameter):
             c_rx = cue
         
         subscript = []
-        if parameter['powerCUEList'][assignmentD2D[index]][c_tx] != 0:
+        if parameter['powerCUEList'][assignmentD2D[index]][cue] != 0:
             for d2d in range(parameter['numD2D']):
                 flag = False
                 #d2d不在配對列表裡
-                if d2d not in parameter['matching_pair'][c_tx] and d2d not in assignmentD2D:
+                if d2d not in parameter['matching_pair'][cue] and d2d not in assignmentD2D:
                     flag = True
-                    for i in parameter['matching_pair'][c_tx]:
+                    for i in parameter['matching_pair'][cue]:
                         #d2d與配對列表裡的裝置都不能互相干擾
                         if d2d in parameter['i_d2d'][i]['d2d'] or i in parameter['i_d2d'][i]['d2d']:
                             flag = False
-                    if flag:
-                        subscript.append(d2d)
+                if flag:
+                    subscript.append(d2d)
 
         for d2d in subscript:
             parameter = gp_method(cue, d2d, **parameter)
@@ -322,6 +322,7 @@ def maximum_matching(**parameter):
     
     #Assignment D2D RB
     juad_throughput = 0
+    print(parameter['data_d2d'])
     assignmentD2D = [i[0] for i in parameter['matching_index']]
     assignmentCUE = [i[1] for i in parameter['matching_index']]
     for index in range(len(assignmentCUE)):
@@ -337,7 +338,6 @@ def maximum_matching(**parameter):
             juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
     print('juad_throughput',juad_throughput)
     
-    t = 0
     iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
     print('iteration',iteration)
     for i in range(iteration):
@@ -368,11 +368,13 @@ def maximum_matching(**parameter):
                 for d2d in parameter['matching_pair'][cue]:
                     print('d2d th',parameter['weight_d2d'][d2d][cue])
                     print('d2d po',parameter['powerD2DList'][d2d][cue])
-                    t = t + parameter['weight_d2d'][d2d][cue]
+                    juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
                     print()
 
-    print('th',t)
+    print('juad_throughput',juad_throughput)
     print('par',parameter['matching_pair'])
-    for i in range(75):
-        print(parameter['assignmentD2D'][i])
+    parameter.update({'throughput' : juad_throughput})
+    
+    # for i in range(75):
+    #     print(parameter['assignmentD2D'][i])
     return parameter

@@ -40,9 +40,9 @@ def get_d2d_use_rb(d2d, **parameter):
     bitmap = np.zeros(parameter['numRB'], dtype=int)
 
     #cue干擾d2d
-    for c_tx in range(parameter['numCellTx']):
-        if d2d in parameter['t_c2d'][c_tx]:
-            cueUseRBList = np.logical_or(cueUseRBList, parameter['assignmentTxCell'][c_tx])
+    # for c_tx in range(parameter['numCellTx']):
+    #     if d2d in parameter['t_c2d'][c_tx]:
+    #         cueUseRBList = np.logical_or(cueUseRBList, parameter['assignmentTxCell'][c_tx])
     #d2d干擾cue
     for c_rx in range(parameter['numCellRx']):
         if c_rx in parameter['t_d2c'][d2d]:
@@ -128,6 +128,7 @@ def cal_need_power(tx, **parameter):
 def greedy(**parameter):
     tool = tools.Tool()
     parameter = initial_parameter(**parameter)
+    print('interference relationship',parameter['i_d2d'])
 
     d2d_need_rb = [0 for i in range(parameter['numD2D'])]
 
