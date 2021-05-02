@@ -171,7 +171,6 @@ for currentTime in range(0,1):
     # # meth_end = time.time()
 
     #juad
-    sys_parameter_ul = juad.initial_parameter(**sys_parameter_ul)
     sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
     
     assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
@@ -259,7 +258,6 @@ for currentTime in range(0,1):
     # gcrt = gcrt + (gcrs_end - gcrs_start)
 
     #juad
-    sys_parameter_dl = juad.initial_parameter(**sys_parameter_dl)
     sys_parameter_dl = juad.maximum_matching(**sys_parameter_dl)
 
     assignmentD2D = [i[0] for i in sys_parameter_dl['matching_index']]

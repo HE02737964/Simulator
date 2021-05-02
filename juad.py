@@ -18,6 +18,8 @@ def initial_parameter(**parameter):
     assignmentD2D = np.zeros((parameter['numD2D'], parameter['numRB']))
 
     matching_pair = [[] for i in range(parameter['numCUE'])]
+
+    data = np.copy(parameter['data_d2d'])
     
     parameter.update({'weight_matrix' : weight_matrix})
     parameter.update({'weight_cue' : weight_cue})
@@ -28,6 +30,7 @@ def initial_parameter(**parameter):
     parameter.update({'sinrD2DList' : sinrD2DList})
     parameter.update({'assignmentD2D' : assignmentD2D})
     parameter.update({'matching_pair' : matching_pair})
+    parameter.update({'data' : data})
     return parameter
 
 #一個CUE和D2D的計算
@@ -57,10 +60,6 @@ def gp_method(cue, d2d, **parameter):
     if d2d in parameter['i_d2c'][c_rx]:
         flag_d2d = True
     
-    #cue和d2d所需的sinr值
-    s_cue = parameter['minCUEsinr'][cue]
-    s_d2d = parameter['minD2Dsinr'][d2d]
-    
     #cue和d2d所使用的RB總數量
     if parameter['numCellRx'] == 1:
         numCUERB = np.sum(parameter['assignmentTxCell'][cue], dtype=int)
@@ -68,11 +67,25 @@ def gp_method(cue, d2d, **parameter):
     else:
         numCUERB = np.sum(parameter['assignmentRxCell'][cue], dtype=int)
         numD2DRB = np.sum(parameter['assignmentRxCell'][cue], dtype=int)
-    
+
+    #cue和d2d所需的sinr值
+    s_cue = parameter['minCUEsinr'][cue]
+    # s_d2d = parameter['minD2Dsinr'][d2d]
+    s_d2d = tool.data_sinr_mapping(parameter['data'][d2d], numD2DRB)
+    parameter['minD2Dsinr'][d2d] = s_d2d
+
     #cue和d2d所需的資料量(Throughput)
     r_cue = parameter['data_cue'][cue]
-    # r_d2d = parameter['data_d2d'][d2d] #思考是否需要將其轉換為可使用RB的數量中所需的資料量
-    r_d2d = tool.sinr_throughput_mapping(convert.mW_to_dB(s_d2d), numD2DRB)
+    r_d2d = parameter['data'][d2d]
+    if r_d2d == 0:
+        parameter['powerCUEList'][d2d][cue] = 0
+        parameter['powerD2DList'][d2d][cue] = 0
+        
+        parameter['weight_matrix'][d2d][cue] = 0
+        parameter['weight_cue'][d2d][cue] = 0
+        parameter['weight_d2d'][d2d][cue] = 0
+        return parameter
+    # r_d2d = tool.sinr_throughput_mapping(convert.mW_to_dB(s_d2d), numD2DRB)
 
     #取d2d - cue有干擾的d2drx中最差的gain
     g_d2d = 100
@@ -283,19 +296,12 @@ def throughput_rasing(**parameter):
 
     for index in range(len(assignmentCUE)):
         cue = assignmentCUE[index]
-        c_tx = 0
-        c_rx = 0
-        if parameter['numCellRx'] == 1:
-            c_tx = cue
-        else:
-            c_rx = cue
-        
         subscript = []
         if parameter['powerCUEList'][assignmentD2D[index]][cue] != 0:
             for d2d in range(parameter['numD2D']):
                 flag = False
                 #d2d不在配對列表裡
-                if d2d not in parameter['matching_pair'][cue] and d2d not in assignmentD2D:
+                if d2d not in parameter['matching_pair'][cue] :
                     flag = True
                     for i in parameter['matching_pair'][cue]:
                         #d2d與配對列表裡的裝置都不能互相干擾
@@ -332,10 +338,11 @@ def maximum_matching(**parameter):
             assignRB = parameter['assignmentTxCell'][cue].copy()
         else:
             assignRB = parameter['assignmentRxCell'][cue].copy()
-        parameter['assignmentD2D'][d2d] = assignRB
-        parameter['matching_pair'][cue].append(d2d)
         if parameter['powerCUEList'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
+            parameter['assignmentD2D'][d2d] = assignRB
+            parameter['matching_pair'][cue].append(d2d)
             juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
+            parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
     print('juad_throughput',juad_throughput)
     
     iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
@@ -343,38 +350,30 @@ def maximum_matching(**parameter):
     for i in range(iteration):
         parameter = throughput_rasing(**parameter)
         
-        assignmentD2D = [i[0] for i in parameter['matching_index']]
-        assignmentCUE = [i[1] for i in parameter['matching_index']]
-        for index in range(len(assignmentCUE)):
-            d2d = assignmentD2D[index]
-            cue = assignmentCUE[index]
-            if parameter['numCellRx'] == 1:
-                assignRB = parameter['assignmentTxCell'][cue].copy()
-            else:
-                assignRB = parameter['assignmentRxCell'][cue].copy()
-            parameter['assignmentD2D'][d2d] = assignRB
-            parameter['matching_pair'][cue].append(d2d)
-        print('mathcing pair',parameter['matching_pair'])
-        # print(parameter['weight_d2d'])
-        
-        
         assignment1D2D = [i[0] for i in parameter['matching_index']]
         assignment1CUE = [i[1] for i in parameter['matching_index']]
         for i in range(len(assignmentCUE)):
             d2d = assignment1D2D[i]
             cue = assignment1CUE[i]
-            if parameter['powerCUEList'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
-                print('mathcing ppair',i,parameter['matching_pair'][cue])
-                for d2d in parameter['matching_pair'][cue]:
-                    print('d2d th',parameter['weight_d2d'][d2d][cue])
-                    print('d2d po',parameter['powerD2DList'][d2d][cue])
-                    juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
-                    print()
+            if parameter['numCellRx'] == 1:
+                assignRB = parameter['assignmentTxCell'][cue].copy()
+            else:
+                assignRB = parameter['assignmentRxCell'][cue].copy()
 
-    print('juad_throughput',juad_throughput)
+            if parameter['powerCUEList'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
+                parameter['assignmentD2D'][d2d] = assignRB
+                parameter['matching_pair'][cue].append(d2d)
+                print('mathcing pair',cue,parameter['matching_pair'][cue])
+                # for d2d in parameter['matching_pair'][cue]:
+                print('d2d th',parameter['weight_d2d'][d2d][cue])
+                print('d2d po',parameter['powerD2DList'][d2d][cue])
+                juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
+                parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
+
+    print('juad:throughput',juad_throughput)
     print('par',parameter['matching_pair'])
     parameter.update({'throughput' : juad_throughput})
-    
-    # for i in range(75):
-    #     print(parameter['assignmentD2D'][i])
+    print(parameter['data'])
+    print(parameter['data_d2d'])
+
     return parameter
