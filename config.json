@@ -2,10 +2,10 @@
 	"radius" : 500,
 	"numBS" : 1,
 	"numCUE" : 25,
-	"numD2D" : 75,
+	"numD2D" : 50,
 	"numRB" : 25,
 	"maxReciver" : 3,
-	"d2dDistance" : 100,
+	"d2dDistance" : 30,
 	"directCUE" : 50,
 	"directD2D" : 50,
 
@@ -16,8 +16,8 @@
 	"bw" : 180e3,
 	"N_dBm" : -174,
 	
-	"totalBeam" : 8,
-	"numScheduleBeam" : 3,
+	"totalBeam" : 1,
+	"numScheduleBeam" : 1,
 
 	"numD2DCluster" : 5,
 	"clusterRadius" : 100,

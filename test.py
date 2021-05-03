@@ -128,7 +128,7 @@ meth = 0
 gcrt = 0
 p_assign = 0
 g_assign = 0
-for currentTime in range(0,1):
+for currentTime in range(0,2):
     simu_start = time.time()
     
     beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])

@@ -345,7 +345,10 @@ def maximum_matching(**parameter):
             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
     print('juad_throughput',juad_throughput)
     
-    iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
+    if len(parameter['candicateCUE']):
+        iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
+    else:
+        iteration = 0
     print('iteration',iteration)
     for i in range(iteration):
         parameter = throughput_rasing(**parameter)
@@ -375,5 +378,14 @@ def maximum_matching(**parameter):
     parameter.update({'throughput' : juad_throughput})
     print(parameter['data'])
     print(parameter['data_d2d'])
+
+    for cue in range(len(parameter['matching_pair'])):
+        print(parameter['matching_pair'][cue])
+    
+    for d2d in range(parameter['numD2D']):
+        if parameter['assignmentD2D'][d2d].any():
+            print('d2d',d2d,parameter['assignmentD2D'][d2d])
+            parameter['numAssignment'] = parameter['numAssignment'] + 1
+    print(parameter['numAssignment'])
 
     return parameter

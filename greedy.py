@@ -162,6 +162,7 @@ def greedy(**parameter):
 
     for d2d in range(parameter['numD2D']):
         if parameter['powerD2DList'][d2d] != 0:
+            parameter['numAssignment'] = parameter['numAssignment'] + 1
             sinr = cal_d2d_sinr(d2d, **parameter)
             # print('need sinr',parameter['minD2Dsinr'][i])
             # print('cal d2d',i,sinr)
