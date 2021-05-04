@@ -62,7 +62,9 @@ def initial_parameter(**parameter):
     parameter.update({'throughput_cue' : throughput_cue})
     parameter.update({'throughput_d2d' : throughput_d2d})
     parameter.update({'d2d_total_throughput' : d2d_total_throughput})
+    parameter.update({'throughput' : 0})
     parameter.update({'powerD2DList' : powerD2DList})
+    parameter.update({'throughput' : 0})
     parameter.update({'delta' : delta})
     return parameter
 
@@ -138,7 +140,10 @@ def vertex_coloring(**parameter):
 
         #計算每個RB上的功率分配因子(delta)
         for rb in range(parameter['numRB']):
-            parameter['delta'][rb] = (1 / s*parameter['edge_rb'][rb])
+            if s*parameter['edge_rb'][rb] == 0:
+                parameter['delta'][rb] = 0
+            else:
+                parameter['delta'][rb] = (1 / s*parameter['edge_rb'][rb])
             # print('calculate rb',rb,'power factor',parameter['delta'][rb])
             #計算每個D2D在每個RB上的傳輸功率
             for d2d in range(parameter['numD2D']):
@@ -282,6 +287,7 @@ def check_some_value(**parameter):
             if d2d not in assignList:
                 assignList.append(d2d)
     parameter['numAssignment'] = parameter['numAssignment'] + len(assignList)
+    parameter['throughput'] = np.sum(parameter['d2d_total_throughput'])
     # print('d2d assign list',assignList)
     # print('rb use status',parameter['rb_use_status'])
     pwr = np.zeros(parameter['numD2D'])

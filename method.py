@@ -6,6 +6,7 @@ np.seterr(divide='ignore')
 def initial_parameter(**parameter):
     parameter.update({'powerD2DList' : np.zeros(parameter['numD2D'])})
     parameter.update({'nStartD2D' : np.asarray([])})
+    parameter.update({'throughput' : 0})
     parameter = cal_num_interfered_neighbor(**parameter)
     parameter = cal_priority(**parameter)
     parameter = create_no_cell_interference_graph(**parameter) #建沒有與Cell UE關聯的干擾圖
@@ -172,6 +173,7 @@ def phase1(**parameter):
     for d2d in range(parameter['numD2D']):
         if parameter['powerD2DList'][d2d] != 0:
             assign = assign + 1
+            parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
             sinr = cal_d2d_sinr(d2d, **parameter)
             print('d2d', d2d, 'pwr', parameter['powerD2DList'][d2d])
             print('d2d', d2d, 'sinr', sinr)

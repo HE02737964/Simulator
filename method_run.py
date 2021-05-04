@@ -92,7 +92,7 @@ def run_juad_ul(simu_time):
         assignmentCUE = [i[1] for i in juad_ul['matching_index']]
 
         for i in range(len(assignmentCUE)):
-            if juad_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and juad_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+            if juad_ul['powerCUE'][i][assignmentCUE[i]] != 0 and juad_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
                 j_assign = j_assign + 1
                 juad_throughput = juad_throughput + juad_ul['weight_d2d'][i][assignmentCUE[i]]
     
@@ -123,7 +123,7 @@ def run_juad_dl(simu_time):
         assignmentCUE = [i[1] for i in juad_dl['matching_index']]
 
         for i in range(len(assignmentCUE)):
-            if juad_dl['powerCUEList'][i][assignmentCUE[i]] != 0 and juad_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
+            if juad_dl['powerCUE'][i][assignmentCUE[i]] != 0 and juad_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
                 j_assign = j_assign + 1
                 juad_throughput = juad_throughput + juad_dl['weight_d2d'][i][assignmentCUE[i]]
     
@@ -254,7 +254,7 @@ def merge(args):
         assignmentD2D = [i[0] for i in j_ul['matching_index']]
         assignmentCUE = [i[1] for i in j_ul['matching_index']]
         for i in range(len(assignmentCUE)):
-            if j_ul['powerCUEList'][i][assignmentCUE[i]] != 0 and j_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
+            if j_ul['powerCUE'][i][assignmentCUE[i]] != 0 and j_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
                 j_assign = j_assign + 1
                 j_throughput = j_throughput + j_ul['weight_d2d'][i][assignmentCUE[i]]
         j_time = j_time + (juad_end - juad_start)
@@ -290,7 +290,7 @@ def merge(args):
         assignmentD2D = [i[0] for i in j_dl['matching_index']]
         assignmentCUE = [i[1] for i in j_dl['matching_index']]
         for i in range(len(assignmentCUE)):
-            if j_dl['powerCUEList'][i][assignmentCUE[i]] != 0 and j_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
+            if j_dl['powerCUE'][i][assignmentCUE[i]] != 0 and j_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
                 j_assign = j_assign + 1
                 j_throughput = j_throughput + j_dl['weight_d2d'][i][assignmentCUE[i]]
         j_time = j_time + (juad_end - juad_start)

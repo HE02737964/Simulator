@@ -98,6 +98,7 @@ class Initial:
             'omnidirectD2D' : omnidirectD2D,
 
             'numAssignment' : 0,
+            'total_throughput' : 0,
 
             'sectorPoint' : sectorPoint
         }

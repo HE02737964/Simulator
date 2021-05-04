@@ -99,7 +99,8 @@ environment = {
 
     'scheduleTimes' : scheduleTimes_ul,
 
-    'numAssignment' : 0
+    'numAssignment' : 0,
+    'total_throughput' : 0
 }
 
 gain_ul = {
@@ -122,13 +123,16 @@ total = 0
 t_m = 0
 juad_throughput = 0
 gcrs_throughput = 0
+gred_throughput = 0
 start = time.time()
 simu = 0
 meth = 0
 gcrt = 0
 p_assign = 0
+j_assign = 0
 g_assign = 0
-for currentTime in range(0,2):
+y_assign = 0
+for currentTime in range(0,1):
     simu_start = time.time()
     
     beamPoint = allocate.selectBeamSector(sectorPoint, currentTime, initial['numScheduleBeam'])
@@ -160,10 +164,13 @@ for currentTime in range(0,2):
 
     
     #proposed
-    # method_ul = sys_parameter_ul.copy()
+    method_ul = sys_parameter_ul.copy()
     # # simu_end = time.time()
     # # meth_start = time.time()
-    # method_ul = method.phase1(**method_ul)
+    method_ul = method.phase1(**method_ul)
+    p_assign = p_assign + method_ul['numAssignment']
+    t_m = t_m + method_ul['throughput']
+    
     # for i in range(method_ul['numD2D']):
     #     if method_ul['powerD2DList'][i] != 0:
     #         t_m = t_m + data_d2d_ul[i]
@@ -171,11 +178,14 @@ for currentTime in range(0,2):
     # # meth_end = time.time()
 
     #juad
-    sys_parameter_ul = juad.maximum_matching(**sys_parameter_ul)
+    juad_ul = sys_parameter_ul.copy()
+    juad_ul = juad.maximum_matching(**juad_ul)
     
-    assignmentD2D = [i[0] for i in sys_parameter_ul['matching_index']]
-    assignmentCUE = [i[1] for i in sys_parameter_ul['matching_index']]
-    juad_throughput = juad_throughput + sys_parameter_ul['throughput']
+    assignmentD2D = [i[0] for i in juad_ul['matching_index']]
+    assignmentCUE = [i[1] for i in juad_ul['matching_index']]
+    juad_throughput = juad_throughput + juad_ul['throughput']
+    j_assign = j_assign + juad_ul['numAssignment']
+    
     # for i in range(len(assignmentCUE)):
     #     d2d = assignmentD2D[i]
     #     cue = assignmentCUE[i]
@@ -193,22 +203,23 @@ for currentTime in range(0,2):
     #gcrs
 
     # sys.stdout = open('gcrs_debug', 'w')
-    # gcrs_ul = sys_parameter_ul.copy()
+    gcrs_ul = sys_parameter_ul.copy()
     # gcrs_start = time.time()
     # print('current time',time.ctime(time.time()))
-    # gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
+    gcrs_ul = gcrs.vertex_coloring(**gcrs_ul)
     # print('data_d2d',gcrs_ul['data_d2d'])
-    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_ul['d2d_total_throughput'])
-    # g_assign = g_assign + gcrs_ul['numAssignment']
+    gcrs_throughput = gcrs_throughput + gcrs_ul['throughput']
+    g_assign = g_assign + gcrs_ul['numAssignment']
+    
     # gcrs_end = time.time()
 
     #greedy
-    # greedy_ul = sys_parameter_ul.copy()
-    # greedy_ul = greedy.greedy(**greedy_ul)
+    greedy_ul = sys_parameter_ul.copy()
+    greedy_ul = greedy.greedy(**greedy_ul)
     # print(greedy_ul['priority_sort_index'])
-    # print('greedy throughput',greedy_ul['throughput'])
-    # assign = greedy_ul['numD2D'] - len(greedy_ul['nStartD2D'])
-    # print('greedy assign',assign)
+    gred_throughput = gred_throughput + greedy_ul['throughput']
+    y_assign = y_assign + (greedy_ul['numD2D'] - len(greedy_ul['nStartD2D']))
+    
     # print('nStartD2D',greedy_ul['nStartD2D'])
     # print('sum nstartD2D',len(greedy_ul['nStartD2D']))
     # for i in range(greedy_ul['numD2D']):
@@ -244,9 +255,10 @@ for currentTime in range(0,2):
     # # simu1_end = time.time()
     # # #proposed
     # meth1_start = time.time()
-    # method_dl = sys_parameter_dl.copy()
-    # method_dl = method.initial_parameter(**method_dl)
-    # method_dl = method.phase1(**method_dl)
+    method_dl = sys_parameter_dl.copy()
+    method_dl = method.phase1(**method_dl)
+    t_m = t_m + method_dl['throughput']
+    p_assign = p_assign + method_dl['numAssignment']
     # for i in range(method_dl['numD2D']):
     #     if method_dl['powerD2DList'][i] != 0:
     #         t_m = t_m + data_d2d_dl[i]
@@ -258,11 +270,14 @@ for currentTime in range(0,2):
     # gcrt = gcrt + (gcrs_end - gcrs_start)
 
     #juad
-    sys_parameter_dl = juad.maximum_matching(**sys_parameter_dl)
+    juad_dl = sys_parameter_dl.copy()
+    juad_dl = juad.maximum_matching(**juad_dl)
+    juad_throughput = juad_throughput + juad_dl['throughput']
+    j_assign = j_assign + juad_dl['numAssignment']
 
-    assignmentD2D = [i[0] for i in sys_parameter_dl['matching_index']]
-    assignmentCUE = [i[1] for i in sys_parameter_dl['matching_index']]
-    juad_throughput = juad_throughput + sys_parameter_dl['throughput']
+    # assignmentD2D = [i[0] for i in sys_parameter_dl['matching_index']]
+    # assignmentCUE = [i[1] for i in sys_parameter_dl['matching_index']]
+    # juad_throughput = juad_throughput + sys_parameter_dl['throughput']
     # for i in range(len(assignmentCUE)):
     #     if sys_parameter_dl['powerCUEList'][i][assignmentCUE[i]] != 0 and sys_parameter_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
     #         # print('min sinr cue', assignmentCUE[i], sys_parameter_dl['minCUEsinr'][assignmentCUE[i]])
@@ -273,17 +288,17 @@ for currentTime in range(0,2):
     #         juad_throughput = juad_throughput + sys_parameter_dl['weight_d2d'][i][assignmentCUE[i]]
 
     #gcrs
-    # gcrs_dl = sys_parameter_dl.copy()
-    # gcrs_dl = gcrs.initial_parameter(**gcrs_dl)
-    # gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
-    # g_assign = g_assign + gcrs_dl['numAssignment']
-    # gcrs_throughput = gcrs_throughput + np.sum(gcrs_dl['d2d_total_throughput'])
+    gcrs_dl = sys_parameter_dl.copy()
+    gcrs_dl = gcrs.vertex_coloring(**gcrs_dl)
+    g_assign = g_assign + gcrs_dl['numAssignment']
+    gcrs_throughput = gcrs_throughput + gcrs_dl['throughput']
 
     #greedy
-    # greedy_dl = sys_parameter_dl.copy()
-    # greedy_dl = greedy.greedy(**greedy_dl)
+    greedy_dl = sys_parameter_dl.copy()
+    greedy_dl = greedy.greedy(**greedy_dl)
     # print('greedy throughput',greedy_dl['throughput'])
-    # assign = greedy_dl['numD2D'] - len(greedy_dl['nStartD2D'])
+    gred_throughput = gred_throughput + greedy_dl['throughput']
+    y_assign = y_assign + (greedy_dl['numD2D'] - len(greedy_dl['nStartD2D']))
     # print('greedy assign',assign)
     # print('nStartD2D',greedy_dl['nStartD2D'])
     # print('sum nstartD2D',len(greedy_dl['nStartD2D']))
@@ -299,11 +314,19 @@ end = time.time()
 # print("方法的時間：%f 秒" % meth)
 # print("GCRS的時間：%f 秒" % gcrt)
 # print('Maximum throughput', total)
-print('prop_throughput',t_m)
-print('num assignment', p_assign)
-print('juad_throughput',juad_throughput)
-print('gcrs_throughput',gcrs_throughput)
-print('num assignment', g_assign)
+# print('prop_throughput',t_m)
+# print('num assignment', p_assign)
+# print('juad_throughput',juad_throughput)
+# print('gcrs_throughput',gcrs_throughput)
+# print('num assignment', g_assign)
+print('method throughput',t_m)
+print('method assign', p_assign)
+print('juad throughput',juad_throughput)
+print('juad assign', j_assign)
+print('gcrs throughput',gcrs_throughput)
+print('gcrs assign', g_assign)
+print('greedy throughput',gred_throughput)
+print('greedy assign',y_assign)
 # print(data_d2d_ul)
 # print(data_d2d_dl)
 sys.stdout.close()
