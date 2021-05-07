@@ -185,14 +185,14 @@ def phase1(**parameter):
             if parameter['minCUEsinr'][cue] != 0:
                 sinr = cal_cue_sinr(cue, **parameter)
                 print('cue', cue, 'pwr', parameter['powerCUEList'][cue])
-                print('cue', cue, 'sinr', sinr)
+                print('cue', cue, 'sinr', sinr[0])
                 print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
                 print()
         else:
             if parameter['minCUEsinr'][cue] != 0:
                 sinr = cal_cue_sinr(0, **parameter)
-                print('cue', 0, 'pwr', parameter['powerCUEList'][0])
-                print('cue', cue, 'sinr', sinr)
+                print('bs', 0, 'pwr', parameter['powerCUEList'][0])
+                print('cue', cue, 'sinr', sinr[cue])
                 print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
                 print()
 
@@ -204,6 +204,7 @@ def phase1(**parameter):
     print('len assignment', len(assignList))
     print('num d2d assign',assign)
     parameter['numAssignment'] = parameter['numAssignment'] + assign
+    parameter['total_throughput'] = parameter['total_throughput'] + parameter['throughput']
     print('numAssignment',parameter['numAssignment'])
     return parameter
 
@@ -293,11 +294,14 @@ def dfs(node, graph, not_visit_point, vis, path, longestPath, power_assign_list,
 def get_d2d_use_rb(d2d, **parameter):
     d2dUseRBList = np.ones(parameter['numRB'], dtype=int)
     cueUseRBList = np.zeros(parameter['numRB'], dtype=int)
+    print('i_d2c',parameter['i_d2c'])
     for cue in range(parameter['numCellRx']):
         if d2d in parameter['i_d2c'][cue]:
             #CUE有使用的RB做or運算，找出所有rx cue會被d2d干擾的RB
             cueUseRBList = np.logical_or(cueUseRBList, parameter['assignmentRxCell'][cue])
+            print('cue',cue, 'use rb',cueUseRBList)
     d2dUseRBList = d2dUseRBList - cueUseRBList
+    print('d2d',d2d,'use rb list',d2dUseRBList)
     parameter['d2d_use_rb_List'][d2d] = d2dUseRBList
     return parameter
 
@@ -394,6 +398,11 @@ def cal_virtual_interference(tx, rx, rb, **parameter):
     count = 0    #未被assign的干擾鄰居數量
     avgCount = 0 #有被assign的干擾鄰居數量
     totalPower = 0
+    numInterference = len(parameter['i_d2d_rx'][tx][rx]['d2d'])
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            totalPower = totalPower + parameter['powerD2DList'][d2d]
+            avgCount = avgCount + 1
     for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
         #d2d的干擾鄰居尚未被assign
         if parameter['powerD2DList'][i] == 0:
@@ -401,8 +410,8 @@ def cal_virtual_interference(tx, rx, rb, **parameter):
         #d2d的干擾鄰居已被assign
         else:
             print('d2d',i,'interference d2d',tx,'power of',i,parameter['powerD2DList'][i])
-            avgCount = avgCount + 1
-            totalPower = totalPower + parameter['powerD2DList'][i]
+            # avgCount = avgCount + 1
+            # totalPower = totalPower + parameter['powerD2DList'][i]
             print('total power',totalPower)
     
     #d2d的干擾鄰居都被assign或沒有干擾鄰居
@@ -460,10 +469,12 @@ def cal_d2d_sinr(d2d, **parameter):
 
 #計算cue的sinr
 def cal_cue_sinr(cue, **parameter):
-    sinr_list = np.zeros((parameter['numCellRx'], parameter['numRB']))
+    sinr_list_rb = np.zeros((parameter['numCellRx'], parameter['numRB']))
+    sinr_list = np.zeros((parameter['numCellRx']))
     for rx in range(parameter['numCellRx']):
         for rb in range(parameter['numRB']):
             interference = cal_cue_interference(rx, rb, **parameter)
-            sinr_list[rx][rb] = (parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][rx][rb]) / ( parameter['N0'] + interference)
-    sinr_nonzero_list = sinr_list[np.nonzero(sinr_list)]
-    return np.min(sinr_nonzero_list)
+            sinr_list_rb[rx][rb] = (parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][rx][rb]) / ( parameter['N0'] + interference)
+        sinr_nonzero_list = sinr_list_rb[rx][np.nonzero(sinr_list_rb[rx])]
+        sinr_list[rx] = np.min(sinr_nonzero_list)
+    return sinr_list

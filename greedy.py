@@ -97,13 +97,15 @@ def cal_d2d_sinr(d2d, **parameter):
 
 #計算cue的sinr
 def cal_cue_sinr(cue, **parameter):
-    sinr_list = np.zeros((parameter['numCellRx'], parameter['numRB']))
+    sinr_list_rb = np.zeros((parameter['numCellRx'], parameter['numRB']))
+    sinr_list = np.zeros((parameter['numCellRx']))
     for rx in range(parameter['numCellRx']):
         for rb in range(parameter['numRB']):
             interference = cal_cue_interference(rx, rb, **parameter)
-            sinr_list[rx][rb] = (parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][rx][rb]) / ( parameter['N0'] + interference)
-    sinr_nonzero_list = sinr_list[np.nonzero(sinr_list)]
-    return np.min(sinr_nonzero_list)
+            sinr_list_rb[rx][rb] = (parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][rx][rb]) / ( parameter['N0'] + interference)
+        sinr_nonzero_list = sinr_list_rb[rx][np.nonzero(sinr_list_rb[rx])]
+        sinr_list[rx] = np.min(sinr_nonzero_list)
+    return sinr_list
 
 def cal_need_power(tx, **parameter):
     powerList = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))

@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import json
 import genrator
 import channel
@@ -37,6 +38,7 @@ class Initial:
             'N0' : N0,
             'Pmax' : config['Pmax'],
             'Pmin' : config['Pmin'],
+            'Pbs' : config['Pbs'],
             'cqiLevel' : config['cqiLevel'],
             'beamWide' : config['beamWide'],
             'totalBeam' : config['totalBeam'],
@@ -107,7 +109,7 @@ class Initial:
         return parameter
 
     def initial_ul(self):
-        parameter = self.parameter.copy()
+        parameter = copy.deepcopy(self.parameter)
 
         c = channel.Channel(parameter['numRB'], parameter['numD2DReciver'])
         scheduleTimes_ul = np.zeros(parameter['numD2D'])
@@ -128,7 +130,9 @@ class Initial:
         return parameter_ul
 
     def initial_dl(self):
-        parameter = self.parameter.copy()
+        parameter = copy.deepcopy(self.parameter)
+
+        parameter['Pmax'] = parameter['Pbs']
 
         c = channel.Channel(parameter['numRB'], parameter['numD2DReciver'])
         scheduleTimes_dl = np.zeros(parameter['numD2D'])

@@ -32,9 +32,7 @@ def run_method_ul(simu_time):
         meth_start = time.time()
         method_ul = method.phase1(**method_ul)
         meth_end = time.time()
-        for i in range(method_ul['numD2D']):
-            if method_ul['powerD2DList'][i] != 0:
-                t_m = t_m + method_ul['data_d2d'][i]
+        t_m = method_ul['throughput']
         total = total + np.sum(method_ul['data_d2d'])
         exe_time = exe_time + (meth_end - meth_start)
     p_assign = (method_ul['numAssignment'] / simu_time)
@@ -59,9 +57,7 @@ def run_method_dl(simu_time):
         method_dl = method.phase1(**method_dl)
         meth_end = time.time()
         
-        for i in range(method_dl['numD2D']):
-            if method_dl['powerD2DList'][i] != 0:
-                t_m = t_m + method_dl['data_d2d'][i]
+        t_m = method_dl['throughput']
         total = total + np.sum(method_dl['data_d2d'])
         # p_assign = p_assign + method_dl['numAssignment']
         exe_time = exe_time + (meth_end - meth_start)
@@ -241,9 +237,8 @@ def merge(args):
         m_ul = method.phase1(**m_ul)
         meth_end = time.time()
 
-        for i in range(m_ul['numD2D']):
-            if m_ul['powerD2DList'][i] != 0:
-                m_throughput = m_throughput + m_ul['data_d2d'][i]
+        m_throughput = m_throughput + m_ul['throughput']
+        m_assign = m_assign + m_ul['numAssignment']
         total = total + np.sum(m_ul['data_d2d'])
         m_time = m_time + (meth_end - meth_start)
 
@@ -251,35 +246,31 @@ def merge(args):
         juad_start = time.time()
         j_ul = juad.maximum_matching(**j_ul)
         juad_end = time.time()
-        assignmentD2D = [i[0] for i in j_ul['matching_index']]
-        assignmentCUE = [i[1] for i in j_ul['matching_index']]
-        for i in range(len(assignmentCUE)):
-            if j_ul['powerCUE'][i][assignmentCUE[i]] != 0 and j_ul['powerD2DList'][i][assignmentCUE[i]] != 0:
-                j_assign = j_assign + 1
-                j_throughput = j_throughput + j_ul['weight_d2d'][i][assignmentCUE[i]]
+
+        j_throughput = j_throughput + j_ul['throughput']
+        j_assign = j_assign + j_ul['numAssignment']
+
         j_time = j_time + (juad_end - juad_start)
 
         #gcrs ul
         gcrs_start = time.time()
         g_ul = gcrs.vertex_coloring(**g_ul)
         gcrs_end = time.time()
-        g_throughput = g_throughput + np.sum(g_ul['d2d_total_throughput'])
+        g_throughput = g_throughput + g_ul['throughput']
+        g_assign = g_assign + g_ul['numAssignment']
         g_time = g_time + (gcrs_end - gcrs_start)
 
         #greedy ul
         t_ul = greedy.greedy(**t_ul)
-        for i in range(t_ul['numD2D']):
-            if m_ul['powerD2DList'][i] != 0:
-                m_throughput = m_throughput + m_ul['data_d2d'][i]
-        t_assign = t_assign + (t_ul['numD2D'] - len(t_ul['nStartD2D']))
+        t_throughput = t_throughput + t_ul['throughput']
+        t_assign = t_assign + t_ul['numAssignment']
 
         #meth dl
         meth_start = time.time()
         m_dl = method.phase1(**m_dl)
         meth_end = time.time()
-        for i in range(m_dl['numD2D']):
-            if m_dl['powerD2DList'][i] != 0:
-                m_throughput = m_throughput + m_dl['data_d2d'][i]
+        m_throughput = m_throughput + m_dl['throughput']
+        m_assign = m_assign + m_dl['numAssignment']
         total = total + np.sum(m_dl['data_d2d'])
         m_time = m_time + (meth_end - meth_start)
 
@@ -287,32 +278,28 @@ def merge(args):
         juad_start = time.time()
         j_dl = juad.maximum_matching(**j_dl)
         juad_end = time.time()
-        assignmentD2D = [i[0] for i in j_dl['matching_index']]
-        assignmentCUE = [i[1] for i in j_dl['matching_index']]
-        for i in range(len(assignmentCUE)):
-            if j_dl['powerCUE'][i][assignmentCUE[i]] != 0 and j_dl['powerD2DList'][i][assignmentCUE[i]] != 0:
-                j_assign = j_assign + 1
-                j_throughput = j_throughput + j_dl['weight_d2d'][i][assignmentCUE[i]]
+        j_throughput = j_throughput + j_dl['throughput']
+        j_assign = j_assign + j_dl['numAssignment']
         j_time = j_time + (juad_end - juad_start)
 
         #gcrs dl
         gcrs_start = time.time()
         g_dl = gcrs.vertex_coloring(**g_dl)
         gcrs_end = time.time()
-        g_throughput = g_throughput + np.sum(g_dl['d2d_total_throughput'])
+        g_throughput = g_throughput + g_dl['throughput']
+        g_assign = g_assign + g_dl['numAssignment']
         g_time = g_time + (gcrs_end - gcrs_start)
 
         #greedy dl
         t_dl = greedy.greedy(**t_dl)
-        for i in range(t_dl['numD2D']):
-            if t_dl['powerD2DList'][i] != 0:
-                t_throughput = t_throughput + t_dl['data_d2d'][i]
+        t_throughput = t_throughput + t_dl['throughput']
+        t_assign = t_assign + t_dl['numAssignment']
         t_assign = t_assign + (t_dl['numD2D'] - len(t_dl['nStartD2D']))
 
-    m_assign = ((m_ul['numAssignment'] + m_dl['numAssignment']) / (simu_time * 2))
-    j_assign = j_assign / (simu_time * 2)
-    g_assign = ((g_ul['numAssignment'] + g_dl['numAssignment']) / (simu_time * 2))
-    t_assign = t_assign / (simu_time * 2)
+    m_assign = m_assign / simu_time
+    j_assign = j_assign / simu_time
+    g_assign = g_assign / simu_time
+    t_assign = t_assign / simu_time
 
     m = (((m_throughput / simu_time) * 1000) / 1e6)
     j = (((j_throughput / simu_time) * 1000) / 1e6)
@@ -367,7 +354,7 @@ def m(args):
     m_exe_time = m_exe_time_ul + m_exe_time_dl
     m_total_t = m_total_t_ul + m_total_t_dl
     m_t = m_t_ul + m_t_dl
-    m_assign = (m_assign_ul + m_assign_dl) / 2
+    m_assign = m_assign_ul + m_assign_dl
     total = total_ul + total_dl
 
     Total = (((total/simu_time)*1000)/1e6)

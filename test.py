@@ -38,6 +38,7 @@ initial = {
     'N0' : N0,
     'Pmax' : config["Pmax"],
     'Pmin' : config["Pmin"],
+    'Pbs' : config["Pbs"],
     'cqiLevel' : config["cqiLevel"],
     'beamWide' : config["beamWide"],
     'totalBeam' : config["totalBeam"],
@@ -244,6 +245,8 @@ for currentTime in range(0,1):
     }
     simu1_start = time.time()
     sys_parameter_dl = {**initial, **environment, **gain_dl, **downlink}
+
+    sys_parameter_dl['Pmax'] = sys_parameter_dl['Pbs']
 
     sys_parameter_dl = allocate.cellAllocateDl(**sys_parameter_dl)
     sys_parameter_dl = measure.DownlinkBS(**sys_parameter_dl)
