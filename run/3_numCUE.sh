@@ -1,0 +1,43 @@
+python3 ./../simulation.py method 500 numCUE 5 config &
+python3 ./../simulation.py method 500 numCUE 6 config &
+python3 ./../simulation.py method 500 numCUE 7 config &
+python3 ./../simulation.py method 500 numCUE 8 config &
+python3 ./../simulation.py method 500 numCUE 9 config &
+python3 ./../simulation.py method 500 numCUE 10 config &
+python3 ./../simulation.py method 500 numCUE 11 config &
+python3 ./../simulation.py method 500 numCUE 12 config &
+python3 ./../simulation.py method 500 numCUE 13 config &
+python3 ./../simulation.py method 500 numCUE 14 config &
+
+python3 ./../simulation.py juad 500 numCUE 5 config &
+python3 ./../simulation.py juad 500 numCUE 6 config &
+python3 ./../simulation.py juad 500 numCUE 7 config &
+python3 ./../simulation.py juad 500 numCUE 8 config &
+python3 ./../simulation.py juad 500 numCUE 9 config &
+python3 ./../simulation.py juad 500 numCUE 10 config &
+python3 ./../simulation.py juad 500 numCUE 11 config &
+python3 ./../simulation.py juad 500 numCUE 12 config &
+python3 ./../simulation.py juad 500 numCUE 13 config &
+python3 ./../simulation.py juad 500 numCUE 14 config &
+
+python3 ./../simulation.py gcrs 500 numCUE 5 config &
+python3 ./../simulation.py gcrs 500 numCUE 6 config &
+python3 ./../simulation.py gcrs 500 numCUE 7 config &
+python3 ./../simulation.py gcrs 500 numCUE 8 config &
+python3 ./../simulation.py gcrs 500 numCUE 9 config &
+python3 ./../simulation.py gcrs 500 numCUE 10 config &
+python3 ./../simulation.py gcrs 500 numCUE 11 config &
+python3 ./../simulation.py gcrs 500 numCUE 12 config &
+python3 ./../simulation.py gcrs 500 numCUE 13 config &
+python3 ./../simulation.py gcrs 500 numCUE 14 config &
+
+python3 ./../simulation.py greedy 500 numCUE 5 config &
+python3 ./../simulation.py greedy 500 numCUE 6 config &
+python3 ./../simulation.py greedy 500 numCUE 7 config &
+python3 ./../simulation.py greedy 500 numCUE 8 config &
+python3 ./../simulation.py greedy 500 numCUE 9 config &
+python3 ./../simulation.py greedy 500 numCUE 10 config &
+python3 ./../simulation.py greedy 500 numCUE 11 config &
+python3 ./../simulation.py greedy 500 numCUE 12 config &
+python3 ./../simulation.py greedy 500 numCUE 13 config &
+python3 ./../simulation.py greedy 500 numCUE 14 config &
