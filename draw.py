@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 import numpy as np
 import matplotlib.pyplot as plt
 import genrator
@@ -61,6 +62,9 @@ def draw_test():
     fixed_values2 = [525.045466 ,605.994134 ,679.932226 ,731.823092 ,827.03916 ,937.365108 ,1017.964052 ,1083.6777 ,1081.146828 ,1113.770642]
     fixed_value3 = [545.568432, 609.069646, 699.420256, 742.56326, 792.914766, 896.253694, 1002.271784, 985.07623,  1161.31785, 1137.322656]
 
+    fixed_4 = [1174.05856, 1167.25106, 1157.377035, 1161.852825, 1166.323375, 1159.51205, 1154.39687, 1153.701875, 1156.89623, 1145.16863]
+    fixed_5 = [1150.178045, 1160.686715, 1152.999155, 1152.425165, 1153.25057, 1148.319175, 1143.83779, 1141.0801, 1145.778955, 1134.79409]
+
     flexible_1000ms = [511.548636, 593.84806, 666.399189, 736.14967, 808.61329, 880.705499, 941.881326, 1006.75319, 1066.9373400000002, 1134.325642]
     flexible_500ms = [512.703684, 594.1119, 666.460892, 736.471596, 811.089578, 877.036142, 941.380454, 1011.842402, 1067.477328, 1129.793816]
     flexible_500ms_1 = [502.95154, 586.009308, 655.067642, 725.485298, 795.739872, 866.595186, 925.634746, 990.061358, 1051.194132, 1107.092976]
@@ -73,9 +77,12 @@ def draw_test():
     # plt.plot(x_labels, flexible_500ms,'^-', color = 'b', label="flexible_500ms")
     # plt.plot(x_labels, flexible_1000ms, 'd-', color = 'k', label="flexible_1000ms")
 
-    plt.plot(x_labels, fixed_value3,'s-',color = 'r', label="fixed_1")
-    plt.plot(x_labels, flexible_500ms_1,'^-', color = 'b', label="flexible_500ms")
-    plt.plot(x_labels, flexible_1000ms_1, 'd-', color = 'k', label="flexible_1000ms")
+    # plt.plot(x_labels, fixed_value3,'s-',color = 'r', label="fixed_1")
+    # plt.plot(x_labels, flexible_500ms_1,'^-', color = 'b', label="flexible_500ms")
+    # plt.plot(x_labels, flexible_1000ms_1, 'd-', color = 'k', label="flexible_1000ms")
+
+    plt.plot(x_labels, fixed_4,'s-',color = 'r', label="fixed_1")
+    plt.plot(x_labels, fixed_5,'o-',color = 'g', label="fixed_2")
 
     # plt.title("Python 畫折線圖(Line chart)範例", x=0.5, y=1.03)
 

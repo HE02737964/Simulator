@@ -286,7 +286,7 @@ def bipartite_matching(**parameter):
         value = cost_matrix[row][column]
         cost = cost + value
     parameter.update({'matching_index' : indexes})
-    print('matching index',indexes)
+    # print('matching index',indexes)
     return parameter
 
 def throughput_rasing(**parameter):
@@ -394,7 +394,7 @@ def greedy_throughput_rasing(**parameter):
     d2d_need_rb = [0 for i in range(parameter['numD2D'])]
     for d2d in range(parameter['numD2D']):
         if not parameter['assignmentD2D'][d2d].any():
-            print('d2d greedy',d2d)
+            # print('d2d greedy',d2d)
             parameter = get_d2d_use_rb(d2d, **parameter)
             numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
             tbs, rb = tool.data_tbs_mapping(parameter['data_d2d'][d2d], parameter['numRB'])
@@ -413,7 +413,7 @@ def greedy_throughput_rasing(**parameter):
                     parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
                     parameter['numAssignment'] = parameter['numAssignment'] + 1
                 else:
-                    print('d2d',d2d,'power not enough')
+                    # print('d2d',d2d,'power not enough')
                     parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
 
     for d2d in range(parameter['numD2D']):
@@ -421,8 +421,8 @@ def greedy_throughput_rasing(**parameter):
             sinr = cal_d2d_sinr(d2d, **parameter)
             # print('need sinr',parameter['minD2Dsinr'][i])
             # print('cal d2d',i,sinr)
-            if sinr < parameter['minD2Dsinr'][d2d]:
-                print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
+            # if sinr < parameter['minD2Dsinr'][d2d]:
+            #     print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
 
     return parameter
 #主程式
@@ -445,14 +445,14 @@ def maximum_matching(**parameter):
         else:
             assignRB = parameter['assignmentRxCell'][cue].copy()
         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
-            print('d2dd2d',d2d)
+            # print('d2dd2d',d2d)
             parameter['assignmentD2D'][d2d] = assignRB
             parameter['matching_pair'][cue].append(d2d)
             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
             parameter['numAssignment'] = parameter['numAssignment'] + 1
             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
             parameter['powerD2D'][d2d] = parameter['powerD2DList'][d2d][cue]
-    print('juad_throughput',parameter['throughput'])
+    # print('juad_throughput',parameter['throughput'])
     
     # if len(parameter['candicateCUE']):
     #     iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
@@ -484,16 +484,16 @@ def maximum_matching(**parameter):
 
     
     parameter = greedy_throughput_rasing(**parameter)
-    print('cue power list',parameter['powerCUEList'])
-    print('cue candicate',parameter['candicateCUE'])
-    for cue in range(len(parameter['matching_pair'])):
-        print(parameter['matching_pair'][cue])
+    # print('cue power list',parameter['powerCUEList'])
+    # print('cue candicate',parameter['candicateCUE'])
+    # for cue in range(len(parameter['matching_pair'])):
+    #     print(parameter['matching_pair'][cue])
     
     for d2d in range(parameter['numD2D']):
         if parameter['assignmentD2D'][d2d].any():
             print('d2d',d2d,parameter['assignmentD2D'][d2d])
             
-    print(parameter['numAssignment'])
-    print('total throughput',parameter['throughput'])
-    print('totla',parameter['total_throughput'])
+    # print(parameter['numAssignment'])
+    # print('total throughput',parameter['throughput'])
+    # print('totla',parameter['total_throughput'])
     return parameter

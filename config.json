@@ -17,7 +17,7 @@
 	"bw" : 180e3,
 	"N_dBm" : -174,
 	
-	"totalBeam" : 8,
+	"totalBeam" : 10,
 	"numScheduleBeam" : 3,
 
 	"numD2DCluster" : 5,
