@@ -1,0 +1,43 @@
+cd .. && python3  simulation.py method 500 d2dDistance 10 config &
+cd .. && python3  simulation.py method 500 d2dDistance 20 config &
+cd .. && python3  simulation.py method 500 d2dDistance 30 config &
+cd .. && python3  simulation.py method 500 d2dDistance 40 config &
+cd .. && python3  simulation.py method 500 d2dDistance 50 config &
+cd .. && python3  simulation.py method 500 d2dDistance 60 config &
+cd .. && python3  simulation.py method 500 d2dDistance 70 config &
+cd .. && python3  simulation.py method 500 d2dDistance 80 config &
+cd .. && python3  simulation.py method 500 d2dDistance 90 config &
+cd .. && python3  simulation.py method 500 d2dDistance 100 config &
+
+cd .. && python3  simulation.py juad 500 d2dDistance 10 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 20 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 30 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 40 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 50 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 60 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 70 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 80 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 90 config &
+cd .. && python3  simulation.py juad 500 d2dDistance 100 config &
+
+cd .. && python3  simulation.py gcrs 500 d2dDistance 10 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 20 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 30 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 40 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 50 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 60 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 70 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 80 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 90 config &
+cd .. && python3  simulation.py gcrs 500 d2dDistance 100 config &
+
+cd .. && python3  simulation.py greedy 500 d2dDistance 10 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 20 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 30 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 40 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 50 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 60 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 70 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 80 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 90 config &
+cd .. && python3  simulation.py greedy 500 d2dDistance 100 config &

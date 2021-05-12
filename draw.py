@@ -109,4 +109,84 @@ def draw_test():
     plt.savefig("Test.eps")
     plt.show()
 
-draw_test()
+def draw_simulation():
+    file_name = ['method', 'juad', 'gcrs', 'greedy']
+    
+    numGraph = 8
+    index = 0
+
+    x_label = [[] for i in range(numGraph)]
+    y_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+    y_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+    
+    for i in range(len(file_name)):
+        file = open('./result/%s'%file_name[i], 'r')
+        
+        for data in file:
+            result = data.split()
+            name = result[3]
+            if name == "totalBeam":
+                index = 0
+            elif name == "numScheduleBeam":
+                index = 1
+            elif name == "numCUE":
+                index = 2
+            elif name == "dataD2DMax":
+                index = 3
+            elif name == "numD2D":
+                index = 4
+            elif name == "d2dDistance":
+                index = 5
+            elif name == "maxReciver":
+                index = 6
+            elif name == "pass":
+                index = 7
+                
+            if int(result[4]) not in x_label[index]:
+                x_label[index].append(int(result[4]))
+            y_temp[i][index].append(float(result[5]))
+        
+        for j in range(numGraph):
+            y_label[i][j] = [y for x,y in sorted(zip(x_label[j], y_temp[i][j]))]
+            x_label[j] = sorted(x_label[j])
+    
+    for i in range(numGraph):
+        print('x label',i,x_label[i])
+        for j in range(len(file_name)):
+            print('method',j,'y label',y_label[j][i])
+
+    for i in range(numGraph):
+        x_name = ""
+        if i == 0:
+            x_name = "System total of Beam"
+        elif i == 1:
+            x_name = "Number of schedule beam"
+        elif i == 2:
+            x_name = "Number of CUE"
+        elif i == 3:
+            x_name = "Maximum of D2D group packet size"
+        elif i == 4:
+            x_name = "Number of D2D group"
+        elif i == 5:
+            x_name = "Distance of D2D group Tx and Rx"
+        elif i == 6:
+            x_name = "Number of Reciver of D2D group"
+        elif i == 7:
+            x_name = "pass"
+        
+        if i == 1 or i == 2 or i == 4:
+            plt.figure()
+            plt.plot(x_label[i], y_label[0][i],'s-',color = 'r', label="proposed")
+            plt.plot(x_label[i], y_label[1][i],'o-',color = 'g', label="juad")
+            # plt.plot(x_label[i], y_label[2][i],'^-', color = 'b', label="gcrs")
+            plt.plot(x_label[i], y_label[3][i], 'd-', color = 'k', label="greedy")
+
+            plt.xlabel(x_name, labelpad = 15)
+            plt.xticks(x_label[i])
+            plt.ylabel("D2D group Throughput (Mbps)", labelpad = 20)
+            plt.legend(loc = "best")
+            plt.tight_layout()
+            plt.savefig('./result/%s_%s.eps'%(i,x_name))
+            # plt.show()
+    
+draw_simulation()

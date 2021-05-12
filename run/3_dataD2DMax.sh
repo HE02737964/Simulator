@@ -1,0 +1,43 @@
+cd .. && python3  simulation.py method 500 dataD2DMax 30 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 35 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 40 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 45 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 50 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 55 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 60 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 65 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 70 config &
+cd .. && python3  simulation.py method 500 dataD2DMax 75 config &
+
+cd .. && python3  simulation.py juad 500 dataD2DMax 30 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 35 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 40 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 45 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 50 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 55 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 60 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 65 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 70 config &
+cd .. && python3  simulation.py juad 500 dataD2DMax 75 config &
+
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 30 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 35 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 40 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 45 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 50 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 55 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 60 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 65 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 70 config &
+cd .. && python3  simulation.py gcrs 500 dataD2DMax 75 config &
+
+cd .. && python3  simulation.py greedy 500 dataD2DMax 30 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 35 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 40 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 45 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 50 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 55 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 60 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 65 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 70 config &
+cd .. && python3  simulation.py greedy 500 dataD2DMax 75 config &

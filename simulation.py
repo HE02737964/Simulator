@@ -4,6 +4,7 @@ import method
 import juad
 import gcrs
 import greedy
+import time
 
 def m(totalTime):
     throughput = 0
@@ -18,14 +19,6 @@ def m(totalTime):
         dl = generator_dl.get_dl_system_info(ms, **dl)
         dl = method.phase1(**dl)
         
-        print(ul['assignmentTxCell'])
-        print()
-        print(ul['assignmentRxCell'])
-        print()
-        print(dl['assignmentTxCell'])
-        print()
-        print(dl['assignmentRxCell'])
-        print()
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
 
@@ -65,7 +58,7 @@ def g(totalTime):
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
         dl = gcrs.vertex_coloring(**dl)
-        
+
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
 
