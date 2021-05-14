@@ -489,9 +489,9 @@ def maximum_matching(**parameter):
     # for cue in range(len(parameter['matching_pair'])):
     #     print(parameter['matching_pair'][cue])
     
-    for d2d in range(parameter['numD2D']):
-        if parameter['assignmentD2D'][d2d].any():
-            print('d2d',d2d,parameter['assignmentD2D'][d2d])
+    # for d2d in range(parameter['numD2D']):
+    #     if parameter['assignmentD2D'][d2d].any():
+    #         print('d2d',d2d,parameter['assignmentD2D'][d2d])
             
     # print(parameter['numAssignment'])
     # print('total throughput',parameter['throughput'])

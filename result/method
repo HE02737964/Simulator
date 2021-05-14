@@ -28,3 +28,22 @@ simulation time 500 numCUE 14 1137.85236
 simulation time 500 numCUE 13 1140.065102
 simulation time 500 numCUE 8 1152.689936
 simulation time 500 numD2D 75 1131.991966
+simulation time 500 maxReciver 1 1302.582972
+simulation time 500 maxReciver 2 1203.942688
+simulation time 500 maxReciver 3 1128.72154
+simulation time 500 maxReciver 4 1074.401124
+simulation time 500 maxReciver 5 1017.85365
+simulation time 500 maxReciver 6 980.725566
+simulation time 500 maxReciver 7 949.81733
+simulation time 500 maxReciver 8 928.947802
+simulation time 500 maxReciver 9 904.04205
+simulation time 500 maxReciver 10 882.228364simulation time 500 totalBeam 8 1131.429366
+simulation time 500 totalBeam 12 1134.21244
+simulation time 500 totalBeam 9 1131.384784
+simulation time 500 totalBeam 7 1126.53077
+simulation time 500 totalBeam 6 1120.224564
+simulation time 500 totalBeam 11 1128.90448
+simulation time 500 totalBeam 10 1128.353722
+simulation time 500 totalBeam 4 1119.782128
+simulation time 500 totalBeam 5 1126.0606
+simulation time 500 totalBeam 3 1121.673392

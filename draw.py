@@ -114,8 +114,9 @@ def draw_simulation():
     
     numGraph = 8
     index = 0
-
-    x_label = [[] for i in range(numGraph)]
+    
+    x_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+    x_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     y_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     y_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     
@@ -142,18 +143,19 @@ def draw_simulation():
             elif name == "pass":
                 index = 7
                 
-            if int(result[4]) not in x_label[index]:
-                x_label[index].append(int(result[4]))
+            # if int(result[4]) not in x_temp[index]:
+                # x_temp[index].append(int(result[4]))
+            x_temp[i][index].append(int(result[4]))
             y_temp[i][index].append(float(result[5]))
-        
         for j in range(numGraph):
-            y_label[i][j] = [y for x,y in sorted(zip(x_label[j], y_temp[i][j]))]
-            x_label[j] = sorted(x_label[j])
+            y_label[i][j] = [y for x,y in sorted(zip(x_temp[i][j], y_temp[i][j]))]
+            x_label[i][j] = sorted(x_temp[i][j])
     
-    for i in range(numGraph):
-        print('x label',i,x_label[i])
-        for j in range(len(file_name)):
-            print('method',j,'y label',y_label[j][i])
+    # for i in range(numGraph):
+    #     print('x label',i,x_label[i])
+    #     for j in range(len(file_name)):
+    #         print('method',j,'y label',y_label[j][i])
+    #         print('method',j,'y_temp,',y_temp[j][i])
 
     for i in range(numGraph):
         x_name = ""
@@ -170,19 +172,19 @@ def draw_simulation():
         elif i == 5:
             x_name = "Distance of D2D group Tx and Rx"
         elif i == 6:
-            x_name = "Number of Reciver of D2D group"
+            x_name = "Number of Receiver of D2D group"
         elif i == 7:
             x_name = "pass"
         
-        if i == 1 or i == 2 or i == 4:
+        if i == 1 or i == 2 or i == 4 or i == 6:
             plt.figure()
-            plt.plot(x_label[i], y_label[0][i],'s-',color = 'r', label="proposed")
-            plt.plot(x_label[i], y_label[1][i],'o-',color = 'g', label="juad")
-            # plt.plot(x_label[i], y_label[2][i],'^-', color = 'b', label="gcrs")
-            plt.plot(x_label[i], y_label[3][i], 'd-', color = 'k', label="greedy")
+            plt.plot(x_label[0][i], y_label[0][i],'s-',color = 'r', label="proposed")
+            plt.plot(x_label[1][i], y_label[1][i],'o-',color = 'g', label="juad")
+            plt.plot(x_label[2][i], y_label[2][i],'^-', color = 'b', label="gcrs")
+            plt.plot(x_label[3][i], y_label[3][i], 'd-', color = 'k', label="greedy")
 
             plt.xlabel(x_name, labelpad = 15)
-            plt.xticks(x_label[i])
+            plt.xticks(x_label[0][i])
             plt.ylabel("D2D group Throughput (Mbps)", labelpad = 20)
             plt.legend(loc = "best")
             plt.tight_layout()

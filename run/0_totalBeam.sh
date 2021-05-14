@@ -1,43 +1,43 @@
-python3 ./../simulation.py method 500 totalBeam 3 config &
-python3 ./../simulation.py method 500 totalBeam 4 config &
-python3 ./../simulation.py method 500 totalBeam 5 config &
-python3 ./../simulation.py method 500 totalBeam 6 config &
-python3 ./../simulation.py method 500 totalBeam 7 config &
-python3 ./../simulation.py method 500 totalBeam 8 config &
-python3 ./../simulation.py method 500 totalBeam 9 config &
-python3 ./../simulation.py method 500 totalBeam 10 config &
-python3 ./../simulation.py method 500 totalBeam 11 config &
-python3 ./../simulation.py method 500 totalBeam 12 config &
+cd .. && python3 simulation.py method 500 totalBeam 3 config &
+cd .. && python3 simulation.py method 500 totalBeam 4 config &
+cd .. && python3 simulation.py method 500 totalBeam 5 config &
+cd .. && python3 simulation.py method 500 totalBeam 6 config &
+cd .. && python3 simulation.py method 500 totalBeam 7 config &
+cd .. && python3 simulation.py method 500 totalBeam 8 config &
+cd .. && python3 simulation.py method 500 totalBeam 9 config &
+cd .. && python3 simulation.py method 500 totalBeam 10 config &
+cd .. && python3 simulation.py method 500 totalBeam 11 config &
+cd .. && python3 simulation.py method 500 totalBeam 12 config &
 
-python3 ./../simulation.py juad 500 totalBeam 3 config &
-python3 ./../simulation.py juad 500 totalBeam 4 config &
-python3 ./../simulation.py juad 500 totalBeam 5 config &
-python3 ./../simulation.py juad 500 totalBeam 6 config &
-python3 ./../simulation.py juad 500 totalBeam 7 config &
-python3 ./../simulation.py juad 500 totalBeam 8 config &
-python3 ./../simulation.py juad 500 totalBeam 9 config &
-python3 ./../simulation.py juad 500 totalBeam 10 config &
-python3 ./../simulation.py juad 500 totalBeam 11 config &
-python3 ./../simulation.py juad 500 totalBeam 12 config &
+cd .. && python3 simulation.py juad 500 totalBeam 3 config &
+cd .. && python3 simulation.py juad 500 totalBeam 4 config &
+cd .. && python3 simulation.py juad 500 totalBeam 5 config &
+cd .. && python3 simulation.py juad 500 totalBeam 6 config &
+cd .. && python3 simulation.py juad 500 totalBeam 7 config &
+cd .. && python3 simulation.py juad 500 totalBeam 8 config &
+cd .. && python3 simulation.py juad 500 totalBeam 9 config &
+cd .. && python3 simulation.py juad 500 totalBeam 10 config &
+cd .. && python3 simulation.py juad 500 totalBeam 11 config &
+cd .. && python3 simulation.py juad 500 totalBeam 12 config &
 
-python3 ./../simulation.py gcrs 500 totalBeam 3 config &
-python3 ./../simulation.py gcrs 500 totalBeam 4 config &
-python3 ./../simulation.py gcrs 500 totalBeam 5 config &
-python3 ./../simulation.py gcrs 500 totalBeam 6 config &
-python3 ./../simulation.py gcrs 500 totalBeam 7 config &
-python3 ./../simulation.py gcrs 500 totalBeam 8 config &
-python3 ./../simulation.py gcrs 500 totalBeam 9 config &
-python3 ./../simulation.py gcrs 500 totalBeam 10 config &
-python3 ./../simulation.py gcrs 500 totalBeam 11 config &
-python3 ./../simulation.py gcrs 500 totalBeam 12 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 3 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 4 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 5 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 6 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 7 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 8 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 9 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 10 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 11 config &
+cd .. && python3 simulation.py gcrs 500 totalBeam 12 config &
 
-python3 ./../simulation.py greedy 500 totalBeam 3 config &
-python3 ./../simulation.py greedy 500 totalBeam 4 config &
-python3 ./../simulation.py greedy 500 totalBeam 5 config &
-python3 ./../simulation.py greedy 500 totalBeam 6 config &
-python3 ./../simulation.py greedy 500 totalBeam 7 config &
-python3 ./../simulation.py greedy 500 totalBeam 8 config &
-python3 ./../simulation.py greedy 500 totalBeam 9 config &
-python3 ./../simulation.py greedy 500 totalBeam 10 config &
-python3 ./../simulation.py greedy 500 totalBeam 11 config &
-python3 ./../simulation.py greedy 500 totalBeam 12 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 3 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 4 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 5 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 6 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 7 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 8 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 9 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 10 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 11 config &
+cd .. && python3 simulation.py greedy 500 totalBeam 12 config &
