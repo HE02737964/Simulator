@@ -112,7 +112,7 @@ class Initial:
         parameter = copy.deepcopy(self.parameter)
 
         c = channel.Channel(parameter['numRB'], parameter['numD2DReciver'])
-        scheduleTimes_ul = np.zeros(parameter['numD2D'])
+        scheduleTimes_ul = np.ones(parameter['numD2D'])
         
         ul = {
             'scheduleTimes' : scheduleTimes_ul
@@ -135,7 +135,7 @@ class Initial:
         parameter['Pmax'] = parameter['Pbs']
 
         c = channel.Channel(parameter['numRB'], parameter['numD2DReciver'])
-        scheduleTimes_dl = np.zeros(parameter['numD2D'])
+        scheduleTimes_dl = np.ones(parameter['numD2D'])
 
         
 

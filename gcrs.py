@@ -158,7 +158,7 @@ def vertex_coloring(**parameter):
                     parameter['powerD2DList'][d2d][rb] = 0
                 # print('set d2d',d2d,'power',parameter['powerD2DList'][d2d][rb],'in rb',rb)
     # print('check some value start',time.ctime(time.time()))
-    parameter = check_some_value(**parameter)
+
     # print('check some value end',time.ctime(time.time()))
     return parameter
 
@@ -187,50 +187,24 @@ def check_some_value(**parameter):
                     d_vt = convert_sinr_vt(d2d_sinr)
                     parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
 
-        #移除rb上不滿足所需sinr的d2d
-        index = len(parameter['rb_use_status'][rb]['d2d']) - 1
-        point = 0
-        while point <= index:
-            d2d = parameter['rb_use_status'][rb]['d2d'][point]
-            d2d_sinr = cal_d2d_sinr(d2d, rb, **parameter)
-            d_vt = convert_sinr_vt(d2d_sinr)
-            if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(d2d_sinr):
-                parameter['rb_use_status'][rb]['d2d'].remove(d2d)
-                parameter['powerD2DList'][d2d][rb] = 0
-                #扣除掉d2d在該rb上的throughput
-                parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-                index = len(parameter['rb_use_status'][rb]['d2d']) - 1
-                point = 0
-                # print('d2d',d2d,'sinr not enough')
-            else:
-                point = point + 1
-
-        # #移除會使CUE的sinr小於所需值的d2d
-        # deleteD2D = []
-        # for cue in parameter['rb_use_status'][rb]['cue']:
-        #     sinr = cal_cue_sinr(cue, rb, **parameter)
-        #     if convert.mW_to_dB(parameter['minCUEsinr'][cue]) < convert.mW_to_dB(sinr):
-        #         for d2d in parameter['i_d2c']:
-        #             if d2d in parameter['rb_use_status'][rb]['d2d']:
-        #                 sinr = cal_d2d_sinr(d2d, rb, **parameter)
-        #                 d_vt = convert_sinr_vt(sinr)
-        #                 parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-        #                 deleteD2D.append(d2d)
-                        # print('d2d',d2d,'interference cue',cue)
-        
-        # #紀錄sinr不滿足所需值的D2D
-        # for d2d in parameter['rb_use_status'][rb]['d2d']:
-        #     sinr = cal_d2d_sinr(d2d, rb, **parameter)
-        #     d_vt = convert_sinr_vt(sinr)
-        #     if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(sinr) and d2d not in deleteD2D:
-        #         parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
-        #         deleteD2D.append(d2d)
-                # print('d2d',d2d,'sinr not enough')
-
-        # #將先前紀錄起來的D2D從RB使用列表中移除
-        # for d2d in deleteD2D:
-        #     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
-    # print('d2d rb status',parameter['rb_use_status'])
+        if parameter['check_value'] == True:
+            #移除rb上不滿足所需sinr的d2d
+            index = len(parameter['rb_use_status'][rb]['d2d']) - 1
+            point = 0
+            while point <= index:
+                d2d = parameter['rb_use_status'][rb]['d2d'][point]
+                d2d_sinr = cal_d2d_sinr(d2d, rb, **parameter)
+                d_vt = convert_sinr_vt(d2d_sinr)
+                if convert.mW_to_dB(parameter['minD2Dsinr'][d2d]) > convert.mW_to_dB(d2d_sinr):
+                    parameter['rb_use_status'][rb]['d2d'].remove(d2d)
+                    parameter['powerD2DList'][d2d][rb] = 0
+                    #扣除掉d2d在該rb上的throughput
+                    parameter['throughput_rb'][rb] = parameter['throughput_rb'][rb] - d_vt
+                    index = len(parameter['rb_use_status'][rb]['d2d']) - 1
+                    point = 0
+                    # print('d2d',d2d,'sinr not enough')
+                else:
+                    point = point + 1
 
     #更新每個D2D使用的RB和Vt
     np.zeros_like(parameter['throughput_d2d'])

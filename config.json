@@ -1,7 +1,7 @@
 {
 	"radius" : 500,
 	"numBS" : 1,
-	"numCUE" : 25,
+	"numCUE" : 50,
 	"numD2D" : 75,
 	"numRB" : 25,
 	"maxReciver" : 3,
@@ -24,7 +24,7 @@
 	"clusterRadius" : 100,
 	"numDensity" : 70,
 
-	"dataCUEMax" : 3752,
+	"dataCUEMax" : 2216,
 	"dataCUEMin" : 16,
 	"dataD2DMax" : 18336,
 	"dataD2DMin" : 680,
