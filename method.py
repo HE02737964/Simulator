@@ -149,60 +149,13 @@ def phase1(**parameter):
                 candicate = np.delete(candicate, deleteD2D)
 
         parameter['scheduleTimes'][root] = parameter['scheduleTimes'][root] + 1
+    
+    return parameter
 
-    # print(parameter['powerD2DList'])    
-
-    for tx in range(parameter['numD2D']):
-        if parameter['powerD2DList'][tx] != 0:
-            power_list = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-            for rx in range(parameter['numD2DReciver'][tx]):
-                for rb in range(parameter['numRB']):
-                    interference = cal_d2d_interference(tx, rx, rb, **parameter)
-                    power_list[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
-            
-            if np.max(power_list) < parameter['Pmin']:
-                parameter['powerD2DList'][tx] = parameter['Pmin']
-            else:
-                parameter['powerD2DList'][tx] = np.max(power_list)
-    # print(parameter['powerD2DList'])
-    assign = 0
-    for d2d in range(parameter['numD2D']):
-        if parameter['powerD2DList'][d2d] != 0:
-            assign = assign + 1
-            parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
-            sinr = cal_d2d_sinr(d2d, **parameter)
-            # print('d2d', d2d, 'pwr', parameter['powerD2DList'][d2d])
-            # print('d2d', d2d, 'sinr', sinr)
-            # print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])
-            # print()
-
-    for cue in parameter['candicateCUE']:
-        if parameter['numCellRx'] == 1:
-            if parameter['minCUEsinr'][cue] != 0:
-                sinr = cal_cue_sinr(cue, **parameter)
-                # print('cue', cue, 'pwr', parameter['powerCUEList'][cue])
-                # print('cue', cue, 'sinr', sinr[0])
-                # print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
-                # print()
-        else:
-            if parameter['minCUEsinr'][cue] != 0:
-                sinr = cal_cue_sinr(0, **parameter)
-                # print('bs', 0, 'pwr', parameter['powerCUEList'][0])
-                # print('cue', cue, 'sinr', sinr[cue])
-                # print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
-                # print()
-
-    assignList = []
-    for d2d in range(parameter['numD2D']):
-        if parameter['powerD2DList'][d2d] != 0:
-            assignList.append(d2d)
-    # print('assignment list',assignList)
-    # print('len assignment', len(assignList))
-    # print('num d2d assign',assign)
-    parameter['numAssignment'] = parameter['numAssignment'] + assign
-    parameter['total_throughput'] = parameter['total_throughput'] + parameter['throughput']
-    print('throughput',parameter['throughput'])
-    # print('numAssignment',parameter['numAssignment'])
+def proposed(**parameter):
+    parameter = phase1(**parameter)
+    parameter = cal_d2d_min_sinr_power(**parameter)
+    parameter = throughput_collect(**parameter)
     return parameter
 
 #計算D2D的干擾鄰居數量
@@ -475,3 +428,60 @@ def cal_cue_sinr(cue, **parameter):
         sinr_nonzero_list = sinr_list_rb[rx][np.nonzero(sinr_list_rb[rx])]
         sinr_list[rx] = np.min(sinr_nonzero_list)
     return sinr_list
+
+def cal_d2d_min_sinr_power(**parameter):
+    for tx in range(parameter['numD2D']):
+        if parameter['powerD2DList'][tx] != 0:
+            power_list = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
+            for rx in range(parameter['numD2DReciver'][tx]):
+                for rb in range(parameter['numRB']):
+                    interference = cal_d2d_interference(tx, rx, rb, **parameter)
+                    power_list[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
+            
+            if np.max(power_list) < parameter['Pmin']:
+                parameter['powerD2DList'][tx] = parameter['Pmin']
+            else:
+                parameter['powerD2DList'][tx] = np.max(power_list)
+    return parameter
+
+def throughput_collect(**parameter):
+    assign = 0
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            assign = assign + 1
+            parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
+            sinr = cal_d2d_sinr(d2d, **parameter)
+            # print('d2d', d2d, 'pwr', parameter['powerD2DList'][d2d])
+            # print('d2d', d2d, 'sinr', sinr)
+            # print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])
+            # print()
+
+    assignList = []
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            assignList.append(d2d)
+    # print('assignment list',assignList)
+    # print('len assignment', len(assignList))
+    # print('num d2d assign',assign)
+    parameter['numAssignment'] = parameter['numAssignment'] + assign
+    parameter['total_throughput'] = parameter['total_throughput'] + parameter['throughput']
+    print('throughput',parameter['throughput'])
+    # print('numAssignment',parameter['numAssignment'])
+    return parameter
+
+def cue_sinr(**parameter):
+    for cue in parameter['candicateCUE']:
+        if parameter['numCellRx'] == 1:
+            if parameter['minCUEsinr'][cue] != 0:
+                sinr = cal_cue_sinr(cue, **parameter)
+                print('cue', cue, 'pwr', parameter['powerCUEList'][cue])
+                print('cue', cue, 'sinr', sinr[0])
+                print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
+                print()
+        else:
+            if parameter['minCUEsinr'][cue] != 0:
+                sinr = cal_cue_sinr(0, **parameter)
+                print('bs', 0, 'pwr', parameter['powerCUEList'][0])
+                print('cue', cue, 'sinr', sinr[cue])
+                print('min', cue, 'sinr', parameter['minCUEsinr'][cue])
+                print()

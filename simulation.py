@@ -12,12 +12,12 @@ def m(totalTime):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         ul = generator_ul.get_ul_system_info(ms, **ul)
-        ul = method.phase1(**ul)
+        ul = method.proposed(**ul)
 
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
-        dl = method.phase1(**dl)
+        dl = method.proposed(**dl)
         
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
@@ -52,16 +52,14 @@ def g(totalTime):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         ul = generator_ul.get_ul_system_info(ms, **ul)
+        ul.update({'check_value' : False})
         ul = gcrs.vertex_coloring(**ul)
-        ul['check_value'] = False
-        ul = gcrs.check_some_value(**ul)
 
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
+        dl.update({'check_value' : False})
         dl = gcrs.vertex_coloring(**dl)
-        dl['check_value'] = False
-        dl = gcrs.check_some_value(**dl)
 
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
@@ -76,16 +74,14 @@ def g_c(totalTime):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         ul = generator_ul.get_ul_system_info(ms, **ul)
+        ul.update({'check_value' : True})
         ul = gcrs.vertex_coloring(**ul)
-        ul['check_value'] = True
-        ul = gcrs.check_some_value(**ul)
 
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
+        dl.update({'check_value' : True})
         dl = gcrs.vertex_coloring(**dl)
-        dl['check_value'] = True
-        dl = gcrs.check_some_value(**dl)
 
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
