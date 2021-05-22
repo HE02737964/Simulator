@@ -3,26 +3,53 @@ import tools
 import method
 
 def mGreedy(**parameter):
-    tool = tools.Tool()
     parameter = method.initial_parameter(**parameter)
     parameter = method.phase1(**parameter)
-    greedy(**parameter)
-
+    parameter = greedy(**parameter)
+    
+    return parameter
 
 def greedy(**parameter):
+    tool = tools.Tool()
+    convert = tools.Convert()
+
+    rasing_data = []
     sortD2D = np.copy(parameter['priority_sort_index'])
     nStartD2D = parameter['nStartD2D'].copy()
     candicate = sortD2D[np.in1d(sortD2D, nStartD2D)]
-    
-    while candicate.size > 0:
-        root = candicate[0]
+    print('candicate', candicate)
+    for d2d in candicate:
+        power = cal_min_interference_power(d2d, **parameter)
+        numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
 
+        if power >= parameter['Pmin'] and numRB != 0:
+            #為了要計算d2d的sinr,假設已分配RB和power
+            parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
+            parameter['powerD2DList'][d2d] = power
+
+            sinr = method.cal_d2d_sinr(d2d, **parameter)
+            sinrDB = convert.mW_to_dB(sinr)
+            
+            if sinrDB >= -6.7:
+                throughput = tool.sinr_throughput_mapping(sinrDB, numRB)
+                rasing_data.append(throughput)
+
+                parameter['minD2Dsinr'][d2d] = sinr
+                parameter['data_d2d'][d2d] = throughput
+
+            else:
+                #d2d不滿足條件,不能啟動,RB收回以及power歸0
+                parameter['assignmentD2D'][d2d].fill(0)
+                parameter['powerD2DList'][d2d] = 0
+    
+    parameter = method.cal_d2d_min_sinr_power(**parameter)
+    parameter = method.throughput_collect(**parameter)
+    return parameter
 
 #計算能對其他裝置造成的最小干擾功率(p1)
 def cal_min_interference_power(d2d, **parameter):
     #d2d沒有干擾任何裝置
     if (not parameter['t_d2d'][d2d]) and (not parameter['t_d2c'][d2d]):
-        # print(d2d,'no interference any ue')
         return -1
 
     #被干擾的裝置分為2種case討論，一種是d2d另一種是cue
@@ -36,6 +63,7 @@ def cal_min_interference_power(d2d, **parameter):
         if parameter['powerD2DList'][tx] == 0 or tx in parameter['nStartD2D']:
             continue
         for rx in range(parameter['numD2DReciver'][tx]):
+            #d2d會干擾tx的rx
             if d2d in parameter['i_d2d_rx'][tx][rx]['d2d']:
                 flag = True
                 d2d_min_power = np.zeros(parameter['numRB'])
@@ -53,11 +81,3 @@ def cal_min_interference_power(d2d, **parameter):
         return -1
     else:
         return Pmin
-
-
-import initial_info
-import sys
-generator_ul = initial_info.Initial(sys.argv)
-ul = generator_ul.initial_ul()
-ul = generator_ul.get_ul_system_info(1, **ul)
-ul = mGreedy(**ul)

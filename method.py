@@ -431,7 +431,7 @@ def cal_cue_sinr(cue, **parameter):
 
 def cal_d2d_min_sinr_power(**parameter):
     for tx in range(parameter['numD2D']):
-        if parameter['powerD2DList'][tx] != 0:
+        if parameter['powerD2DList'][tx] != 0 and tx not in parameter['nStartD2D']:
             power_list = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
             for rx in range(parameter['numD2DReciver'][tx]):
                 for rb in range(parameter['numRB']):

@@ -1,7 +1,7 @@
 import sys
 import initial_info
 import method
-import mgreedy
+import mGreedy
 import juad
 import gcrs
 import greedy
@@ -33,12 +33,12 @@ def m_c(totalTime):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         ul = generator_ul.get_ul_system_info(ms, **ul)
-        ul = mgreedy.mGreedy(**ul)
+        ul = mGreedy.mGreedy(**ul)
 
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
-        dl = mgreedy.mGreedy(**dl)
+        dl = mGreedy.mGreedy(**dl)
         
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
     throughput = (((throughput / totalTime)* 1000) / 1e6)
