@@ -28,13 +28,6 @@ simulation time 500 totalBeam 10 1128.353722
 simulation time 500 totalBeam 4 1119.782128
 simulation time 500 totalBeam 5 1126.0606
 simulation time 500 totalBeam 3 1121.673392
-simulation time 500 numD2D 30 509.040082
-simulation time 500 numD2D 35 591.083336
-simulation time 500 numD2D 40 664.209516
-simulation time 500 numD2D 45 730.407492
-simulation time 500 numD2D 50 803.033524
-simulation time 500 numD2D 55 873.481786
-simulation time 500 numD2D 60 933.965006
 simulation time 500 numCUE 5 1160.003856
 simulation time 500 numCUE 10 1140.834482
 simulation time 500 numCUE 15 1138.01479
@@ -55,3 +48,13 @@ simulation time 500 d2dDistance 70 710.437042
 simulation time 500 d2dDistance 80 648.416248
 simulation time 500 d2dDistance 90 588.801706
 simulation time 500 d2dDistance 100 546.12423
+simulation time 500 numD2D 30 518.492906
+simulation time 500 numD2D 35 602.57951
+simulation time 500 numD2D 40 683.10176
+simulation time 500 numD2D 45 752.785344
+simulation time 500 numD2D 50 832.838032
+simulation time 500 numD2D 55 906.34393
+simulation time 500 numD2D 60 976.353816
+simulation time 500 numD2D 65 1044.808256
+simulation time 500 numD2D 70 1113.483516
+simulation time 500 numD2D 75 1174.676006

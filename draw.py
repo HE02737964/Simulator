@@ -110,7 +110,7 @@ def draw_test():
     plt.show()
 
 def draw_simulation():
-    file_name = ['method', 'juad', 'gcrs', 'greedy']
+    file_name = ['method', 'method_greedy', 'juad', 'gcrs', 'gcrs_c', 'greedy']
     
     numGraph = 8
     index = 0
@@ -176,12 +176,15 @@ def draw_simulation():
         elif i == 7:
             x_name = "pass"
         
-        if i == 1 or i == 2 or i == 4 or i == 6:
+        # if i == 1 or i == 2 or i == 4 or i == 6:
+        if i == 4:
             plt.figure()
             plt.plot(x_label[0][i], y_label[0][i],'s-',color = 'r', label="proposed")
-            plt.plot(x_label[1][i], y_label[1][i],'o-',color = 'g', label="juad")
-            plt.plot(x_label[2][i], y_label[2][i],'^-', color = 'b', label="gcrs")
-            plt.plot(x_label[3][i], y_label[3][i], 'd-', color = 'k', label="greedy")
+            plt.plot(x_label[1][i], y_label[1][i],'D-',color = 'm', label="proposed + greedy")
+            plt.plot(x_label[2][i], y_label[2][i],'o-',color = 'g', label="juad")
+            plt.plot(x_label[3][i], y_label[3][i],'^-', color = 'b', label="gcrs")
+            plt.plot(x_label[4][i], y_label[4][i], '+-', color = 'c', label="gcrs + greedy")
+            plt.plot(x_label[5][i], y_label[5][i], 'd-', color = 'k', label="greedy")
 
             plt.xlabel(x_name, labelpad = 15)
             plt.xticks(x_label[0][i])
@@ -189,6 +192,6 @@ def draw_simulation():
             plt.legend(loc = "best")
             plt.tight_layout()
             plt.savefig('./result/%s_%s.eps'%(i,x_name))
-            # plt.show()
+            plt.show()
     
 draw_simulation()

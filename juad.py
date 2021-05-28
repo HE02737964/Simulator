@@ -76,8 +76,9 @@ def gp_method(cue, d2d, **parameter):
 
     #cue和d2d所需的sinr值
     s_cue = parameter['minCUEsinr'][cue]
-    # s_d2d = parameter['minD2Dsinr'][d2d]
-    s_d2d = tool.data_sinr_mapping(parameter['data'][d2d], numD2DRB)
+    # s_d2d = parameter['minD2Dsinr'][d2d] #最原始方法
+    s_d2d = tool.data_sinr_mapping(parameter['data'][d2d], numD2DRB) #加入greedy方法
+    # s_d2d = tool.max_tbs_sinr_mapping()
     parameter['minD2Dsinr'][d2d] = s_d2d
 
     #cue和d2d所需的資料量(Throughput)
@@ -437,6 +438,7 @@ def maximum_matching(**parameter):
     #Assignment D2D RB
     assignmentD2D = [i[0] for i in parameter['matching_index']]
     assignmentCUE = [i[1] for i in parameter['matching_index']]
+
     for index in range(len(assignmentCUE)):
         d2d = assignmentD2D[index]
         cue = assignmentCUE[index]
@@ -444,21 +446,20 @@ def maximum_matching(**parameter):
             assignRB = parameter['assignmentTxCell'][cue].copy()
         else:
             assignRB = parameter['assignmentRxCell'][cue].copy()
+            
         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
-            # print('d2dd2d',d2d)
             parameter['assignmentD2D'][d2d] = assignRB
             parameter['matching_pair'][cue].append(d2d)
             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
             parameter['numAssignment'] = parameter['numAssignment'] + 1
             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
             parameter['powerD2D'][d2d] = parameter['powerD2DList'][d2d][cue]
-    # print('juad_throughput',parameter['throughput'])
-    
+
     # if len(parameter['candicateCUE']):
     #     iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
     # else:
     #     iteration = 0
-    # print('iteration',iteration)
+
     # for i in range(iteration):
     #     parameter = throughput_rasing(**parameter)
         
@@ -475,14 +476,11 @@ def maximum_matching(**parameter):
     #         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
     #             parameter['assignmentD2D'][d2d] = assignRB
     #             parameter['matching_pair'][cue].append(d2d)
-    #             print('mathcing pair',cue,parameter['matching_pair'][cue])
-    #             # for d2d in parameter['matching_pair'][cue]:
-    #             print('d2d th',parameter['weight_d2d'][d2d][cue])
-    #             print('d2d po',parameter['powerD2DList'][d2d][cue])
-    #             juad_throughput = juad_throughput + parameter['weight_d2d'][d2d][cue]
+    #             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
+    #             parameter['numAssignment'] = parameter['numAssignment'] + 1
     #             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
+    #             parameter['powerD2D'][d2d] = parameter['powerD2DList'][d2d][cue]
 
-    
     parameter = greedy_throughput_rasing(**parameter)
     # print('cue power list',parameter['powerCUEList'])
     # print('cue candicate',parameter['candicateCUE'])

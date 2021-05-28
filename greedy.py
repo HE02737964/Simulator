@@ -172,4 +172,7 @@ def greedy(**parameter):
                 # print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
     # print('throughput',parameter['throughput'])
     # print('power list greedy',parameter['powerD2DList'])
+    for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            print('d2d',d2d,parameter['data_d2d'][d2d])
     return parameter

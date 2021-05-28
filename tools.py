@@ -209,6 +209,14 @@ class Tool:
         sinr = convert.dB_to_mW(sinr_dB)
         return sinr
 
+    def max_tbs_sinr_mapping(self):
+        convert = Convert()
+        tbs = 25
+        cqi = convert.TBS_CQI_mapping(tbs)
+        sinr_dB = convert.CQI_SINR_mapping(cqi)
+        sinr = convert.dB_to_mW(sinr_dB)
+        return sinr
+
     def IsInsideSector(self, u, v):
         return -u[0]*v[1] + u[1]*v[0] > 0
 

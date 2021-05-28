@@ -17,7 +17,7 @@ def greedy(**parameter):
     sortD2D = np.copy(parameter['priority_sort_index'])
     nStartD2D = parameter['nStartD2D'].copy()
     candicate = sortD2D[np.in1d(sortD2D, nStartD2D)]
-    print('candicate', candicate)
+    
     for d2d in candicate:
         power = cal_min_interference_power(d2d, **parameter)
         numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
@@ -29,7 +29,7 @@ def greedy(**parameter):
 
             sinr = method.cal_d2d_sinr(d2d, **parameter)
             sinrDB = convert.mW_to_dB(sinr)
-            
+
             if sinrDB >= -6.7:
                 throughput = tool.sinr_throughput_mapping(sinrDB, numRB)
                 rasing_data.append(throughput)
@@ -41,7 +41,7 @@ def greedy(**parameter):
                 #d2d不滿足條件,不能啟動,RB收回以及power歸0
                 parameter['assignmentD2D'][d2d].fill(0)
                 parameter['powerD2DList'][d2d] = 0
-    
+
     parameter = method.cal_d2d_min_sinr_power(**parameter)
     parameter = method.throughput_collect(**parameter)
     return parameter

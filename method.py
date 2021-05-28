@@ -56,10 +56,10 @@ def phase1(**parameter):
     candicate = np.copy(parameter['priority_sort_index'])
     # print('candicate',candicate)
     # print(parameter['d2d_no_cell_interference_graph'])
-    print('ccandicate CUE', parameter['candicateCUE'])
-    print('interference', parameter['i_d2d'])
-    print('nStartD2D', parameter['nStartD2D'])
-    print('assignemnt',parameter['assignmentRxCell'])
+    # print('ccandicate CUE', parameter['candicateCUE'])
+    # print('interference', parameter['i_d2d'])
+    # print('nStartD2D', parameter['nStartD2D'])
+    # print('assignemnt',parameter['assignmentRxCell'])
     while candicate.size > 0:
         root = candicate[0]
         # print('root',root)
@@ -465,7 +465,7 @@ def throughput_collect(**parameter):
     # print('num d2d assign',assign)
     parameter['numAssignment'] = parameter['numAssignment'] + assign
     parameter['total_throughput'] = parameter['total_throughput'] + parameter['throughput']
-    print('throughput',parameter['throughput'])
+    # print('throughput',parameter['throughput'])
     # print('numAssignment',parameter['numAssignment'])
     return parameter
 
