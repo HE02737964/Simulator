@@ -7,6 +7,9 @@ def drawCell(**parameter):
     numCUE = len(parameter['ue_point'])
     numD2D = len(parameter['tx_point'])
 
+    text_cue = [i for i in range(numCUE)]
+    text_d2d = [i for i in range(numD2D)]
+
     x0 = 0
     y0 = 0
     theta = np.arange(0, 2*np.pi, 0.01)
@@ -30,6 +33,9 @@ def drawCell(**parameter):
             plotted = 1
         else:
             plt.scatter(parameter['ue_point'][i][0], parameter['ue_point'][i][1], color="#FF00FF", zorder=1000, s=6)
+
+    for i, txt in enumerate(text_cue):
+        plt.annotate(txt, (parameter['ue_point'][i][0], parameter['ue_point'][i][1]))
 
     #Draw D2D
     plotted = 0
@@ -110,13 +116,18 @@ def draw_test():
     plt.show()
 
 def draw_simulation():
-    file_name = ['method', 'method_greedy', 'juad', 'gcrs', 'gcrs_c', 'greedy']
+    # file_name = ['method', 'method_greedy', 'juad', 'gcrs', 'gcrs_c', 'greedy']
+    file_name = ['method_c', 'juad', 'gcrs_c', 'greedy']
+    color_list = ['r', 'g', 'b', 'k']
+    style_list = ['s-', 'o-', '^-', 'd-']
+    label_list = ['proposed', 'juad', 'gcrs', 'greedy']
     
     numGraph = 8
     index = 0
     
     x_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     x_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+
     y_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     y_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     
@@ -151,12 +162,6 @@ def draw_simulation():
             y_label[i][j] = [y for x,y in sorted(zip(x_temp[i][j], y_temp[i][j]))]
             x_label[i][j] = sorted(x_temp[i][j])
     
-    # for i in range(numGraph):
-    #     print('x label',i,x_label[i])
-    #     for j in range(len(file_name)):
-    #         print('method',j,'y label',y_label[j][i])
-    #         print('method',j,'y_temp,',y_temp[j][i])
-
     for i in range(numGraph):
         x_name = ""
         if i == 0:
@@ -166,7 +171,10 @@ def draw_simulation():
         elif i == 2:
             x_name = "Number of CUE"
         elif i == 3:
-            x_name = "Maximum of D2D group packet size"
+            for j in range(len(file_name)):
+                for data in range(10):
+                    x_label[j][i][data] = (float(x_label[j][i][data]) * 1000) / 1e6
+            x_name = "Maximum of D2D group packet size (Mbps)"
         elif i == 4:
             x_name = "Number of D2D group"
         elif i == 5:
@@ -177,15 +185,11 @@ def draw_simulation():
             x_name = "pass"
         
         # if i == 1 or i == 2 or i == 4 or i == 6:
-        if i == 4:
+        if i == 0 or i == 1 or i == 2 or i == 3 or i == 4 or i == 5 or i == 6:
             plt.figure()
-            plt.plot(x_label[0][i], y_label[0][i],'s-',color = 'r', label="proposed")
-            plt.plot(x_label[1][i], y_label[1][i],'D-',color = 'm', label="proposed + greedy")
-            plt.plot(x_label[2][i], y_label[2][i],'o-',color = 'g', label="juad")
-            plt.plot(x_label[3][i], y_label[3][i],'^-', color = 'b', label="gcrs")
-            plt.plot(x_label[4][i], y_label[4][i], '+-', color = 'c', label="gcrs + greedy")
-            plt.plot(x_label[5][i], y_label[5][i], 'd-', color = 'k', label="greedy")
-
+            for j in range(len(file_name)):
+                plt.plot(x_label[j][i], y_label[j][i], style_list[j], color = color_list[j], label = label_list[j])
+            
             plt.xlabel(x_name, labelpad = 15)
             plt.xticks(x_label[0][i])
             plt.ylabel("D2D group Throughput (Mbps)", labelpad = 20)

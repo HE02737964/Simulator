@@ -133,31 +133,26 @@ def y(totalTime):
 
 import copy
 def test(totalTime):
-    throughput_g = throughput_j = 0
+    throughput = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         ul = generator_ul.get_ul_system_info(ms, **ul)
-        jul = copy.deepcopy(ul)
-        ul = greedy.greedy(**ul)
-        jul = juad.maximum_matching(**jul)
+        ul.update({'check_value' : False})
+        ul = gcrs.test_coloring(**ul)
 
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         dl = generator_dl.get_dl_system_info(ms, **dl)
-        jdl = copy.deepcopy(dl)
-        dl = greedy.greedy(**dl)
-        jdl = juad.maximum_matching(**jdl)
-        
-        throughput_g =  throughput_g + (ul['throughput'] + dl['throughput'])
-        throughput_j =  throughput_j + (jul['throughput'] + jdl['throughput'])
-    throughput_g = (((throughput_g / totalTime)* 1000) / 1e6)
-    throughput_j = (((throughput_j / totalTime)* 1000) / 1e6)
+        dl.update({'check_value' : False})
+        dl = gcrs.test_coloring(**dl)
+
+        throughput =  throughput + (ul['throughput'] + dl['throughput'])
+    throughput = (((throughput / totalTime)* 1000) / 1e6)
 
     f = open("./result/test",'a')
     f.write("simulation time {} ".format(totalTime))
-    f.write("{} {} {}\n".format(sys.argv[3], sys.argv[4], throughput_g))
-    f.write("{} {} {}\n".format(sys.argv[3], sys.argv[4], throughput_j))
+    f.write("{} {} {}\n".format(sys.argv[3], sys.argv[4], throughput))
 
 if __name__ == '__main__':
     simulation_time = int(sys.argv[2])

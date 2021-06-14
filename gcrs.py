@@ -1,6 +1,5 @@
 import numpy as np
 import tools
-import time
 
 def initial_parameter(**parameter):
     #初始化傳輸功率
@@ -83,6 +82,8 @@ def vertex_coloring(**parameter):
             subscript = []
             for d2d in range(parameter['numD2D']):
                 if d2d not in parameter['rb_use_status'][rb]['d2d']:
+                    # if parameter['rb_use_status'][rb]['cue'] not in parameter['t_d2c'][d2d]:
+                    #     print('d2d',d2d,parameter['t_d2c'][d2d],parameter['rb_use_status'][rb]['cue'])
                     subscript.append(d2d)
             # print('subscript',subscript)
             while subscript:
@@ -92,6 +93,7 @@ def vertex_coloring(**parameter):
 
                 #記錄當前Vt, Vi
                 current_Vt = parameter['throughput_rb'][rb]
+                current_Vc = cue_throughput
                 current_Vi = parameter['edge_rb'][rb]
                 current_vertex_list = parameter['rb_use_status'][rb]['d2d'].copy()
                 # print('current Vt', current_Vt)
@@ -114,11 +116,13 @@ def vertex_coloring(**parameter):
                 if current_Vt < new_Vt:
                     parameter['rb_use_status'][rb]['d2d'] = new_vertex_list
                     parameter['throughput_rb'][rb] = new_Vt
+                    parameter['throughput_cue'][rb] = cue_Vt
                     subscript.remove(vertex)
                     # print('put vertex in rb')
                 else:
                     parameter['rb_use_status'][rb]['d2d'] = current_vertex_list
                     parameter['throughput_rb'][rb] = current_Vt
+                    parameter['throughput_cue'][rb] = current_Vc
                     subscript.remove(vertex)
                     # print('vertex can not throughput rasing')
                 
@@ -213,7 +217,7 @@ def check_some_value(**parameter):
     parameter = remove_d2d_less_than_min_sinr(**parameter)
 
     #更新每個D2D使用的RB和Vt
-    np.zeros_like(parameter['throughput_d2d'])
+    parameter['throughput_d2d'] = np.zeros_like(parameter['throughput_d2d'])
     # print('set d2d throughput zero',parameter['throughput_d2d'])
     # print('set assignemnt d2d zero',parameter['assignmentD2D'])
     for rb in range(parameter['numRB']):
@@ -246,9 +250,11 @@ def check_some_value(**parameter):
                 if d2d in parameter['rb_use_status'][rb]['d2d']:
                     parameter['rb_use_status'][rb]['d2d'].remove(d2d)
             continue
+
         for rb in range(parameter['numRB']):
             sinr_list[rb] = cal_d2d_sinr(d2d, rb, **parameter)
-        sinr = np.min(sinr_list)
+        sinr_nonzeroList = sinr_list[np.nonzero(sinr_list)]
+        sinr = np.min(sinr_nonzeroList)
         sinr = convert.mW_to_dB(sinr)
         d2d_throughput = tool.sinr_throughput_mapping(sinr, numRB)
         if d2d_throughput >= parameter['data_d2d'][d2d]:
@@ -383,15 +389,17 @@ def cal_Vt_cue(rb, **parameter):
                     sinr = cal_cue_sinr(cue, rb, **parameter)
                     # print('cue',cue, 'sinr',sinr)
                     # print('cue min sinr',parameter['minCUEsinr'][cue])
-                    throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+                    # throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+                    throughput = parameter['data_cue'][cue]
             else:
-                if parameter['assignmentRxCell'][rx][rb] == 1:
-                    if rx not in parameter['rb_use_status'][rb]['cue']:
-                        parameter['rb_use_status'][rb]['cue'].append(rx)
+                if parameter['assignmentTxCell'][cue][rb] == 1:
+                    if cue not in parameter['rb_use_status'][rb]['cue']:
+                        parameter['rb_use_status'][cue]['cue'].append(cue)
                     sinr = cal_cue_sinr(cue, rb, **parameter)
                     # print('cue',rx, 'sinr',sinr)
                     # print('cue min sinr',parameter['minCUEsinr'][rx])
-                    throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+                    # throughput = tool.sinr_throughput_mapping(convert.mW_to_dB(sinr), 1)
+                    throughput = parameter['data_cue'][rx]
     return throughput
 
 def convert_sinr_vt(sinr):
