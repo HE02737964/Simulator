@@ -29,6 +29,9 @@ def m(totalTime):
 
 def m_c(totalTime):
     throughput = 0
+    loss = 0
+    assignment = 0
+    distance = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -41,7 +44,26 @@ def m_c(totalTime):
         dl = mGreedy.mGreedy(**dl)
         
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
+        loss = loss + (ul['consumption'] + dl['consumption'])
+        assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
+        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
     throughput = (((throughput / totalTime)* 1000) / 1e6)
+    assignment = assignment / totalTime
+    distance = (distance / totalTime)
+    
+    consumption = (throughput / (loss / totalTime)) / distance
+
+    if sys.argv[3] == 'numD2D':
+        f = open("./result/method_c",'a')
+        f.write("simulation time {} ".format(totalTime))
+        f.write("{} {} {}\n".format('consumption', sys.argv[4], consumption))
+
+        f = open("./result/raw_data", 'a')
+        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     f = open("./result/method_c",'a')
     f.write("simulation time {} ".format(totalTime))
@@ -49,6 +71,9 @@ def m_c(totalTime):
 
 def j(totalTime):
     throughput = 0
+    loss = 0
+    distance = 0
+    assignment = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -61,7 +86,25 @@ def j(totalTime):
         dl = juad.maximum_matching(**dl)
         
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
+        loss = loss + (ul['consumption'] + dl['consumption'])
+        assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
+        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
     throughput = (((throughput / totalTime)* 1000) / 1e6)
+    assignment = assignment / totalTime
+    distance = (distance / totalTime)
+    consumption = (throughput / (loss / totalTime)) / distance
+
+    if sys.argv[3] == 'numD2D':
+        f = open("./result/juad",'a')
+        f.write("simulation time {} ".format(totalTime))
+        f.write("{} {} {}\n".format('consumption', sys.argv[4], consumption))
+
+        f = open("./result/raw_data", 'a')
+        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+        f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     f = open("./result/juad",'a')
     f.write("simulation time {} ".format(totalTime))
@@ -91,6 +134,9 @@ def g(totalTime):
 
 def g_c(totalTime):
     throughput = 0
+    loss = 0
+    distance = 0
+    assignment = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -105,7 +151,25 @@ def g_c(totalTime):
         dl = gcrs.vertex_coloring(**dl)
 
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
+        loss = loss + (ul['consumption'] + dl['consumption'])
+        assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
+        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
     throughput = (((throughput / totalTime)* 1000) / 1e6)
+    assignment = assignment / totalTime
+    distance = (distance / totalTime)
+    consumption = (throughput / (loss / totalTime)) / distance
+    
+    if sys.argv[3] == 'numD2D':
+        f = open("./result/gcrs_noCheck",'a')
+        f.write("simulation time {} ".format(totalTime))
+        f.write("{} {} {}\n".format('consumption', sys.argv[4], consumption))
+
+        f = open("./result/raw_data", 'a')
+        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     f = open("./result/gcrs_noCheck",'a')
     f.write("simulation time {} ".format(totalTime))
@@ -113,6 +177,9 @@ def g_c(totalTime):
 
 def y(totalTime):
     throughput = 0
+    loss = 0
+    distance = 0
+    assignment = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -125,7 +192,25 @@ def y(totalTime):
         dl = greedy.greedy(**dl)
         
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
+        loss = loss + (ul['consumption'] + dl['consumption'])
+        assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
+        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
     throughput = (((throughput / totalTime)* 1000) / 1e6)
+    assignment = assignment / totalTime
+    distance = (distance / totalTime)
+    consumption = (throughput / (loss / totalTime)) / distance
+
+    if sys.argv[3] == 'numD2D':
+        f = open("./result/greedy",'a')
+        f.write("simulation time {} ".format(totalTime))
+        f.write("{} {} {}\n".format('consumption', sys.argv[4], consumption))
+
+        f = open("./result/raw_data", 'a')
+        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     f = open("./result/greedy",'a')
     f.write("simulation time {} ".format(totalTime))

@@ -27,8 +27,8 @@ def initial_parameter(**parameter):
     parameter.update({'weight_cue' : weight_cue})
     parameter.update({'weight_d2d' : weight_d2d})
     parameter.update({'powerCUE' : powerCUE})
-    parameter.update({'powerD2DList' : powerD2DList})
-    parameter.update({'powerD2D' : np.zeros(parameter['numD2D'])})
+    parameter.update({'powerD2D' : powerD2DList})
+    parameter.update({'powerD2DList' : np.zeros(parameter['numD2D'])})
     parameter.update({'sinrCUEList' : sinrCUEList})
     parameter.update({'sinrD2DList' : sinrD2DList})
     parameter.update({'assignmentD2D' : assignmentD2D})
@@ -86,7 +86,7 @@ def gp_method(cue, d2d, **parameter):
     r_d2d = parameter['data'][d2d]
     if r_d2d == 0:
         # parameter['powerCUE'][d2d][cue] = 0
-        parameter['powerD2DList'][d2d][cue] = 0
+        parameter['powerD2D'][d2d][cue] = 0
         
         parameter['weight_matrix'][d2d][cue] = 0
         parameter['weight_cue'][d2d][cue] = 0
@@ -257,7 +257,7 @@ def gp_method(cue, d2d, **parameter):
         throughput_d2d = r_d2d
 
     parameter['powerCUE'][d2d][cue] = cue_power
-    parameter['powerD2DList'][d2d][cue] = d2d_power
+    parameter['powerD2D'][d2d][cue] = d2d_power
 
     parameter['sinrCUEList'][d2d][cue] = sinr_cue
     parameter['sinrD2DList'][d2d][cue] = sinr_d2d
@@ -350,7 +350,7 @@ def cal_d2d_interference(tx, rx, rb, **parameter):
     interference = 0
     for i in parameter['i_d2d_rx'][tx][rx]['d2d']:
         if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentD2D'][i][rb] == 1:
-            interference = interference + (parameter['powerD2D'][i] * parameter['g_dij'][i][tx][rx][rb])
+            interference = interference + (parameter['powerD2DList'][i] * parameter['g_dij'][i][tx][rx][rb])
     for i in parameter['i_d2d_rx'][tx][rx]['cue']:
         if parameter['assignmentD2D'][tx][rb] == 1 and parameter['assignmentTxCell'][i][rb] == 1:
             interference = interference + (parameter['powerCUEList'][i] * parameter['g_c2d'][i][tx][rx][rb])
@@ -363,9 +363,14 @@ def get_d2d_sys_info(tbs):
     sinr = convert.dB_to_mW(sinr)
     return cqi, sinr
 
-def cal_need_power(tx, **parameter):
+def cal_need_power(tx, nRB, **parameter):
     powerList = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-    parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
+    count = 0
+    for rb in range(parameter['numRB']):
+        if parameter['d2d_use_rb_List'][tx][rb] == 1 and count <= nRB:
+            parameter['assignmentD2D'][tx][rb] = 1
+            count = count + 1
+    # parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
     for rx in range(parameter['numD2DReciver'][tx]):
         for rb in range(parameter['numRB']):
             interference = cal_d2d_interference(tx, rx, rb, **parameter)
@@ -386,7 +391,7 @@ def cal_d2d_sinr(d2d, **parameter):
     for rx in range(parameter['numD2DReciver'][d2d]):
         for rb in range(parameter['numRB']):
             interference = cal_d2d_interference(d2d, rx, rb, **parameter)
-            sinr_list[rx][rb] = (parameter['powerD2D'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / ( parameter['N0'] + interference)
+            sinr_list[rx][rb] = (parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / ( parameter['N0'] + interference)
     sinr_nonzero_list = sinr_list[np.nonzero(sinr_list)]
     return np.min(sinr_nonzero_list)
 
@@ -398,19 +403,40 @@ def greedy_throughput_rasing(**parameter):
             # print('d2d greedy',d2d)
             parameter = get_d2d_use_rb(d2d, **parameter)
             numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
+            # tbs, rb = tool.data_tbs_mapping_higher_rb(parameter['data_d2d'][d2d], parameter['numRB'])
             tbs, rb = tool.data_tbs_mapping(parameter['data_d2d'][d2d], parameter['numRB'])
             d2d_need_rb[d2d] = rb
-            if numRB == 0 or numRB < d2d_need_rb[d2d]:
+            # if numRB == 0 or numRB < d2d_need_rb[d2d]:
+            if numRB == 0:
+            #     print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
                 parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
+            elif numRB < d2d_need_rb[d2d]:
+                data = tool.TBS_Throughput_mapping(25, numRB)
+                cqi, sinr = get_d2d_sys_info(25)
+                parameter['data_d2d'][d2d] = data
+                parameter['minD2Dsinr'][d2d] = sinr
+
+                power = cal_need_power(d2d,  d2d_need_rb[d2d], **parameter)
+                
+                if power != 0:
+                    parameter['powerD2DList'][d2d] = power
+                    count = 0
+                    for rb in range(parameter['numRB']):
+                        if parameter['d2d_use_rb_List'][d2d][rb] == 1 and count <= numRB:
+                            parameter['assignmentD2D'][d2d][rb] = 1
+                            count = count + 1
             else:
                 cqi, sinr = get_d2d_sys_info(tbs)
                 parameter['minD2Dsinr'][d2d] = sinr
 
-                power = cal_need_power(d2d, **parameter)
+                power = cal_need_power(d2d,  d2d_need_rb[d2d], **parameter)
                 
                 if power != 0:
-                    parameter['powerD2D'][d2d] = power
-                    parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
+                    parameter['powerD2DList'][d2d] = power
+                    for rb in range(d2d_need_rb[d2d]):
+                        if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                            parameter['assignmentD2D'][d2d][rb] = 1
+                    # parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
                     parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
                     parameter['numAssignment'] = parameter['numAssignment'] + 1
                 else:
@@ -418,7 +444,7 @@ def greedy_throughput_rasing(**parameter):
                     parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
 
     for d2d in range(parameter['numD2D']):
-        if parameter['powerD2D'][d2d] != 0:
+        if parameter['powerD2DList'][d2d] != 0:
             sinr = cal_d2d_sinr(d2d, **parameter)
             # print('need sinr',parameter['minD2Dsinr'][i])
             # print('cal d2d',i,sinr)
@@ -428,6 +454,7 @@ def greedy_throughput_rasing(**parameter):
     return parameter
 #主程式
 def maximum_matching(**parameter):
+    tool = tools.Tool()
     parameter = initial_parameter(**parameter)
     for j in range(parameter['numD2D']):
         for i in parameter['candicateCUE']:
@@ -447,13 +474,13 @@ def maximum_matching(**parameter):
         else:
             assignRB = parameter['assignmentRxCell'][cue].copy()
             
-        if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
+        if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2D'][d2d][cue] != 0:
             parameter['assignmentD2D'][d2d] = assignRB
             parameter['matching_pair'][cue].append(d2d)
             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
             parameter['numAssignment'] = parameter['numAssignment'] + 1
             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
-            parameter['powerD2D'][d2d] = parameter['powerD2DList'][d2d][cue]
+            parameter['powerD2DList'][d2d] = parameter['powerD2D'][d2d][cue]
 
     # if len(parameter['candicateCUE']):
     #     iteration = int(parameter['numD2D'] / len(parameter['candicateCUE']))
@@ -473,13 +500,13 @@ def maximum_matching(**parameter):
     #         else:
     #             assignRB = parameter['assignmentRxCell'][cue].copy()
 
-    #         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2DList'][d2d][cue] != 0:
+    #         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2D'][d2d][cue] != 0:
     #             parameter['assignmentD2D'][d2d] = assignRB
     #             parameter['matching_pair'][cue].append(d2d)
     #             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
     #             parameter['numAssignment'] = parameter['numAssignment'] + 1
     #             parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
-    #             parameter['powerD2D'][d2d] = parameter['powerD2DList'][d2d][cue]
+    #             parameter['powerD2DList'][d2d] = parameter['powerD2D'][d2d][cue]
 
     parameter = greedy_throughput_rasing(**parameter)
     # print('cue power list',parameter['powerCUEList'])
@@ -494,4 +521,5 @@ def maximum_matching(**parameter):
     # print(parameter['numAssignment'])
     # print('total throughput',parameter['throughput'])
     # print('totla',parameter['total_throughput'])
+    parameter = tool.power_collect(**parameter)
     return parameter

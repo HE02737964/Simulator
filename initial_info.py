@@ -132,7 +132,7 @@ class Initial:
     def initial_dl(self):
         parameter = copy.deepcopy(self.parameter)
 
-        parameter['Pmax'] = parameter['Pbs']
+        # parameter['Pmax'] = parameter['Pbs']
 
         c = channel.Channel(parameter['numRB'], parameter['numD2DReciver'])
         scheduleTimes_dl = np.ones(parameter['numD2D'])

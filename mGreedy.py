@@ -3,9 +3,13 @@ import tools
 import method
 
 def mGreedy(**parameter):
+    tool = tools.Tool()
     parameter = method.initial_parameter(**parameter)
     parameter = method.phase1(**parameter)
     parameter = greedy(**parameter)
+    parameter = method.cal_d2d_min_sinr_power(**parameter)
+    parameter = method.throughput_collect(**parameter)
+    parameter = tool.power_collect(**parameter)
     
     return parameter
 
@@ -22,7 +26,7 @@ def greedy(**parameter):
         power = cal_min_interference_power(d2d, **parameter)
         numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
 
-        if power >= parameter['Pmin'] and numRB != 0:
+        if power < parameter['Pmax'] and power >= parameter['Pmin'] and numRB != 0:
             #為了要計算d2d的sinr,假設已分配RB和power
             parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
             parameter['powerD2DList'][d2d] = power
@@ -42,8 +46,6 @@ def greedy(**parameter):
                 parameter['assignmentD2D'][d2d].fill(0)
                 parameter['powerD2DList'][d2d] = 0
 
-    parameter = method.cal_d2d_min_sinr_power(**parameter)
-    parameter = method.throughput_collect(**parameter)
     return parameter
 
 #計算能對其他裝置造成的最小干擾功率(p1)

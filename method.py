@@ -86,6 +86,7 @@ def phase1(**parameter):
                 p2 = set_power_in_max_min(p2, **parameter)
                 # print('node',node,'p1',p1,'p3',p3,'set p2',p2, 'power and assing rb')
                 parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
+                print('node',node,'p2',p2)
                 parameter['powerD2DList'][node] = p2
                 # print('assign', parameter['assignmentD2D'][node])
                 index = index - 1
@@ -134,8 +135,9 @@ def phase1(**parameter):
                 continue
 
             if p >= p3:
-                # print('node',node,'p',p,'>','p3',p3)
+                print('node',node,'p',p,'>','p3',p3)
                 p = set_power_in_max_min(p, **parameter)
+                print('node',node,'p',p)
                 parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
                 # print('assign', parameter['assignmentD2D'][node])
                 parameter['powerD2DList'][node] = p

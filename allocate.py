@@ -6,6 +6,7 @@ def cellAllocateUl(**parameter):
     convert = tools.Convert()
     candicate = np.sort(np.random.choice(range(0,parameter['numCUE']), size=int(parameter['numCUE'] * (parameter['perScheduleCUE']/100)), replace=False))     #根據比例隨機挑選要傳資料的CUE
     
+    P = parameter['Pmax']
     minSINR = np.zeros(parameter['numCUE'])
     minCQI = np.zeros(parameter['numCUE'])
     rbList = np.zeros(parameter['numCUE'])
@@ -21,7 +22,7 @@ def cellAllocateUl(**parameter):
         rbList[i] = rb
         minCQI[i] = cqi
         minSINR[i] = sinr
-        cal_ue_power(i, sinr, deleteCandicate, power_prb, **parameter)
+        cal_ue_power(i, sinr, P, deleteCandicate, power_prb, **parameter)
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
@@ -42,7 +43,7 @@ def cellAllocateUl(**parameter):
                 minCQI[i] = cqi
                 minSINR[i] = sinr
                 parameter['data_cue'][ue] = throughput
-                cal_ue_power(i, sinr, deleteCandicate, power_prb, **parameter)
+                cal_ue_power(i, sinr, P, deleteCandicate, power_prb, **parameter)
             rb = rbList[ue]             #CUE需要多少個RB
             if ue in deleteCandicate:
                 continue
@@ -76,7 +77,8 @@ def cellAllocateUl(**parameter):
 def cellAllocateDl(**parameter):
     tool = tools.Tool()
     convert = tools.Convert()
-    
+
+    P = parameter['Pbs']
     minSINR = np.zeros(parameter['numCUE'])
     minCQI = np.zeros(parameter['numCUE'])
     sinrList = np.zeros(parameter['numCUE'])
@@ -93,7 +95,7 @@ def cellAllocateDl(**parameter):
         rbList[i] = rb
         minCQI[i] = cqi
         minSINR[i] = sinr
-        cal_ue_power(i, sinr, deleteCandicate, power_prb, **parameter)
+        cal_ue_power(i, sinr, P, deleteCandicate, power_prb, **parameter)
     
     assignmentUE = np.zeros((parameter['numCUE'], parameter['numRB']))    #二維陣列,每個UE使用的RB狀況(1=使用,0=未使用)
     assignmentRB = np.zeros(parameter['numRB'])              #RB的使用狀態(1=使用,0=未使用)
@@ -113,7 +115,7 @@ def cellAllocateDl(**parameter):
                 minCQI[i] = cqi
                 minSINR[i] = sinr
                 parameter['data_cue'][ue] = throughput
-                cal_ue_power(i, sinr, deleteCandicate, power_prb, **parameter)
+                cal_ue_power(i, sinr, P, deleteCandicate, power_prb, **parameter)
             rb = rbList[ue]             #CUE需要多少個RB
             if ue in deleteCandicate:
                 continue
@@ -152,7 +154,7 @@ def get_ue_system_info(tbs):
     sinr = convert.dB_to_mW(sinr)
     return cqi, sinr
 
-def cal_ue_power(cue, sinr, deleteCandicate, power_prb, **parameter):
+def cal_ue_power(cue, sinr, MAX, deleteCandicate, power_prb, **parameter):
     tx = 0
     rx = 0
     if parameter['numCellRx'] == 1:
@@ -165,7 +167,7 @@ def cal_ue_power(cue, sinr, deleteCandicate, power_prb, **parameter):
     
     if power < parameter['Pmin']:
         power = parameter['Pmin']
-    if power > parameter['Pmax']:
+    if power > MAX:
         power = 0
         deleteCandicate.append(cue)
     power_prb[cue] = power

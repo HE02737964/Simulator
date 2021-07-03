@@ -192,12 +192,15 @@ class Tool:
                     break
                 if tbs[index][rb] >= data:
                     return int(index), rb+1
-        # for index in tbs:         #用較多RB,較低的TBS index
-        #     if index == "26A":
-        #         break
-        #     for rb in range(numRB):
-        #         if tbs[index][rb] >= data:
-        #             return int(index), rb+1
+
+    def data_tbs_mapping_higher_rb(self, data, numRB):
+        tbs = self.TBS()
+        for index in tbs:           #用較多RB,較低的TBS index
+            if index == "26A":
+                break
+            for rb in range(numRB):
+                if tbs[index][rb] >= data:
+                    return int(index), rb+1
 
     def data_sinr_mapping(self, data, numRB):
         convert = Convert()
@@ -270,3 +273,70 @@ class Tool:
 
     def Calculate_SINR(self, power, gain, N0, interference):
         return (power * gain) / (N0 + interference)
+
+    def power_collect(self, **parameter):
+        convert = Convert()
+        Vcc = 2.95
+        LC = (300/41)
+        MC = (300/20)
+        UC = (350/3)
+        sumWatt = 0
+        consumption = 0
+        print('sssum',np.sum(parameter['powerD2DList']))
+        for d2d in range(parameter['numD2D']):
+            current = 0
+            watt = 0
+            if parameter['powerD2DList'][d2d] != 0:
+                power = convert.mW_to_dB(parameter['powerD2DList'][d2d])
+                print('d2d',d2d,'power',power)
+                if power <= 0:
+                    current = ((power + 40) + 1) * LC
+                elif power > 0 and power <= 20:
+                    current = 300 + (power * MC)
+                else:
+                    current = 600 + ((power - 20) * UC)
+                watt = Vcc * current
+                sumWatt = sumWatt + watt
+        throughput = parameter['throughput']
+        # consumption = throughput / sumWatt
+        consumption = sumWatt / 1000
+        parameter.update({'consumption' : consumption})
+
+        totalDis = 0
+        count = 0
+        # print(parameter['powerD2DList'])
+        for tx1 in range(parameter['numD2D']):
+            maxDis = 0
+            distance = 0            
+            for rx1 in range(parameter['numD2DReciver'][tx1]):
+                # print(parameter['i_d2d_rx'][tx1][rx1]['d2d'])
+                for tx2 in parameter['i_d2d_rx'][tx1][rx1]['d2d']:
+                    # print(tx2)
+                    for rx2 in range(parameter['numD2DReciver'][tx2]):
+                        if parameter['powerD2DList'][tx1] != 0 and parameter['powerD2DList'][tx2] != 0:
+                            distance = parameter['d_dij'][tx2][tx1][rx1]
+                            if not(tx2 < tx1 and tx1 in parameter['i_d2d_rx'][tx2][rx2]['d2d']):
+                                # distance = np.sqrt( (parameter['tx_point'][tx1][0] - parameter['rx_point'][tx2][rx2][0])**2 + (parameter['tx_point'][tx1][1] - parameter['rx_point'][tx2][rx2][1])**2 )
+                                # if distance > max:
+                                #     max = distance
+                                # print('d2d',tx1,'rx',rx1,'to d2d ',tx2,'rx2',rx2,'distance',distance)
+                                pass
+                                # print('tx1',parameter['tx_point'][tx1])
+                                # print('tx2',parameter['tx_point'][tx2])
+                                # totalDis = totalDis + distance
+                                # print('total distance', totalDis)
+                            else:
+                                if distance < parameter['d_dij'][tx1][tx2][rx2]:
+                                    distance =  parameter['d_dij'][tx1][tx2][rx2]
+                                    # print('d2d',tx2,'rx',rx2,'to d2d ',tx1,'rx1',rx1,'distance',distance)
+                            if distance > maxDis:
+                                maxDis = distance
+                                count += 1
+            totalDis = totalDis + distance
+            # print('tx1',tx1,'distance', distance)
+            # print('total distance', totalDis)
+            # print('count',count)
+        totalDis = totalDis * 1000
+        # print('tt',totalDis)
+        parameter.update({'interferenceDistance' : totalDis})
+        return parameter

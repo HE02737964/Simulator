@@ -107,9 +107,14 @@ def cal_cue_sinr(cue, **parameter):
         sinr_list[rx] = np.min(sinr_nonzero_list)
     return sinr_list
 
-def cal_need_power(tx, **parameter):
+def cal_need_power(tx, nRB, **parameter):
     powerList = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
-    parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
+    count = 0
+    for rb in range(parameter['numRB']):
+        if parameter['d2d_use_rb_List'][tx][rb] == 1 and count <= nRB:
+            parameter['assignmentD2D'][tx][rb] = 1
+            count = count + 1
+    # parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
     for rx in range(parameter['numD2DReciver'][tx]):
         for rb in range(parameter['numRB']):
             interference = cal_d2d_interference(tx, rx, rb, **parameter)
@@ -133,27 +138,50 @@ def greedy(**parameter):
     # print('interference relationship',parameter['i_d2d'])
 
     d2d_need_rb = [0 for i in range(parameter['numD2D'])]
-
+    # print(parameter['numRB'])
     for d2d in parameter['priority_sort_index']:
         parameter = get_d2d_use_rb(d2d, **parameter)
         # print('d2d',d2d,'d2d_use_rb_List',parameter['d2d_use_rb_List'][d2d])
         numRB = np.sum(parameter['d2d_use_rb_List'][d2d])
         # print('d2d',d2d,parameter['data_d2d'][d2d])
-        tbs, rb = tool.data_tbs_mapping(parameter['data_d2d'][d2d], parameter['numRB'])
+        tbs, rb = tool.data_tbs_mapping_higher_rb(parameter['data_d2d'][d2d], parameter['numRB'])
+        # tbs, rb = tool.data_tbs_mapping(parameter['data_d2d'][d2d], parameter['numRB'])
         # print('d2d',d2d,tbs, rb)
         d2d_need_rb[d2d] = rb
-        if numRB == 0 or numRB < d2d_need_rb[d2d]:
+        # if numRB == 0 or numRB < d2d_need_rb[d2d]:
+        if numRB == 0:
             # print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
+        elif numRB < d2d_need_rb[d2d]:
+            # print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
+            data = tool.TBS_Throughput_mapping(25, numRB)
+            cqi, sinr = get_d2d_sys_info(25)
+            # print('cqi',cqi,'sinr',sinr)
+            # print('d2d',d2d,'origin dara',parameter['data_d2d'][d2d],'new data',data)
+            parameter['data_d2d'][d2d] = data
+            parameter['minD2Dsinr'][d2d] = sinr
+
+            power = cal_need_power(d2d, d2d_need_rb[d2d], **parameter)
+            
+            if power != 0:
+                parameter['powerD2DList'][d2d] = power
+                count = 0
+                for rb in range(parameter['numRB']):
+                    if parameter['d2d_use_rb_List'][d2d][rb] == 1 and count <= numRB:
+                        parameter['assignmentD2D'][d2d][rb] = 1
+                        count = count + 1
         else:
             cqi, sinr = get_d2d_sys_info(tbs)
             parameter['minD2Dsinr'][d2d] = sinr
 
-            power = cal_need_power(d2d, **parameter)
+            power = cal_need_power(d2d, d2d_need_rb[d2d], **parameter)
             
             if power != 0:
                 parameter['powerD2DList'][d2d] = power
-                parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
+                for rb in range(d2d_need_rb[d2d]):
+                    if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                        parameter['assignmentD2D'][d2d][rb] = 1
+                # parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
             else:
                 # print('d2d',d2d,'power not enough')
                 parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
@@ -166,10 +194,11 @@ def greedy(**parameter):
         if parameter['powerD2DList'][d2d] != 0:
             parameter['numAssignment'] = parameter['numAssignment'] + 1
             sinr = cal_d2d_sinr(d2d, **parameter)
-            # print('need sinr',parameter['minD2Dsinr'][i])
-            # print('cal d2d',i,sinr)
-            # if sinr < parameter['minD2Dsinr'][d2d]:
-                # print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
+            print('need sinr',parameter['minD2Dsinr'][d2d])
+            print('cal d2d',d2d,sinr)
+            if sinr < parameter['minD2Dsinr'][d2d]:
+                print('d2d',d2d,'sinr',sinr,'min sinr',parameter['minD2Dsinr'][d2d])
     # print('throughput',parameter['throughput'])
-    # print('power list greedy',parameter['powerD2DList'])
+    print('power list greedy',parameter['powerD2DList'])
+    parameter = tool.power_collect(**parameter)
     return parameter

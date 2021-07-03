@@ -120,11 +120,14 @@ def draw_simulation():
     file_name = ['method_c', 'juad', 'gcrs_c', 'greedy']
     color_list = ['r', 'g', 'b', 'k']
     style_list = ['s-', 'o-', '^-', 'd-']
-    label_list = ['proposed', 'juad', 'gcrs', 'greedy']
+    label_list = ['OURS', 'JUAD', 'GCRS', 'KNAP']
     
-    numGraph = 8
+    numGraph = 12
     index = 0
-    
+    width = [-0.15, -0.05, 0.05, 0.15]
+    numRBbar = 4
+    numRBarange = np.arange(numRBbar)
+
     x_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
     x_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
 
@@ -151,8 +154,16 @@ def draw_simulation():
                 index = 5
             elif name == "maxReciver":
                 index = 6
-            elif name == "pass":
+            elif name == "loss":
                 index = 7
+            elif name == "numRB":
+                index = 8
+            elif name == "numD2DCluster":
+                index = 9
+            elif name == "numDensity":
+                index = 10
+            elif name == "consumption":
+                index = 11
                 
             # if int(result[4]) not in x_temp[index]:
                 # x_temp[index].append(int(result[4]))
@@ -165,37 +176,64 @@ def draw_simulation():
     for i in range(numGraph):
         x_name = ""
         if i == 0:
-            x_name = "System total of Beam"
+            x_name = "Number of analog radio lobes"
         elif i == 1:
-            x_name = "Number of schedule beam"
+            x_name = "Number of scheduled radio lobes per TTI"
         elif i == 2:
-            x_name = "Number of CUE"
+            x_name = "Number of CUEs"
         elif i == 3:
             for j in range(len(file_name)):
                 for data in range(10):
-                    x_label[j][i][data] = (float(x_label[j][i][data]) * 1000) / 1e6
-            x_name = "Maximum of D2D group packet size (Mbps)"
+                    x_label[j][i][data] = (float(x_label[j][i][data]) / 1000)
+            x_name = "DUE's maximum data amount per TTI (kbits)"
         elif i == 4:
-            x_name = "Number of D2D group"
+            x_name = "Number of D2D groups"
         elif i == 5:
-            x_name = "Distance of D2D group Tx and Rx"
+            x_name = "Maximum radius of a D2D groups (m)"
         elif i == 6:
-            x_name = "Number of Receiver of D2D group"
+            x_name = "Number of receivers in a D2D group"
         elif i == 7:
-            x_name = "pass"
+            x_name = "Number of D2D group"
+        elif i == 8:
+            x_name = "Total RBs"
+        elif i == 9:
+            x_name = "Number of cluster"
+        elif i == 10:
+            x_name = "Persentage of D2D groups in clusters (%)"
+        elif i == 11:
+            x_name = "Number of D2D group"
         
-        # if i == 1 or i == 2 or i == 4 or i == 6:
-        if i == 0 or i == 1 or i == 2 or i == 3 or i == 4 or i == 5 or i == 6:
-            plt.figure()
-            for j in range(len(file_name)):
+        plt.figure()
+        for j in range(len(file_name)):
+            if i == 8:
+                plt.bar(numRBarange + width[j],  y_label[j][i], 0.1, color = color_list[j], label = label_list[j])
+            else:
                 plt.plot(x_label[j][i], y_label[j][i], style_list[j], color = color_list[j], label = label_list[j])
-            
-            plt.xlabel(x_name, labelpad = 15)
+                
+        plt.xlabel(x_name, labelpad = 15)
+        
+        if i == 8:
+            plt.xticks(numRBarange, x_label[0][i])
+        else:
             plt.xticks(x_label[0][i])
-            plt.ylabel("D2D group Throughput (Mbps)", labelpad = 20)
+        
+        if i != 7 and i != 11:
+            plt.ylabel("D2D group throughput (Mbps)", labelpad = 20)
+        elif i == 11:
+            plt.ylabel("Throughput / Watt", labelpad=20)
+        else:
+            plt.ylabel("Total of D2D group circuit loss (Watt)", labelpad = 20)
+
+        if i == 0 or i == 1 or i == 11:
+            plt.legend(bbox_to_anchor=(0.7,0.9), loc = "upper left")
+        elif i == 2:
+            plt.legend(bbox_to_anchor=(0.7,0.85), loc = "upper left")
+        elif i == 8:
+            plt.legend(bbox_to_anchor=(0.675,1), loc = "upper left", prop={'size': 9})
+        else:
             plt.legend(loc = "best")
-            plt.tight_layout()
-            plt.savefig('./result/%s_%s.eps'%(i,x_name))
-            plt.show()
+        plt.tight_layout()
+        plt.savefig('./result/%s_%s.eps'%(i,x_name))
+        plt.show()
     
 draw_simulation()
