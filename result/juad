@@ -102,3 +102,12 @@ simulation time 100 consumption 60 0.24849826126190536
 simulation time 100 consumption 65 0.21600930755924586
 simulation time 100 consumption 70 0.15096085889462227
 simulation time 100 consumption 75 0.04299059274458325
+simulation time 1 juad numD2D 75 throughput 558.17
+simulation time 1 juad numD2D 75 consumption 0.0265133059346987
+simulation time 1 juad numD2D 75 assignment 61.5
+simulation time 1 juad numD2D 75 percent_assignment 0.82
+simulation time 1 juad numD2D 75 non_assignment 13.5
+simulation time 1 juad numD2D 75 percent_nonsaaignment 0.18
+simulation time 1 juad numD2D 75 fairness 0.8918277219623182
+simulation time 1 juad numD2D 75 distance 451.50234489312425
+simulation time 1 juad numD2D 75 loss 46.627550101626014

@@ -122,7 +122,7 @@ def draw_simulation():
     style_list = ['s-', 'o-', '^-', 'd-']
     label_list = ['OURS', 'JUAD', 'GCRS', 'KNAP']
     
-    numGraph = 12
+    numGraph = 13
     index = 0
     width = [-0.15, -0.05, 0.05, 0.15]
     numRBbar = 4
@@ -164,9 +164,9 @@ def draw_simulation():
                 index = 10
             elif name == "consumption":
                 index = 11
+            elif name == "numD2D1":
+                index = 12
                 
-            # if int(result[4]) not in x_temp[index]:
-                # x_temp[index].append(int(result[4]))
             x_temp[i][index].append(int(result[4]))
             y_temp[i][index].append(float(result[5]))
         for j in range(numGraph):
@@ -202,6 +202,8 @@ def draw_simulation():
             x_name = "Persentage of D2D groups in clusters (%)"
         elif i == 11:
             x_name = "Number of D2D group"
+        elif i == 12:
+            x_name = "Number of D2D group"
         
         plt.figure()
         for j in range(len(file_name)):
@@ -236,4 +238,4 @@ def draw_simulation():
         plt.savefig('./result/%s_%s.eps'%(i,x_name))
         plt.show()
     
-draw_simulation()
+# draw_simulation()

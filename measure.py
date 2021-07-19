@@ -114,7 +114,7 @@ def BetweenD2D(**parameter):
         for rx in range(parameter['numD2DReciver'][tx]):
             i_dij = {'d2d':[]}
             for d2d in range(parameter['numD2D']):       #對別人造成干擾的D2D
-                #以tx為圓心，其最遠的rx為半徑，判斷d2d rx是否在圓形範圍裡
+                #以d2d為圓心，其最遠的rx為半徑，判斷tx的rx是否在圓形範圍裡
                 if d2d in parameter['omnidirectD2D'] and max(parameter['d_d2d'][d2d]) >= parameter['d_dij'][d2d][tx][rx] and d2d != tx and tx not in t_d2d[d2d]:
                     i_dij['d2d'].append(d2d)
                     i_dij['d2d'].sort()

@@ -1,0 +1,43 @@
+cd .. && python3  simulation.py method 500 numDensity 10 config &
+cd .. && python3  simulation.py method 500 numDensity 20 config &
+cd .. && python3  simulation.py method 500 numDensity 30 config &
+cd .. && python3  simulation.py method 500 numDensity 40 config &
+cd .. && python3  simulation.py method 500 numDensity 50 config &
+cd .. && python3  simulation.py method 500 numDensity 60 config &
+cd .. && python3  simulation.py method 500 numDensity 70 config &
+cd .. && python3  simulation.py method 500 numDensity 80 config &
+cd .. && python3  simulation.py method 500 numDensity 90 config &
+cd .. && python3  simulation.py method 500 numDensity 100 config &
+
+cd .. && python3  simulation.py juad 500 numDensity 10 config &
+cd .. && python3  simulation.py juad 500 numDensity 20 config &
+cd .. && python3  simulation.py juad 500 numDensity 30 config &
+cd .. && python3  simulation.py juad 500 numDensity 40 config &
+cd .. && python3  simulation.py juad 500 numDensity 50 config &
+cd .. && python3  simulation.py juad 500 numDensity 60 config &
+cd .. && python3  simulation.py juad 500 numDensity 70 config &
+cd .. && python3  simulation.py juad 500 numDensity 80 config &
+cd .. && python3  simulation.py juad 500 numDensity 90 config &
+cd .. && python3  simulation.py juad 500 numDensity 100 config &
+
+cd .. && python3  simulation.py gcrs 500 numDensity 10 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 20 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 30 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 40 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 50 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 60 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 70 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 80 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 90 config &
+cd .. && python3  simulation.py gcrs 500 numDensity 100 config &
+
+cd .. && python3  simulation.py greedy 500 numDensity 10 config &
+cd .. && python3  simulation.py greedy 500 numDensity 20 config &
+cd .. && python3  simulation.py greedy 500 numDensity 30 config &
+cd .. && python3  simulation.py greedy 500 numDensity 40 config &
+cd .. && python3  simulation.py greedy 500 numDensity 50 config &
+cd .. && python3  simulation.py greedy 500 numDensity 60 config &
+cd .. && python3  simulation.py greedy 500 numDensity 70 config &
+cd .. && python3  simulation.py greedy 500 numDensity 80 config &
+cd .. && python3  simulation.py greedy 500 numDensity 90 config &
+cd .. && python3  simulation.py greedy 500 numDensity 100 config &

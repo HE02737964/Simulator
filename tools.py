@@ -282,13 +282,13 @@ class Tool:
         UC = (350/3)
         sumWatt = 0
         consumption = 0
-        print('sssum',np.sum(parameter['powerD2DList']))
+        # print('sssum',np.sum(parameter['powerD2DList']))
         for d2d in range(parameter['numD2D']):
             current = 0
             watt = 0
             if parameter['powerD2DList'][d2d] != 0:
                 power = convert.mW_to_dB(parameter['powerD2DList'][d2d])
-                print('d2d',d2d,'power',power)
+                # print('d2d',d2d,'power',power)
                 if power <= 0:
                     current = ((power + 40) + 1) * LC
                 elif power > 0 and power <= 20:

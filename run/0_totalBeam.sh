@@ -9,27 +9,27 @@ cd .. && python3 simulation.py method 500 totalBeam 10 config &
 cd .. && python3 simulation.py method 500 totalBeam 11 config &
 cd .. && python3 simulation.py method 500 totalBeam 12 config &
 
-cd .. && python3 simulation.py juad 500 totalBeam 3 config &
-cd .. && python3 simulation.py juad 500 totalBeam 4 config &
-cd .. && python3 simulation.py juad 500 totalBeam 5 config &
-cd .. && python3 simulation.py juad 500 totalBeam 6 config &
-cd .. && python3 simulation.py juad 500 totalBeam 7 config &
-cd .. && python3 simulation.py juad 500 totalBeam 8 config &
-cd .. && python3 simulation.py juad 500 totalBeam 9 config &
-cd .. && python3 simulation.py juad 500 totalBeam 10 config &
-cd .. && python3 simulation.py juad 500 totalBeam 11 config &
-cd .. && python3 simulation.py juad 500 totalBeam 12 config &
+cd .. && python3 simulation.py juad 200 totalBeam 3 config &
+cd .. && python3 simulation.py juad 200 totalBeam 4 config &
+cd .. && python3 simulation.py juad 200 totalBeam 5 config &
+cd .. && python3 simulation.py juad 200 totalBeam 6 config &
+cd .. && python3 simulation.py juad 200 totalBeam 7 config &
+cd .. && python3 simulation.py juad 200 totalBeam 8 config &
+cd .. && python3 simulation.py juad 200 totalBeam 9 config &
+cd .. && python3 simulation.py juad 200 totalBeam 10 config &
+cd .. && python3 simulation.py juad 200 totalBeam 11 config &
+cd .. && python3 simulation.py juad 200 totalBeam 12 config &
 
-cd .. && python3 simulation.py gcrs 500 totalBeam 3 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 4 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 5 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 6 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 7 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 8 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 9 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 10 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 11 config &
-cd .. && python3 simulation.py gcrs 500 totalBeam 12 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 3 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 4 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 5 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 6 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 7 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 8 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 9 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 10 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 11 config &
+cd .. && python3 simulation.py gcrs 100 totalBeam 12 config &
 
 cd .. && python3 simulation.py greedy 500 totalBeam 3 config &
 cd .. && python3 simulation.py greedy 500 totalBeam 4 config &

@@ -6,8 +6,8 @@
 	"numRB" : 25,
 	"maxReciver" : 3,
 	"d2dDistance" : 30,
-	"directCUE" : 50,
-	"directD2D" : 50,
+	"directCUE" : 0,
+	"directD2D" : 0,
 
 	"perScheduleCUE" : 70,
 	"cqiLevel" : 3,
