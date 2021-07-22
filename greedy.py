@@ -148,28 +148,28 @@ def greedy(**parameter):
         # tbs, rb = tool.data_tbs_mapping(parameter['data_d2d'][d2d], parameter['numRB'])
         # print('d2d',d2d,tbs, rb)
         d2d_need_rb[d2d] = rb
-        # if numRB == 0 or numRB < d2d_need_rb[d2d]:
-        if numRB == 0:
+        if numRB == 0 or numRB < d2d_need_rb[d2d]:
+        # if numRB == 0:
             # print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
             parameter['nStartD2D'] = np.append(parameter['nStartD2D'],d2d)
-        elif numRB < d2d_need_rb[d2d]:
-            # print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
-            data = tool.TBS_Throughput_mapping(25, numRB)
-            cqi, sinr = get_d2d_sys_info(25)
-            # print('cqi',cqi,'sinr',sinr)
-            # print('d2d',d2d,'origin dara',parameter['data_d2d'][d2d],'new data',data)
-            parameter['data_d2d'][d2d] = data
-            parameter['minD2Dsinr'][d2d] = sinr
+        # elif numRB < d2d_need_rb[d2d]:
+        #     # print('d2d',d2d,'numRB',numRB,'need rb',d2d_need_rb[d2d])
+        #     data = tool.TBS_Throughput_mapping(25, numRB)
+        #     cqi, sinr = get_d2d_sys_info(25)
+        #     # print('cqi',cqi,'sinr',sinr)
+        #     # print('d2d',d2d,'origin dara',parameter['data_d2d'][d2d],'new data',data)
+        #     parameter['data_d2d'][d2d] = data
+        #     parameter['minD2Dsinr'][d2d] = sinr
 
-            power = cal_need_power(d2d, d2d_need_rb[d2d], **parameter)
+        #     power = cal_need_power(d2d, d2d_need_rb[d2d], **parameter)
             
-            if power != 0:
-                parameter['powerD2DList'][d2d] = power
-                count = 0
-                for rb in range(parameter['numRB']):
-                    if parameter['d2d_use_rb_List'][d2d][rb] == 1 and count <= numRB:
-                        parameter['assignmentD2D'][d2d][rb] = 1
-                        count = count + 1
+        #     if power != 0:
+        #         parameter['powerD2DList'][d2d] = power
+        #         count = 0
+        #         for rb in range(parameter['numRB']):
+        #             if parameter['d2d_use_rb_List'][d2d][rb] == 1 and count <= numRB:
+        #                 parameter['assignmentD2D'][d2d][rb] = 1
+        #                 count = count + 1
         else:
             cqi, sinr = get_d2d_sys_info(tbs)
             parameter['minD2Dsinr'][d2d] = sinr

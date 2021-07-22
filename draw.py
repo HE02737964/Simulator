@@ -116,115 +116,97 @@ def draw_test():
     plt.show()
 
 def draw_simulation():
-    # file_name = ['method', 'method_greedy', 'juad', 'gcrs', 'gcrs_c', 'greedy']
-    file_name = ['method_c', 'juad', 'gcrs_c', 'greedy']
-    color_list = ['r', 'g', 'b', 'k']
+    simulation_file_dict = ['method_c', 'greedy', 'juad', 'gcrs_c']
     style_list = ['s-', 'o-', '^-', 'd-']
-    label_list = ['OURS', 'JUAD', 'GCRS', 'KNAP']
+    label_list = ['DS'+r'$^2$', 'KNAP', 'JUAD', 'GCRS']
+
+    input_file_name_dict = {
+        0: 'totalBeam', 1: 'numScheduleBeam', 2: 'numCUE', 3: 'dataD2DMax', 4: 'numD2D',
+        5: 'd2dDistance', 6: 'maxReciver', 7: 'numDensity', 8: 'numRB', 9: 'numD2DCluster', 
+        10: 'numD2DCluster', 11: 'fiarness'
+    }
+
+    output_file_name_dict = { 
+        0: "sim_lobes", 1: "sim_schedule_lobes", 2: "sim_cues", 3: "sim_max_data",
+        4: "sim_d2d_groups", 5: "sim_d2d_radius", 6: "sim_num_receivers", 
+        7: "sim_energy", 8: "sim_total_rb", 9: "sim_num_clusters", 10: "sim_percentage_clusters",
+        11: "sim_fairness"
+    }
+
+    x_label_name_dict = {
+        0: 'Number of analog radio lobes', 1: 'Number of scheduled radio lobes per TTI', 
+        2: 'Number of CUEs', 3: 'DUE' + "'s " + 'maximum data amount per TTI (kbits)',
+        4: 'Number of D2D groups', 5: 'Maximum radius of a D2D groups (m)', 
+        6: 'Number of receivers in a D2D group', 7: 'Number of D2D group',
+        8: 'Total RBs', 9: 'Number of clusters', 10: 'Persentage of D2D groups in clusters (%)', 
+        11: 'Number of D2D groups'
+    }
+
+    y_label_name_dict = {
+        0: 'D2D group throughput (Mbps)', 7: '(Throughput / Watt) / d', 11: 'Fairness index'
+    }
     
-    numGraph = 13
-    index = 0
+    
+    key_list = list(input_file_name_dict.keys())
+    value_list = list(input_file_name_dict.values())
     width = [-0.15, -0.05, 0.05, 0.15]
     numRBbar = 4
     numRBarange = np.arange(numRBbar)
 
-    x_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
-    x_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+    x_temp = [[[] for i in range(len(input_file_name_dict))] for i in range(len(simulation_file_dict)) ]
+    x_label = [[[] for i in range(len(input_file_name_dict))] for i in range(len(simulation_file_dict)) ]
 
-    y_temp = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
-    y_label = [[[] for i in range(numGraph)] for i in range(len(file_name)) ]
+    y_temp = [[[] for i in range(len(input_file_name_dict))] for i in range(len(simulation_file_dict)) ]
+    y_label = [[[] for i in range(len(input_file_name_dict))] for i in range(len(simulation_file_dict)) ]
     
-    for i in range(len(file_name)):
-        file = open('./result/%s'%file_name[i], 'r')
+    for i in range(len(simulation_file_dict)):
+        file = open('./result/%s'%simulation_file_dict[i], 'r')
         
         for data in file:
             result = data.split()
             name = result[3]
-            if name == "totalBeam":
-                index = 0
-            elif name == "numScheduleBeam":
-                index = 1
-            elif name == "numCUE":
-                index = 2
-            elif name == "dataD2DMax":
-                index = 3
-            elif name == "numD2D":
-                index = 4
-            elif name == "d2dDistance":
-                index = 5
-            elif name == "maxReciver":
-                index = 6
-            elif name == "loss":
-                index = 7
-            elif name == "numRB":
-                index = 8
-            elif name == "numD2DCluster":
-                index = 9
-            elif name == "numDensity":
-                index = 10
-            elif name == "consumption":
-                index = 11
-            elif name == "numD2D1":
-                index = 12
+            if name in value_list:
+                pos = value_list.index(name)
+                index = int(key_list[pos])
                 
-            x_temp[i][index].append(int(result[4]))
-            y_temp[i][index].append(float(result[5]))
-        for j in range(numGraph):
+                x_temp[i][index].append(int(result[4]))
+                y_temp[i][index].append(float(result[5]))
+        for j in range(len(input_file_name_dict)):
             y_label[i][j] = [y for x,y in sorted(zip(x_temp[i][j], y_temp[i][j]))]
             x_label[i][j] = sorted(x_temp[i][j])
     
-    for i in range(numGraph):
-        x_name = ""
-        if i == 0:
-            x_name = "Number of analog radio lobes"
-        elif i == 1:
-            x_name = "Number of scheduled radio lobes per TTI"
-        elif i == 2:
-            x_name = "Number of CUEs"
-        elif i == 3:
-            for j in range(len(file_name)):
+    for i in input_file_name_dict:
+        x_name = x_label_name_dict[i]
+        
+        if i == 3:
+            for j in range(len(simulation_file_dict)):
                 for data in range(10):
                     x_label[j][i][data] = (float(x_label[j][i][data]) / 1000)
-            x_name = "DUE's maximum data amount per TTI (kbits)"
-        elif i == 4:
-            x_name = "Number of D2D groups"
-        elif i == 5:
-            x_name = "Maximum radius of a D2D groups (m)"
-        elif i == 6:
-            x_name = "Number of receivers in a D2D group"
-        elif i == 7:
-            x_name = "Number of D2D group"
-        elif i == 8:
-            x_name = "Total RBs"
-        elif i == 9:
-            x_name = "Number of cluster"
-        elif i == 10:
-            x_name = "Persentage of D2D groups in clusters (%)"
-        elif i == 11:
-            x_name = "Number of D2D group"
-        elif i == 12:
-            x_name = "Number of D2D group"
-        
+
         plt.figure()
-        for j in range(len(file_name)):
+        for j in range(len(simulation_file_dict)):
             if i == 8:
-                plt.bar(numRBarange + width[j],  y_label[j][i], 0.1, color = color_list[j], label = label_list[j])
+                plt.bar(numRBarange + width[j],  y_label[j][i], 0.1, label = label_list[j])
             else:
-                plt.plot(x_label[j][i], y_label[j][i], style_list[j], color = color_list[j], label = label_list[j])
+                plt.plot(x_label[j][i], y_label[j][i], style_list[j], label = label_list[j])
                 
-        plt.xlabel(x_name, labelpad = 15)
+        
+        labelpad = 5
+        font_size = 12
+
+        plt.xlabel(x_name, labelpad = labelpad)
         
         if i == 8:
-            plt.xticks(numRBarange, x_label[0][i])
+            plt.xticks(numRBarange, x_label[0][i], fontsize=font_size-2)
         else:
             plt.xticks(x_label[0][i])
         
         if i != 7 and i != 11:
-            plt.ylabel("D2D group throughput (Mbps)", labelpad = 20)
-        elif i == 11:
-            plt.ylabel("Throughput / Watt", labelpad=20)
+            plt.ylabel(y_label_name_dict[0], labelpad = 20)
+        elif i == 7:
+            plt.ylabel(y_label_name_dict[i], labelpad=20)
         else:
-            plt.ylabel("Total of D2D group circuit loss (Watt)", labelpad = 20)
+            plt.ylabel(y_label_name_dict[i], labelpad = 20)
 
         if i == 0 or i == 1 or i == 11:
             plt.legend(bbox_to_anchor=(0.7,0.9), loc = "upper left")
@@ -235,7 +217,7 @@ def draw_simulation():
         else:
             plt.legend(loc = "best")
         plt.tight_layout()
-        plt.savefig('./result/%s_%s.eps'%(i,x_name))
+        plt.savefig('./result/%s.eps'%(output_file_name_dict[i]))
         plt.show()
     
-# draw_simulation()
+draw_simulation()

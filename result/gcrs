@@ -88,3 +88,12 @@ simulation time 500 numD2D 60 421.49199
 simulation time 500 numD2D 65 450.637422
 simulation time 500 numD2D 70 476.801954
 simulation time 500 numD2D 75 514.620756
+simulation time 1 gcrs maxReciver 3 throughput 672.281
+simulation time 1 gcrs maxReciver 3 consumption 0.0035716441268008525
+simulation time 1 gcrs maxReciver 3 assignment 66.5
+simulation time 1 gcrs maxReciver 3 percent_assignment 0.8866666666666667
+simulation time 1 gcrs maxReciver 3 non_assignment 8.5
+simulation time 1 gcrs maxReciver 3 percent_nonsaaignment 0.11333333333333333
+simulation time 1 gcrs maxReciver 3 fairness 0.022842224998395663
+simulation time 1 gcrs maxReciver 3 distance 630.6735230291371
+simulation time 1 gcrs maxReciver 3 loss 298.4544499999999

@@ -6,7 +6,7 @@ def mGreedy(**parameter):
     tool = tools.Tool()
     parameter = method.initial_parameter(**parameter)
     parameter = method.phase1(**parameter)
-    parameter = greedy(**parameter)
+    # parameter = greedy(**parameter)
     parameter = method.cal_d2d_min_sinr_power(**parameter)
     parameter = method.throughput_collect(**parameter)
     parameter = tool.power_collect(**parameter)

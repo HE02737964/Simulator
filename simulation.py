@@ -12,7 +12,7 @@ def m(totalTime):
     loss = 0
     assignment = 0
     distance = 0
-    MaxThroughput = 0
+    fairness = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -24,23 +24,36 @@ def m(totalTime):
         dl = generator_dl.get_dl_system_info(ms, **dl)
         dl = mGreedy.mGreedy(**dl)
         
-        MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
+        MaxThroughput = TotalThroughput = 0
+        MaxThroughput = np.int64(MaxThroughput)
+        TotalThroughput = np.int64(TotalThroughput)
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+            if dl['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+
+        MaxThroughput = MaxThroughput**2
+        TotalThroughput = TotalThroughput * ul['numD2D']
+        fair = MaxThroughput / TotalThroughput
+        fairness = fairness + fair
+        # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
         distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
 
-    MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
-    throughput = (((throughput / totalTime)* 1000) / 1e6) / 2
-    loss = loss / 2
-    assignment = (assignment / totalTime) / 2
+    # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
+    throughput = (((throughput / totalTime)* 1000) / 1e6) 
+    assignment = (assignment / totalTime)  / 2
     non_assignment = ul['numD2D'] - assignment
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
-    distance = (distance / totalTime) / 2
-    
+    distance = (distance / totalTime) 
     consumption = (throughput / (loss / totalTime)) / distance
-    fairness = throughput / MaxThroughput
+    fairness = fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -64,7 +77,7 @@ def j(totalTime):
     loss = 0
     distance = 0
     assignment = 0
-    MaxThroughput = 0
+    fairness = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -76,23 +89,36 @@ def j(totalTime):
         dl = generator_dl.get_dl_system_info(ms, **dl)
         dl = juad.maximum_matching(**dl)
         
-        MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
+        MaxThroughput = TotalThroughput = 0
+        MaxThroughput = np.int64(MaxThroughput)
+        TotalThroughput = np.int64(TotalThroughput)
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+            if dl['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+
+        MaxThroughput = MaxThroughput**2
+        TotalThroughput = TotalThroughput * ul['numD2D']
+        fair = MaxThroughput / TotalThroughput
+        fairness = fairness + fair
+        # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
         distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
 
-    MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
-    throughput = (((throughput / totalTime)* 1000) / 1e6) / 2
-    loss = loss / 2
-    assignment = (assignment / totalTime) / 2
+    # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
+    throughput = (((throughput / totalTime)* 1000) / 1e6) 
+    assignment = (assignment / totalTime)  / 2
     non_assignment = ul['numD2D'] - assignment
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
-    distance = (distance / totalTime) / 2
-    
+    distance = (distance / totalTime) 
     consumption = (throughput / (loss / totalTime)) / distance
-    fairness = throughput / MaxThroughput
+    fairness = fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -117,7 +143,7 @@ def g(totalTime):
     loss = 0
     distance = 0
     assignment = 0
-    MaxThroughput = 0
+    fairness = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -131,23 +157,36 @@ def g(totalTime):
         dl.update({'check_value' : False})
         dl = gcrs.vertex_coloring(**dl)
 
-        MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
+        MaxThroughput = TotalThroughput = 0
+        MaxThroughput = np.int64(MaxThroughput)
+        TotalThroughput = np.int64(TotalThroughput)
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+            if dl['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+
+        MaxThroughput = MaxThroughput**2
+        TotalThroughput = TotalThroughput * ul['numD2D']
+        fair = MaxThroughput / TotalThroughput
+        fairness = fairness + fair
+        # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
         distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
 
-    MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
-    throughput = (((throughput / totalTime)* 1000) / 1e6) / 2
-    loss = loss / 2
-    assignment = (assignment / totalTime) / 2
+    # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
+    throughput = (((throughput / totalTime)* 1000) / 1e6) 
+    assignment = (assignment / totalTime)  / 2
     non_assignment = ul['numD2D'] - assignment
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
-    distance = (distance / totalTime) / 2
-    
+    distance = (distance / totalTime) 
     consumption = (throughput / (loss / totalTime)) / distance
-    fairness = throughput / MaxThroughput
+    fairness = fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -171,7 +210,7 @@ def y(totalTime):
     loss = 0
     distance = 0
     assignment = 0
-    MaxThroughput = 0
+    fairness = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -183,23 +222,36 @@ def y(totalTime):
         dl = generator_dl.get_dl_system_info(ms, **dl)
         dl = greedy.greedy(**dl)
         
-        MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
+        MaxThroughput = TotalThroughput = 0
+        MaxThroughput = np.int64(MaxThroughput)
+        TotalThroughput = np.int64(TotalThroughput)
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+            if dl['powerD2DList'][d2d] != 0:
+                MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
+                TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+
+        MaxThroughput = (MaxThroughput**2) 
+        TotalThroughput = (TotalThroughput * ul['numD2D']) 
+        fair = MaxThroughput / TotalThroughput
+        fairness = fairness + fair
+        # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
         distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
 
-    MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
-    throughput = (((throughput / totalTime)* 1000) / 1e6) / 2
-    loss = loss / 2
-    assignment = (assignment / totalTime) / 2
+    # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
+    throughput = (((throughput / totalTime)* 1000) / 1e6) 
+    assignment = (assignment / totalTime)  / 2
     non_assignment = ul['numD2D'] - assignment
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
-    distance = (distance / totalTime) / 2
-    
+    distance = (distance / totalTime) 
     consumption = (throughput / (loss / totalTime)) / distance
-    fairness = throughput / MaxThroughput
+    fairness = fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -223,12 +275,12 @@ def test(totalTime):
     l_m = l_j = l_g = l_k = 0
     d_m = d_j = d_g = d_k = 0
     a_m = a_j = a_g = a_k = 0
-    MaxThroughput = 0
+    f_m = f_j = f_g = f_k = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
         data_ul = generator_ul.get_data_ul(ms)
-        MaxThroughput = MaxThroughput + np.sum(data_ul['data_d2d'])
+        # MaxThroughput = MaxThroughput + np.sum(data_ul['data_d2d'])
         ul = {**ul, **data_ul}
         ul = generator_ul.data_to_alloc_ul(**ul)
         ul.update({'check_value' : False})
@@ -242,7 +294,7 @@ def test(totalTime):
         generator_dl = initial_info.Initial(sys.argv)
         dl = generator_dl.initial_dl()
         data_dl = generator_dl.get_data_dl(ms)
-        MaxThroughput = MaxThroughput + np.sum(data_dl['data_d2d'])
+        # MaxThroughput = MaxThroughput + np.sum(data_dl['data_d2d'])
         dl = {**dl, **data_dl}
         dl = generator_dl.data_to_alloc_dl(**dl)
         dl.update({'check_value' : False})
@@ -251,6 +303,55 @@ def test(totalTime):
         j_dl = juad.maximum_matching(**dl)
         g_dl = gcrs.vertex_coloring(**dl)
         k_dl = greedy.greedy(**dl)
+
+        M_m = M_j = M_g = M_k = T_m = T_j = T_g = T_k = 0
+        T_m = np.int64(T_m)
+        T_j = np.int64(T_j)
+        T_g = np.int64(T_g)
+        T_k = np.int64(T_k)
+        for d2d in range(ul['numD2D']):
+            if m_ul['powerD2DList'][d2d] != 0:
+                M_m = M_m + m_ul['data_d2d'][d2d]
+                T_m = T_m + m_ul['data_d2d'][d2d]**2
+            if m_dl['powerD2DList'][d2d] != 0:
+                M_m = M_m + m_dl['data_d2d'][d2d]
+                T_m = T_m + m_dl['data_d2d'][d2d]**2
+            
+            if j_ul['powerD2DList'][d2d] != 0:
+                M_j = M_j + j_ul['data_d2d'][d2d]
+                T_j = T_j + j_ul['data_d2d'][d2d]**2
+            if j_dl['powerD2DList'][d2d] != 0:
+                M_j = M_j + j_dl['data_d2d'][d2d]
+                T_j = T_j + j_dl['data_d2d'][d2d]**2
+
+            if g_ul['powerD2DList'][d2d] != 0:
+                M_g = M_g + g_ul['data_d2d'][d2d]
+                T_g = T_g + g_dl['data_d2d'][d2d]**2
+            if g_dl['powerD2DList'][d2d] != 0:
+                M_g = M_g + g_dl['data_d2d'][d2d]
+                T_g = T_g + g_dl['data_d2d'][d2d]**2
+            
+            if k_ul['powerD2DList'][d2d] != 0:
+                M_k = M_k + k_ul['data_d2d'][d2d]
+                T_k = T_k + k_dl['data_d2d'][d2d]**2
+            if k_dl['powerD2DList'][d2d] != 0:
+                M_k = M_k + k_dl['data_d2d'][d2d]
+                T_k = T_k + k_dl['data_d2d'][d2d]**2
+
+        M_m = M_m ** 2
+        M_j = M_j ** 2
+        M_g = M_g ** 2
+        M_k = M_k ** 2
+
+        m = M_m / T_m
+        j = M_j / T_j
+        g = M_g / T_g
+        k = M_k / T_k
+        # print(fair)
+        f_m = f_m + m
+        f_j = f_j + j
+        f_g = f_g + g
+        f_k = f_k + k
 
         t_m =  t_m + (m_ul['throughput'] + m_dl['throughput'])
         t_j =  t_j + (j_ul['throughput'] + j_dl['throughput'])
@@ -272,21 +373,21 @@ def test(totalTime):
         d_g = d_g + (g_dl['interferenceDistance'] + g_dl['interferenceDistance'])
         d_k = d_k + (k_ul['interferenceDistance'] + k_ul['interferenceDistance'])
 
-    MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
+    # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) / 2
     t_m = (((t_m / totalTime)* 1000) / 1e6) / 2
     t_j = (((t_j / totalTime)* 1000) / 1e6) / 2
     t_g = (((t_g / totalTime)* 1000) / 1e6) / 2
     t_k = (((t_k / totalTime)* 1000) / 1e6) / 2
     
-    f_m = t_m / MaxThroughput
-    f_j = t_j / MaxThroughput
-    f_g = t_g / MaxThroughput
-    f_k = t_k / MaxThroughput
+    # f_m = t_m / MaxThroughput
+    # f_j = t_j / MaxThroughput
+    # f_g = t_g / MaxThroughput
+    # f_k = t_k / MaxThroughput
 
-    print(f_m)
-    print(f_k)
-    print(f_j)
-    print(f_g)
+    # print(f_m)
+    # print(f_k)
+    # print(f_j)
+    # print(f_g)
     
     
 
@@ -324,6 +425,16 @@ def test(totalTime):
     c_j = (t_j / (l_j / totalTime)) / d_j
     c_g = (t_g / (l_g / totalTime)) / d_g
     c_k = (t_k / (l_k / totalTime)) / d_k
+
+    f_m = f_m / totalTime
+    f_j = f_j / totalTime
+    f_g = f_g / totalTime
+    f_k = f_k / totalTime
+
+    print(f_m)
+    print(f_j)
+    print(f_g)
+    print(f_k)
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
