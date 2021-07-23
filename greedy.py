@@ -111,7 +111,7 @@ def cal_need_power(tx, nRB, **parameter):
     powerList = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
     count = 0
     for rb in range(parameter['numRB']):
-        if parameter['d2d_use_rb_List'][tx][rb] == 1 and count <= nRB:
+        if parameter['d2d_use_rb_List'][tx][rb] == 1:# and count <= nRB:
             parameter['assignmentD2D'][tx][rb] = 1
             count = count + 1
     # parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
@@ -174,11 +174,11 @@ def greedy(**parameter):
             cqi, sinr = get_d2d_sys_info(tbs)
             parameter['minD2Dsinr'][d2d] = sinr
 
-            power = cal_need_power(d2d, d2d_need_rb[d2d], **parameter)
+            power = cal_need_power(d2d, numRB, **parameter)
             
             if power != 0:
                 parameter['powerD2DList'][d2d] = power
-                for rb in range(d2d_need_rb[d2d]):
+                for rb in range(parameter['numRB']):
                     if parameter['d2d_use_rb_List'][d2d][rb] == 1:
                         parameter['assignmentD2D'][d2d][rb] = 1
                 # parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()

@@ -367,7 +367,7 @@ def cal_need_power(tx, nRB, **parameter):
     powerList = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
     count = 0
     for rb in range(parameter['numRB']):
-        if parameter['d2d_use_rb_List'][tx][rb] == 1 and count <= nRB:
+        if parameter['d2d_use_rb_List'][tx][rb] == 1:# and count <= nRB:
             parameter['assignmentD2D'][tx][rb] = 1
             count = count + 1
     # parameter['assignmentD2D'][tx] = np.copy(parameter['d2d_use_rb_List'][tx])
@@ -429,11 +429,11 @@ def greedy_throughput_rasing(**parameter):
                 cqi, sinr = get_d2d_sys_info(tbs)
                 parameter['minD2Dsinr'][d2d] = sinr
 
-                power = cal_need_power(d2d,  d2d_need_rb[d2d], **parameter)
+                power = cal_need_power(d2d,  numRB, **parameter)
                 
                 if power != 0:
                     parameter['powerD2DList'][d2d] = power
-                    for rb in range(d2d_need_rb[d2d]):
+                    for rb in range(parameter['numRB']):
                         if parameter['d2d_use_rb_List'][d2d][rb] == 1:
                             parameter['assignmentD2D'][d2d][rb] = 1
                     # parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
@@ -473,13 +473,15 @@ def maximum_matching(**parameter):
             assignRB = parameter['assignmentTxCell'][cue].copy()
         else:
             assignRB = parameter['assignmentRxCell'][cue].copy()
-            
+        
         if parameter['powerCUE'][d2d][cue] != 0 and parameter['powerD2D'][d2d][cue] != 0:
-            parameter['assignmentD2D'][d2d] = assignRB
+            for rb in range(parameter['numRB']):
+                if assignRB[rb] == 1:
+                    parameter['assignmentD2D'][d2d] = 1
             parameter['matching_pair'][cue].append(d2d)
             parameter['throughput'] = parameter['throughput'] + parameter['weight_d2d'][d2d][cue]
             parameter['numAssignment'] = parameter['numAssignment'] + 1
-            parameter['data'][d2d] = parameter['data'][d2d] - parameter['weight_d2d'][d2d][cue]
+            parameter['data'][d2d] = parameter['weight_d2d'][d2d][cue]
             parameter['powerD2DList'][d2d] = parameter['powerD2D'][d2d][cue]
 
     # if len(parameter['candicateCUE']):

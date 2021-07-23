@@ -280,6 +280,7 @@ class Tool:
         LC = (300/41)
         MC = (300/20)
         UC = (350/3)
+        watt_list = np.zeros(parameter['numD2D'])
         sumWatt = 0
         consumption = 0
         # print('sssum',np.sum(parameter['powerD2DList']))
@@ -296,6 +297,7 @@ class Tool:
                 else:
                     current = 600 + ((power - 20) * UC)
                 watt = Vcc * current
+                watt_list[d2d] = watt
                 sumWatt = sumWatt + watt
         throughput = parameter['throughput']
         # consumption = throughput / sumWatt
@@ -339,4 +341,5 @@ class Tool:
         totalDis = totalDis * 1000
         # print('tt',totalDis)
         parameter.update({'interferenceDistance' : totalDis})
+        parameter.update({'watt_list' : watt_list})
         return parameter

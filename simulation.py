@@ -13,6 +13,8 @@ def m(totalTime):
     assignment = 0
     distance = 0
     fairness = 0
+    non_fairness = 0
+    consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -27,23 +29,59 @@ def m(totalTime):
         MaxThroughput = TotalThroughput = 0
         MaxThroughput = np.int64(MaxThroughput)
         TotalThroughput = np.int64(TotalThroughput)
+        count = 0
         for d2d in range(ul['numD2D']):
             if ul['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
             if dl['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
 
         MaxThroughput = MaxThroughput**2
+        NonTotalThroughput = TotalThroughput * count
         TotalThroughput = TotalThroughput * ul['numD2D']
         fair = MaxThroughput / TotalThroughput
+        non_fair = MaxThroughput / NonTotalThroughput
+
         fairness = fairness + fair
+        non_fairness = non_fairness + non_fair
         # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
-        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+        if ul['interferenceDistance'] == 0 and dl['interferenceDistance'] == 0:
+            distance = distance + 1
+        else:
+            distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(ul['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                consumption = consumption + t
+
+        for d2d in range(dl['numD2D']):
+            if dl['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(dl['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
     throughput = (((throughput / totalTime)* 1000) / 1e6) 
@@ -52,8 +90,10 @@ def m(totalTime):
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
-    consumption = (throughput / (loss / totalTime)) / distance
+    # consumption = (throughput / (loss / totalTime)) / distance
+    consumption = (consumption / 2) / totalTime / 1000
     fairness = fairness / totalTime / 2
+    non_fairness = non_fairness / totalTime
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -65,6 +105,7 @@ def m(totalTime):
         f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
         f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
         f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
         f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
         f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
@@ -78,6 +119,8 @@ def j(totalTime):
     distance = 0
     assignment = 0
     fairness = 0
+    non_fairness = 0
+    consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -92,23 +135,59 @@ def j(totalTime):
         MaxThroughput = TotalThroughput = 0
         MaxThroughput = np.int64(MaxThroughput)
         TotalThroughput = np.int64(TotalThroughput)
+        count = 0
         for d2d in range(ul['numD2D']):
             if ul['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
             if dl['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
 
         MaxThroughput = MaxThroughput**2
+        NonTotalThroughput = TotalThroughput * count
         TotalThroughput = TotalThroughput * ul['numD2D']
         fair = MaxThroughput / TotalThroughput
+        non_fair = MaxThroughput / NonTotalThroughput
+
         fairness = fairness + fair
+        non_fairness = non_fairness + non_fair
         # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
-        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+        if ul['interferenceDistance'] == 0 and dl['interferenceDistance'] == 0:
+            distance = distance + 1
+        else:
+            distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(ul['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                consumption = consumption + t
+
+        for d2d in range(dl['numD2D']):
+            if dl['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(dl['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
     throughput = (((throughput / totalTime)* 1000) / 1e6) 
@@ -117,8 +196,10 @@ def j(totalTime):
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
-    consumption = (throughput / (loss / totalTime)) / distance
+    # consumption = (throughput / (loss / totalTime)) / distance
+    consumption = (consumption / 2) / totalTime / 1000
     fairness = fairness / totalTime / 2
+    non_fairness = non_fairness / totalTime
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -144,6 +225,8 @@ def g(totalTime):
     distance = 0
     assignment = 0
     fairness = 0
+    non_fairness = 0
+    consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -160,23 +243,59 @@ def g(totalTime):
         MaxThroughput = TotalThroughput = 0
         MaxThroughput = np.int64(MaxThroughput)
         TotalThroughput = np.int64(TotalThroughput)
+        count = 0
         for d2d in range(ul['numD2D']):
             if ul['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
             if dl['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
 
         MaxThroughput = MaxThroughput**2
+        NonTotalThroughput = TotalThroughput * count
         TotalThroughput = TotalThroughput * ul['numD2D']
         fair = MaxThroughput / TotalThroughput
+        non_fair = MaxThroughput / NonTotalThroughput
+
         fairness = fairness + fair
+        non_fairness = non_fairness + non_fair
         # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
-        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+        if ul['interferenceDistance'] == 0 and dl['interferenceDistance'] == 0:
+            distance = distance + 1
+        else:
+            distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(ul['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                consumption = consumption + t
+
+        for d2d in range(dl['numD2D']):
+            if dl['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(dl['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
     throughput = (((throughput / totalTime)* 1000) / 1e6) 
@@ -185,8 +304,10 @@ def g(totalTime):
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
-    consumption = (throughput / (loss / totalTime)) / distance
+    # consumption = (throughput / (loss / totalTime)) / distance
+    consumption = (consumption / 2) / totalTime / 1000
     fairness = fairness / totalTime / 2
+    non_fairness = non_fairness / totalTime
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -198,6 +319,7 @@ def g(totalTime):
         f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
         f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
         f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
         f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
         f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
@@ -211,6 +333,8 @@ def y(totalTime):
     distance = 0
     assignment = 0
     fairness = 0
+    non_fairness = 0
+    consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -225,23 +349,59 @@ def y(totalTime):
         MaxThroughput = TotalThroughput = 0
         MaxThroughput = np.int64(MaxThroughput)
         TotalThroughput = np.int64(TotalThroughput)
+        count = 0
         for d2d in range(ul['numD2D']):
             if ul['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + ul['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (ul['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
             if dl['powerD2DList'][d2d] != 0:
                 MaxThroughput = MaxThroughput + dl['data_d2d'][d2d]
                 TotalThroughput = TotalThroughput + (dl['data_d2d'][d2d]**2)
+                count += 1
+            else:
+                TotalThroughput = TotalThroughput + 0
 
-        MaxThroughput = (MaxThroughput**2) 
-        TotalThroughput = (TotalThroughput * ul['numD2D']) 
+        MaxThroughput = MaxThroughput**2
+        NonTotalThroughput = TotalThroughput * count
+        TotalThroughput = TotalThroughput * ul['numD2D']
         fair = MaxThroughput / TotalThroughput
+        non_fair = MaxThroughput / NonTotalThroughput
+
         fairness = fairness + fair
+        non_fairness = non_fairness + non_fair
         # MaxThroughput = MaxThroughput + (np.sum(ul['data_d2d']) + np.sum(dl['data_d2d']))
         throughput =  throughput + (ul['throughput'] + dl['throughput'])
         loss = loss + (ul['consumption'] + dl['consumption'])
         assignment = assignment + (ul['numAssignment'] + dl['numAssignment'])
-        distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+        if ul['interferenceDistance'] == 0 and dl['interferenceDistance'] == 0:
+            distance = distance + 1
+        else:
+            distance = distance + (ul['interferenceDistance'] + dl['interferenceDistance'])
+
+        for d2d in range(ul['numD2D']):
+            if ul['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(ul['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                consumption = consumption + t
+
+        for d2d in range(dl['numD2D']):
+            if dl['powerD2DList'][d2d] != 0:
+                count = 1
+                for tx in range(dl['numD2D']):
+                    # print(ul['i_d2d'][d2d]['d2d'])
+                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                        count = count + 1
+                        # print(count)
+                t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
     throughput = (((throughput / totalTime)* 1000) / 1e6) 
@@ -250,8 +410,10 @@ def y(totalTime):
     percent_assignment = assignment / ul['numD2D']
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
-    consumption = (throughput / (loss / totalTime)) / distance
+    # consumption = (throughput / (loss / totalTime)) / distance
+    consumption = (consumption / 2) / totalTime / 1000
     fairness = fairness / totalTime / 2
+    non_fairness = non_fairness / totalTime
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
@@ -263,6 +425,7 @@ def y(totalTime):
         f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
         f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
         f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
         f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
         f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
