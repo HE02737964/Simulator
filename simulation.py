@@ -14,6 +14,7 @@ def m(totalTime):
     distance = 0
     fairness = 0
     non_fairness = 0
+    consumption_c = 0
     consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
@@ -69,7 +70,9 @@ def m(totalTime):
                     if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
-                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t_c = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t = ul['throughput'] / ul['watt_list'][d2d]
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
         for d2d in range(dl['numD2D']):
@@ -77,10 +80,12 @@ def m(totalTime):
                 count = 1
                 for tx in range(dl['numD2D']):
                     # print(ul['i_d2d'][d2d]['d2d'])
-                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                    if d2d != tx and tx in dl['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
                 t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                t_c = (dl['throughput'] / dl['watt_list'][d2d])
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
@@ -91,14 +96,16 @@ def m(totalTime):
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
     # consumption = (throughput / (loss / totalTime)) / distance
-    consumption = (consumption / 2) / totalTime / 1000
+    consumption_c = ((consumption_c / 2) / totalTime) / 1000
+    consumption = ((consumption / 2) / totalTime) / 1000
     fairness = fairness / totalTime / 2
-    non_fairness = non_fairness / totalTime
+    non_fairness = non_fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
         f = open("./result/method", 'a')
         f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
         f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
         f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
         f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
@@ -120,6 +127,7 @@ def j(totalTime):
     assignment = 0
     fairness = 0
     non_fairness = 0
+    consumption_c = 0
     consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
@@ -175,7 +183,9 @@ def j(totalTime):
                     if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
-                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t_c = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t = ul['throughput'] / ul['watt_list'][d2d]
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
         for d2d in range(dl['numD2D']):
@@ -183,10 +193,12 @@ def j(totalTime):
                 count = 1
                 for tx in range(dl['numD2D']):
                     # print(ul['i_d2d'][d2d]['d2d'])
-                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                    if d2d != tx and tx in dl['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
                 t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                t_c = (dl['throughput'] / dl['watt_list'][d2d])
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
@@ -197,20 +209,23 @@ def j(totalTime):
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
     # consumption = (throughput / (loss / totalTime)) / distance
-    consumption = (consumption / 2) / totalTime / 1000
+    consumption_c = ((consumption_c / 2) / totalTime) / 1000
+    consumption = ((consumption / 2) / totalTime) / 1000
     fairness = fairness / totalTime / 2
-    non_fairness = non_fairness / totalTime
+    non_fairness = non_fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
         f = open("./result/juad", 'a')
         f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
         f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
         f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
         f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
         f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
         f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
         f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
         f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
         f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
@@ -226,6 +241,7 @@ def g(totalTime):
     assignment = 0
     fairness = 0
     non_fairness = 0
+    consumption_c = 0
     consumption = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
@@ -283,7 +299,9 @@ def g(totalTime):
                     if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
-                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t_c = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t = ul['throughput'] / ul['watt_list'][d2d]
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
         for d2d in range(dl['numD2D']):
@@ -291,10 +309,12 @@ def g(totalTime):
                 count = 1
                 for tx in range(dl['numD2D']):
                     # print(ul['i_d2d'][d2d]['d2d'])
-                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                    if d2d != tx and tx in dl['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
                 t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                t_c = (dl['throughput'] / dl['watt_list'][d2d])
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
@@ -305,14 +325,16 @@ def g(totalTime):
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
     # consumption = (throughput / (loss / totalTime)) / distance
-    consumption = (consumption / 2) / totalTime / 1000
+    consumption_c = ((consumption_c / 2) / totalTime) / 1000
+    consumption = ((consumption / 2) / totalTime) / 1000
     fairness = fairness / totalTime / 2
-    non_fairness = non_fairness / totalTime
+    non_fairness = non_fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
         f = open("./result/gcrs", 'a')
         f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
         f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
         f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
         f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
@@ -335,6 +357,7 @@ def y(totalTime):
     fairness = 0
     non_fairness = 0
     consumption = 0
+    consumption_c = 0
     for ms in range(1, totalTime+1):
         generator_ul = initial_info.Initial(sys.argv)
         ul = generator_ul.initial_ul()
@@ -389,7 +412,9 @@ def y(totalTime):
                     if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and ul['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
-                t = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t_c = (ul['throughput'] / ul['watt_list'][d2d]) / count
+                t = ul['throughput'] / ul['watt_list'][d2d]
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
         for d2d in range(dl['numD2D']):
@@ -397,10 +422,12 @@ def y(totalTime):
                 count = 1
                 for tx in range(dl['numD2D']):
                     # print(ul['i_d2d'][d2d]['d2d'])
-                    if d2d != tx and tx in ul['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
+                    if d2d != tx and tx in dl['i_d2d'][d2d]['d2d'] and dl['powerD2DList'][tx] != 0:
                         count = count + 1
                         # print(count)
                 t = (dl['throughput'] / dl['watt_list'][d2d]) / count
+                t_c = (dl['throughput'] / dl['watt_list'][d2d])
+                consumption_c = consumption_c + t_c
                 consumption = consumption + t
 
     # MaxThroughput = (((MaxThroughput / totalTime) * 1000) / 1e6) 
@@ -411,14 +438,16 @@ def y(totalTime):
     percent_nonsaaignment = non_assignment / ul['numD2D']
     distance = (distance / totalTime) 
     # consumption = (throughput / (loss / totalTime)) / distance
-    consumption = (consumption / 2) / totalTime / 1000
+    consumption_c = ((consumption_c / 2) / totalTime) / 1000
+    consumption = ((consumption / 2) / totalTime) / 1000
     fairness = fairness / totalTime / 2
-    non_fairness = non_fairness / totalTime
+    non_fairness = non_fairness / totalTime / 2
 
     data = ['numD2D', 'numCUE', 'maxReciver']
     if sys.argv[3] in data:
         f = open("./result/greedy", 'a')
         f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
         f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
         f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
         f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))

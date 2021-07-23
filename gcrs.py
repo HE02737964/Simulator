@@ -277,6 +277,8 @@ def check_some_value(**parameter):
             if d2d not in assignList:
                 assignList.append(d2d)
     parameter['numAssignment'] = parameter['numAssignment'] + len(assignList)
+    for d2d in range(parameter['numD2D']):
+        parameter['data_d2d'][d2d] = parameter['d2d_total_throughput'][d2d]
     parameter['throughput'] = np.sum(parameter['d2d_total_throughput'])
     # print('d2d assign list',assignList)
     # print('rb use status',parameter['rb_use_status'])
