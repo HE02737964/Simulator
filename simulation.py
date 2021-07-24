@@ -101,20 +101,18 @@ def m(totalTime):
     fairness = fairness / totalTime / 2
     non_fairness = non_fairness / totalTime / 2
 
-    data = ['numD2D', 'numCUE', 'maxReciver']
-    if sys.argv[3] in data:
-        f = open("./result/method", 'a')
-        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
-        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
-        f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
-        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
-        f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
-        f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
-        f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
-        f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
-        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
-        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
-        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
+    f = open("./result/method", 'a')
+    f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+    f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
+    f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
+    f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+    f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
+    f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
+    f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
+    f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+    f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
+    f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+    f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     # f = open("./result/method",'a')
     # f.write("simulation time {} ".format(totalTime))
@@ -214,20 +212,18 @@ def j(totalTime):
     fairness = fairness / totalTime / 2
     non_fairness = non_fairness / totalTime / 2
 
-    data = ['numD2D', 'numCUE', 'maxReciver']
-    if sys.argv[3] in data:
-        f = open("./result/juad", 'a')
-        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
-        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
-        f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
-        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
-        f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
-        f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
-        f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
-        f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
-        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
-        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
-        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
+    f = open("./result/juad", 'a')
+    f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+    f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
+    f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
+    f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+    f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
+    f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
+    f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
+    f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+    f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
+    f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+    f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     # f = open("./result/juad",'a')
     # f.write("simulation time {} ".format(totalTime))
@@ -330,20 +326,19 @@ def g(totalTime):
     fairness = fairness / totalTime / 2
     non_fairness = non_fairness / totalTime / 2
 
-    data = ['numD2D', 'numCUE', 'maxReciver']
-    if sys.argv[3] in data:
-        f = open("./result/gcrs", 'a')
-        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
-        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
-        f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
-        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
-        f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
-        f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
-        f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
-        f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
-        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
-        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
-        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
+
+    f = open("./result/gcrs", 'a')
+    f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+    f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
+    f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
+    f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+    f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
+    f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
+    f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
+    f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+    f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
+    f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+    f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     # f = open("./result/gcrs",'a')
     # f.write("simulation time {} ".format(totalTime))
@@ -443,20 +438,19 @@ def y(totalTime):
     fairness = fairness / totalTime / 2
     non_fairness = non_fairness / totalTime / 2
 
-    data = ['numD2D', 'numCUE', 'maxReciver']
-    if sys.argv[3] in data:
-        f = open("./result/greedy", 'a')
-        f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
-        f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
-        f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
-        f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
-        f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
-        f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
-        f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
-        f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
-        f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
-        f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
-        f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
+
+    f = open("./result/greedy", 'a')
+    f.write("simulation time {} {} {} {} throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], throughput))
+    f.write("simulation time {} {} {} {} consumption_c {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption_c))
+    f.write("simulation time {} {} {} {} consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], consumption))
+    f.write("simulation time {} {} {} {} assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], assignment))
+    f.write("simulation time {} {} {} {} percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_assignment))
+    f.write("simulation time {} {} {} {} non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_assignment))
+    f.write("simulation time {} {} {} {} percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], percent_nonsaaignment))
+    f.write("simulation time {} {} {} {} fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], fairness))
+    f.write("simulation time {} {} {} {} non_fairness {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], non_fairness))
+    f.write("simulation time {} {} {} {} distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], distance))
+    f.write("simulation time {} {} {} {} loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], loss))
 
     # f = open("./result/greedy",'a')
     # f.write("simulation time {} ".format(totalTime))
@@ -628,45 +622,44 @@ def test(totalTime):
     print(f_g)
     print(f_k)
 
-    data = ['numD2D', 'numCUE', 'maxReciver']
-    if sys.argv[3] in data:
-        f = open("./result/raw_data", 'a')
-        
-        f.write("simulation time {} {} {} {} method throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_m))
-        f.write("simulation time {} {} {} {} method consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_m))
-        f.write("simulation time {} {} {} {} method assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_m))
-        f.write("simulation time {} {} {} {} method percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_m))
-        f.write("simulation time {} {} {} {} method non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_m))
-        f.write("simulation time {} {} {} {} method percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_m))
-        f.write("simulation time {} {} {} {} method distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_m))
-        f.write("simulation time {} {} {} {} method loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_m))
-        
-        f.write("simulation time {} {} {} {} greedy throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_k))
-        f.write("simulation time {} {} {} {} greedy consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_k))
-        f.write("simulation time {} {} {} {} greedy assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_k))
-        f.write("simulation time {} {} {} {} greedy percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_k))
-        f.write("simulation time {} {} {} {} greedy non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_k))
-        f.write("simulation time {} {} {} {} greedy percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_k))
-        f.write("simulation time {} {} {} {} greedy distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_k))
-        f.write("simulation time {} {} {} {} greedy loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_k))
 
-        f.write("simulation time {} {} {} {} juad throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_j))
-        f.write("simulation time {} {} {} {} juad consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_j))
-        f.write("simulation time {} {} {} {} juad assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_j))
-        f.write("simulation time {} {} {} {} juad percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_j))
-        f.write("simulation time {} {} {} {} juad non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_j))
-        f.write("simulation time {} {} {} {} juad percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_j))
-        f.write("simulation time {} {} {} {} juad distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_j))
-        f.write("simulation time {} {} {} {} juad loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_j))
+    f = open("./result/raw_data", 'a')
+    
+    f.write("simulation time {} {} {} {} method throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_m))
+    f.write("simulation time {} {} {} {} method consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_m))
+    f.write("simulation time {} {} {} {} method assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_m))
+    f.write("simulation time {} {} {} {} method percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_m))
+    f.write("simulation time {} {} {} {} method non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_m))
+    f.write("simulation time {} {} {} {} method percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_m))
+    f.write("simulation time {} {} {} {} method distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_m))
+    f.write("simulation time {} {} {} {} method loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_m))
+    
+    f.write("simulation time {} {} {} {} greedy throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_k))
+    f.write("simulation time {} {} {} {} greedy consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_k))
+    f.write("simulation time {} {} {} {} greedy assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_k))
+    f.write("simulation time {} {} {} {} greedy percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_k))
+    f.write("simulation time {} {} {} {} greedy non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_k))
+    f.write("simulation time {} {} {} {} greedy percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_k))
+    f.write("simulation time {} {} {} {} greedy distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_k))
+    f.write("simulation time {} {} {} {} greedy loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_k))
 
-        f.write("simulation time {} {} {} {} gcrs throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_g))
-        f.write("simulation time {} {} {} {} gcrs consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_g))
-        f.write("simulation time {} {} {} {} gcrs assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_g))
-        f.write("simulation time {} {} {} {} gcrs percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_g))
-        f.write("simulation time {} {} {} {} gcrs non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_g))
-        f.write("simulation time {} {} {} {} gcrs percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_g))
-        f.write("simulation time {} {} {} {} gcrs distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_g))
-        f.write("simulation time {} {} {} {} gcrs loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_g))
+    f.write("simulation time {} {} {} {} juad throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_j))
+    f.write("simulation time {} {} {} {} juad consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_j))
+    f.write("simulation time {} {} {} {} juad assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_j))
+    f.write("simulation time {} {} {} {} juad percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_j))
+    f.write("simulation time {} {} {} {} juad non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_j))
+    f.write("simulation time {} {} {} {} juad percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_j))
+    f.write("simulation time {} {} {} {} juad distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_j))
+    f.write("simulation time {} {} {} {} juad loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_j))
+
+    f.write("simulation time {} {} {} {} gcrs throughput {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], t_g))
+    f.write("simulation time {} {} {} {} gcrs consumption {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], c_g))
+    f.write("simulation time {} {} {} {} gcrs assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], a_g))
+    f.write("simulation time {} {} {} {} gcrs percent_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], p_g))
+    f.write("simulation time {} {} {} {} gcrs non_assignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], n_g))
+    f.write("simulation time {} {} {} {} gcrs percent_nonsaaignment {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], pn_g))
+    f.write("simulation time {} {} {} {} gcrs distance {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], d_g))
+    f.write("simulation time {} {} {} {} gcrs loss {}\n".format(totalTime, sys.argv[1], sys.argv[3], sys.argv[4], l_g))
         
 if __name__ == '__main__':
     simulation_time = int(sys.argv[2])

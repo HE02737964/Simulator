@@ -1,0 +1,43 @@
+cd .. && python3  simulation.py method 500 radius 340 config &
+cd .. && python3  simulation.py method 500 radius 380 config &
+cd .. && python3  simulation.py method 500 radius 420 config &
+cd .. && python3  simulation.py method 500 radius 460 config &
+cd .. && python3  simulation.py method 500 radius 500 config &
+cd .. && python3  simulation.py method 500 radius 540 config &
+cd .. && python3  simulation.py method 500 radius 580 config &
+cd .. && python3  simulation.py method 500 radius 620 config &
+cd .. && python3  simulation.py method 500 radius 660 config &
+cd .. && python3  simulation.py method 500 radius 700 config &
+
+cd .. && python3  simulation.py juad 500 radius 340 config &
+cd .. && python3  simulation.py juad 500 radius 380 config &
+cd .. && python3  simulation.py juad 500 radius 420 config &
+cd .. && python3  simulation.py juad 500 radius 460 config &
+cd .. && python3  simulation.py juad 500 radius 500 config &
+cd .. && python3  simulation.py juad 500 radius 540 config &
+cd .. && python3  simulation.py juad 500 radius 580 config &
+cd .. && python3  simulation.py juad 500 radius 620 config &
+cd .. && python3  simulation.py juad 500 radius 660 config &
+cd .. && python3  simulation.py juad 500 radius 700 config &
+
+cd .. && python3  simulation.py gcrs 500 radius 340 config &
+cd .. && python3  simulation.py gcrs 500 radius 380 config &
+cd .. && python3  simulation.py gcrs 500 radius 420 config &
+cd .. && python3  simulation.py gcrs 500 radius 460 config &
+cd .. && python3  simulation.py gcrs 500 radius 500 config &
+cd .. && python3  simulation.py gcrs 500 radius 540 config &
+cd .. && python3  simulation.py gcrs 500 radius 580 config &
+cd .. && python3  simulation.py gcrs 500 radius 620 config &
+cd .. && python3  simulation.py gcrs 500 radius 660 config &
+cd .. && python3  simulation.py gcrs 500 radius 700 config &
+
+cd .. && python3  simulation.py greedy 500 radius 340 config &
+cd .. && python3  simulation.py greedy 500 radius 380 config &
+cd .. && python3  simulation.py greedy 500 radius 420 config &
+cd .. && python3  simulation.py greedy 500 radius 460 config &
+cd .. && python3  simulation.py greedy 500 radius 500 config &
+cd .. && python3  simulation.py greedy 500 radius 540 config &
+cd .. && python3  simulation.py greedy 500 radius 580 config &
+cd .. && python3  simulation.py greedy 500 radius 620 config &
+cd .. && python3  simulation.py greedy 500 radius 660 config &
+cd .. && python3  simulation.py greedy 500 radius 700 config &
