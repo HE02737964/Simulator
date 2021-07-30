@@ -11,6 +11,9 @@ def initial_parameter(**parameter):
     parameter = cal_priority(**parameter)
     parameter = create_no_cell_interference_graph(**parameter) #建沒有與Cell UE關聯的干擾圖
     parameter.update({'longestPath_type' : "priority"})
+    parameter.update({'spreadingD2D' : np.zeros(parameter['numD2D'])})
+    parameter.update({'start_point' : 0})
+    parameter.update({'end_point' : (parameter['spreading'])})
     
     #每個d2d都有它要略過拜訪的child
     skipNode = [[] for i in range(parameter['numD2D'])]
@@ -23,11 +26,14 @@ def initial_parameter(**parameter):
     return parameter
 
 def phase1(**parameter):
-    parameter = initial_parameter(**parameter)
+    parameter['nStartD2D'] = np.asarray([])
     tool = tools.Tool()
 
     #找出d2d所有可用的RB以及所需sinr
     for d2d in range(parameter['numD2D']):
+        if parameter['powerD2DList'][d2d] != 0:
+            continue
+
         #得到d2d能使用的rb list
         parameter = get_d2d_use_rb(d2d, **parameter)
        
@@ -38,9 +44,12 @@ def phase1(**parameter):
         parameter['minD2Dsinr'][d2d] = tool.data_sinr_mapping(parameter['data_d2d'][d2d], numUseRB)
        
         #利用Pmax計算d2d rx的snr
-        d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
+        d2dSinr = np.zeros((parameter['numD2DReciver'][d2d], parameter['spreading']))
         parameter['powerD2DList'][d2d] = parameter['Pmax']
-        parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
+        for rb in range(parameter['start_point'], parameter['end_point']):
+            if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                parameter['assignmentD2D'][d2d][rb] = 1
+        # parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
 
         d2dSinr = cal_d2d_sinr(d2d, **parameter)
 
@@ -85,7 +94,11 @@ def phase1(**parameter):
             if p1 == -1 and p3 <= parameter['Pmax']:
                 p2 = set_power_in_max_min(p2, **parameter)
                 # print('node',node,'p1',p1,'p3',p3,'set p2',p2, 'power and assing rb')
-                parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
+                for rb in range(parameter['start_point'], parameter['end_point']):
+                    if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                        parameter['assignmentD2D'][node][rb] = 1
+
+                #parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
                 # print('node',node,'p2',p2)
                 parameter['powerD2DList'][node] = p2
                 # print('assign', parameter['assignmentD2D'][node])
@@ -138,7 +151,11 @@ def phase1(**parameter):
                 # print('node',node,'p',p,'>','p3',p3)
                 p = set_power_in_max_min(p, **parameter)
                 # print('node',node,'p',p)
-                parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
+                for rb in range(parameter['start_point'], parameter['end_point']):
+                    if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                        parameter['assignmentD2D'][node][rb] = 1
+
+                # parameter['assignmentD2D'][node] = np.copy(parameter['d2d_use_rb_List'][node])
                 # print('assign', parameter['assignmentD2D'][node])
                 parameter['powerD2DList'][node] = p
                 index = index - 1
@@ -265,7 +282,7 @@ def cal_need_power(d2d, **parameter):
     #方便計算干擾用，先假設d2d已被分配它能使用的rb
     parameter['assignmentD2D'][d2d] = np.copy(parameter['d2d_use_rb_List'][d2d])
     for rx in range(parameter['numD2DReciver'][d2d]):
-        for rb in range(parameter['numRB']):
+        for rb in range(parameter['start_point'], parameter['end_point']):
             interference = cal_d2d_interference(d2d, rx, rb, **parameter)       
             # print('cal already assign interference of d2d',d2d,interference)     
             virtual_interference = cal_virtual_interference(d2d, rx, rb, **parameter)
@@ -301,7 +318,7 @@ def cal_min_interference_power(d2d, **parameter):
             if d2d in parameter['i_d2d_rx'][tx][rx]['d2d']:
                 flag = True
                 d2d_min_power = np.zeros(parameter['numRB'])
-                for rb in range(parameter['numRB']):
+                for rb in range(parameter['start_point'], parameter['end_point']):
                     if parameter['assignmentD2D'][d2d][rb] == 1 and parameter['assignmentD2D'][tx][rb] == 1:
                         interference = cal_d2d_interference(tx, rx, rb, **parameter)
                         d2d_min_power[rb] = ((parameter['powerD2DList'][tx] * parameter['g_d2d'][tx][rx][rb]) / (parameter['minD2Dsinr'][tx] * parameter['g_dij'][d2d][tx][rx][rb])) - ((parameter['N0'] + interference) / parameter['g_dij'][d2d][tx][rx][rb])
@@ -372,7 +389,7 @@ def cal_virtual_interference(tx, rx, rb, **parameter):
         # print('d2d',tx, 'no interference neighbor, virtual power ',interference)
     else:
         if avgCount == 0:
-            interference = ((parameter['Pmax'] / (count * parameter['numRB'])) * parameter['g_dij'][i][tx][rx][rb])
+            interference = ((parameter['Pmax'] / (count * parameter['spreading'])) * parameter['g_dij'][i][tx][rx][rb])
             # print('virtual interference neighbor',interference)
             # print('Calculation: ((Pmax',parameter['Pmax'],'/ (count' ,count , '* numRB',parameter['numRB'], ')) * gain',parameter['g_dij'][i][tx][rx][rb])
         else:
@@ -413,7 +430,7 @@ def max_power_set_zero(power, **parameter):
 def cal_d2d_sinr(d2d, **parameter):
     sinr_list = np.zeros((parameter['numD2DReciver'][d2d], parameter['numRB']))
     for rx in range(parameter['numD2DReciver'][d2d]):
-        for rb in range(parameter['numRB']):
+        for rb in range(parameter['start_point'], parameter['end_point']):
             interference = cal_d2d_interference(d2d, rx, rb, **parameter)
             sinr_list[rx][rb] = (parameter['powerD2DList'][d2d] * parameter['g_d2d'][d2d][rx][rb]) / ( parameter['N0'] + interference)
     sinr_nonzero_list = sinr_list[np.nonzero(sinr_list)]
@@ -424,7 +441,7 @@ def cal_cue_sinr(cue, **parameter):
     sinr_list_rb = np.zeros((parameter['numCellRx'], parameter['numRB']))
     sinr_list = np.zeros((parameter['numCellRx']))
     for rx in range(parameter['numCellRx']):
-        for rb in range(parameter['numRB']):
+        for rb in range(parameter['start_point'], parameter['end_point']):
             interference = cal_cue_interference(rx, rb, **parameter)
             sinr_list_rb[rx][rb] = (parameter['powerCUEList'][cue] * parameter['g_c2b'][cue][rx][rb]) / ( parameter['N0'] + interference)
         sinr_nonzero_list = sinr_list_rb[rx][np.nonzero(sinr_list_rb[rx])]
@@ -436,7 +453,7 @@ def cal_d2d_min_sinr_power(**parameter):
         if parameter['powerD2DList'][tx] != 0 and tx not in parameter['nStartD2D']:
             power_list = np.zeros((parameter['numD2DReciver'][tx], parameter['numRB']))
             for rx in range(parameter['numD2DReciver'][tx]):
-                for rb in range(parameter['numRB']):
+                for rb in range(parameter['start_point'], parameter['end_point']):
                     interference = cal_d2d_interference(tx, rx, rb, **parameter)
                     power_list[rx][rb] = (parameter['minD2Dsinr'][tx] * (parameter['N0'] + interference)) / parameter['g_d2d'][tx][rx][rb]
             
@@ -452,7 +469,7 @@ def throughput_collect(**parameter):
         if parameter['powerD2DList'][d2d] != 0:
             assign = assign + 1
             parameter['throughput'] = parameter['throughput'] + parameter['data_d2d'][d2d]
-            sinr = cal_d2d_sinr(d2d, **parameter)
+            # sinr = cal_d2d_sinr(d2d, **parameter)
             # print('d2d', d2d, 'pwr', parameter['powerD2DList'][d2d])
             # print('d2d', d2d, 'sinr', sinr)
             # print('min', d2d, 'sinr', parameter['minD2Dsinr'][d2d])

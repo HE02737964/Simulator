@@ -5,9 +5,17 @@ import method
 def mGreedy(**parameter):
     tool = tools.Tool()
     parameter = method.initial_parameter(**parameter)
-    parameter = method.phase1(**parameter)
-    # parameter = greedy(**parameter)
-    parameter = method.cal_d2d_min_sinr_power(**parameter)
+    iteration = int(parameter['numRB'] / parameter['spreading'])
+    parameter = method.initial_parameter(**parameter)
+    for i in range(iteration):
+        parameter['start_point'] = i * parameter['spreading']
+        parameter['end_point'] = ((i + 1) * parameter['spreading'])
+        parameter = method.phase1(**parameter)
+        # parameter = greedy(**parameter)
+        parameter = method.cal_d2d_min_sinr_power(**parameter)
+    for d2d in range(75):
+        x = parameter['assignmentD2D'][d2d][np.nonzero(parameter['assignmentD2D'][d2d])]
+        print(len(x))
     parameter = method.throughput_collect(**parameter)
     parameter = tool.power_collect(**parameter)
     

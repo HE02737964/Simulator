@@ -178,9 +178,11 @@ def greedy(**parameter):
             
             if power != 0:
                 parameter['powerD2DList'][d2d] = power
+                numRB = d2d_need_rb[d2d]
                 for rb in range(parameter['numRB']):
-                    if parameter['d2d_use_rb_List'][d2d][rb] == 1:
+                    if parameter['d2d_use_rb_List'][d2d][rb] == 1 and numRB != 0:
                         parameter['assignmentD2D'][d2d][rb] = 1
+                        numRB = numRB - 1
                 # parameter['assignmentD2D'][d2d] = parameter['d2d_use_rb_List'][d2d].copy()
             else:
                 # print('d2d',d2d,'power not enough')

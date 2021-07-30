@@ -1,234 +1,704 @@
-simulation time 100 numCUE 25 throughput 408.04462
-simulation time 100 numCUE 25 consumption 0.008272166193392026
-simulation time 100 numCUE 25 assignment 66.17
-simulation time 100 numCUE 25 percent_assignment 0.8822666666666666
-simulation time 100 numCUE 25 non_assignment 8.829999999999998
-simulation time 100 numCUE 25 percent_nonsaaignment 0.11773333333333331
-simulation time 100 numCUE 25 fairness 0.575375083967551
-simulation time 100 numCUE 25 distance 328.54147872668045
-simulation time 100 numCUE 25 loss 15014.061743089438
-simulation time 100 numCUE 30 throughput 413.823235
-simulation time 100 numCUE 30 consumption 0.008559318463969432
-simulation time 100 numCUE 30 assignment 66.31
-simulation time 100 numCUE 30 percent_assignment 0.8841333333333333
-simulation time 100 numCUE 30 non_assignment 8.689999999999998
-simulation time 100 numCUE 30 percent_nonsaaignment 0.11586666666666663
-simulation time 100 numCUE 30 fairness 0.5822893004283962
-simulation time 100 numCUE 30 distance 324.64448091762324
-simulation time 100 numCUE 30 loss 14892.501824593492
-simulation time 100 numCUE 35 throughput 412.943205
-simulation time 100 numCUE 35 consumption 0.008616498187673297
-simulation time 100 numCUE 35 assignment 66.12
-simulation time 100 numCUE 35 percent_assignment 0.8816
-simulation time 100 numCUE 35 non_assignment 8.879999999999995
-simulation time 100 numCUE 35 percent_nonsaaignment 0.11839999999999994
-simulation time 100 numCUE 35 fairness 0.5786964722793067
-simulation time 100 numCUE 35 distance 323.3397985717796
-simulation time 100 numCUE 35 loss 14821.779897662598
-simulation time 100 numCUE 40 throughput 401.23302
-simulation time 100 numCUE 40 consumption 0.008456252330926296
-simulation time 100 numCUE 40 assignment 65.69
-simulation time 100 numCUE 40 percent_assignment 0.8758666666666667
-simulation time 100 numCUE 40 non_assignment 9.310000000000002
-simulation time 100 numCUE 40 percent_nonsaaignment 0.12413333333333336
-simulation time 100 numCUE 40 fairness 0.5636602726553818
-simulation time 100 numCUE 40 distance 316.8857534592829
-simulation time 100 numCUE 40 loss 14973.24801941057
-simulation time 100 numCUE 45 throughput 404.278595
-simulation time 100 numCUE 45 consumption 0.008329792700388618
-simulation time 100 numCUE 45 assignment 66.04
-simulation time 100 numCUE 45 percent_assignment 0.8805333333333334
-simulation time 100 numCUE 45 non_assignment 8.959999999999994
-simulation time 100 numCUE 45 percent_nonsaaignment 0.11946666666666658
-simulation time 100 numCUE 45 fairness 0.5696722399780411
-simulation time 100 numCUE 45 distance 320.6924605451218
-simulation time 100 numCUE 45 loss 15134.141996747965
-simulation time 100 numCUE 50 throughput 394.661775
-simulation time 100 numCUE 50 consumption 0.007780385942272919
-simulation time 100 numCUE 50 assignment 66.01
-simulation time 100 numCUE 50 percent_assignment 0.8801333333333334
-simulation time 100 numCUE 50 non_assignment 8.989999999999995
-simulation time 100 numCUE 50 percent_nonsaaignment 0.1198666666666666
-simulation time 100 numCUE 50 fairness 0.552051087310265
-simulation time 100 numCUE 50 distance 331.9362200652447
-simulation time 100 numCUE 50 loss 15281.615920426822
-simulation time 100 numCUE 55 throughput 403.47872
-simulation time 100 numCUE 55 consumption 0.008344796401878796
-simulation time 100 numCUE 55 assignment 66.05
-simulation time 100 numCUE 55 percent_assignment 0.8806666666666666
-simulation time 100 numCUE 55 non_assignment 8.950000000000003
-simulation time 100 numCUE 55 percent_nonsaaignment 0.11933333333333337
-simulation time 100 numCUE 55 fairness 0.5634594205566479
-simulation time 100 numCUE 55 distance 315.7648660167359
-simulation time 100 numCUE 55 loss 15312.323058028463
-simulation time 100 numCUE 60 throughput 404.014545
-simulation time 100 numCUE 60 consumption 0.008204521647064993
-simulation time 100 numCUE 60 assignment 66.0
-simulation time 100 numCUE 60 percent_assignment 0.88
-simulation time 100 numCUE 60 non_assignment 9.0
-simulation time 100 numCUE 60 percent_nonsaaignment 0.12
-simulation time 100 numCUE 60 fairness 0.5668864818486361
-simulation time 100 numCUE 60 distance 320.9659441547604
-simulation time 100 numCUE 60 loss 15342.099002947154
-simulation time 100 numCUE 65 throughput 397.756285
-simulation time 100 numCUE 65 consumption 0.007905230952421374
-simulation time 100 numCUE 65 assignment 66.065
-simulation time 100 numCUE 65 percent_assignment 0.8808666666666667
-simulation time 100 numCUE 65 non_assignment 8.935000000000002
-simulation time 100 numCUE 65 percent_nonsaaignment 0.11913333333333337
-simulation time 100 numCUE 65 fairness 0.5553102270269887
-simulation time 100 numCUE 65 distance 321.8761434158151
-simulation time 100 numCUE 65 loss 15631.96950457317
-simulation time 100 numCUE 70 throughput 412.8537
-simulation time 100 numCUE 70 consumption 0.008248740339320751
-simulation time 100 numCUE 70 assignment 66.455
-simulation time 100 numCUE 70 percent_assignment 0.8860666666666667
-simulation time 100 numCUE 70 non_assignment 8.545000000000002
-simulation time 100 numCUE 70 percent_nonsaaignment 0.11393333333333336
-simulation time 100 numCUE 70 fairness 0.578779561740576
-simulation time 100 numCUE 70 distance 322.8427185056212
-simulation time 100 numCUE 70 loss 15503.064457825201
-simulation time 500 numD2D 50 throughput 288.729779
-simulation time 500 numD2D 50 consumption 0.016154170324610136
-simulation time 500 numD2D 50 assignment 45.946
-simulation time 500 numD2D 50 percent_assignment 0.91892
-simulation time 500 numD2D 50 non_assignment 4.054000000000002
-simulation time 500 numD2D 50 percent_nonsaaignment 0.08108000000000004
-simulation time 500 numD2D 50 fairness 0.6087075747408902
-simulation time 500 numD2D 50 distance 168.09919720257798
-simulation time 500 numD2D 50 loss 53163.22101229672
-simulation time 500 numD2D 55 throughput 316.21234
-simulation time 500 numD2D 55 consumption 0.013945792175635073
-simulation time 500 numD2D 55 assignment 50.059
-simulation time 500 numD2D 55 percent_assignment 0.9101636363636363
-simulation time 500 numD2D 55 non_assignment 4.9410000000000025
-simulation time 500 numD2D 55 percent_nonsaaignment 0.08983636363636369
-simulation time 500 numD2D 55 fairness 0.6023019891292657
-simulation time 500 numD2D 55 distance 195.27118671227197
-simulation time 500 numD2D 55 loss 58058.720931300784
-simulation time 500 numD2D 60 throughput 338.818447
-simulation time 500 numD2D 60 consumption 0.011770546616534625
-simulation time 500 numD2D 60 assignment 54.209
-simulation time 500 numD2D 60 percent_assignment 0.9034833333333334
-simulation time 500 numD2D 60 non_assignment 5.790999999999997
-simulation time 500 numD2D 60 percent_nonsaaignment 0.09651666666666661
-simulation time 500 numD2D 60 fairness 0.5934525537955768
-simulation time 500 numD2D 60 distance 229.4154582741363
-simulation time 500 numD2D 60 loss 62736.1325247967
-simulation time 500 numD2D 65 throughput 361.814644
-simulation time 500 numD2D 65 consumption 0.010425537756440416
-simulation time 500 numD2D 65 assignment 58.213
-simulation time 500 numD2D 65 percent_assignment 0.8955846153846154
-simulation time 500 numD2D 65 non_assignment 6.786999999999999
-simulation time 500 numD2D 65 percent_nonsaaignment 0.1044153846153846
-simulation time 500 numD2D 65 fairness 0.5864712659375525
-simulation time 500 numD2D 65 distance 258.174783718395
-simulation time 500 numD2D 65 loss 67211.54171107728
-simulation time 500 numD2D 70 throughput 386.094655
-simulation time 500 numD2D 70 consumption 0.009200334646137738
-simulation time 500 numD2D 70 assignment 62.285
-simulation time 500 numD2D 70 percent_assignment 0.8897857142857143
-simulation time 500 numD2D 70 non_assignment 7.715000000000003
-simulation time 500 numD2D 70 percent_nonsaaignment 0.11021428571428576
-simulation time 500 numD2D 70 fairness 0.5778468895151898
-simulation time 500 numD2D 70 distance 293.68264289701006
-simulation time 500 numD2D 70 loss 71446.65316707316
-simulation time 500 maxReciver 10 throughput 307.587999
-simulation time 500 maxReciver 10 consumption 0.005469614971138729
-simulation time 500 maxReciver 10 assignment 58.799
-simulation time 500 maxReciver 10 percent_assignment 0.7839866666666666
-simulation time 500 maxReciver 10 non_assignment 16.201
-simulation time 500 maxReciver 10 percent_nonsaaignment 0.21601333333333333
-simulation time 500 maxReciver 10 fairness 0.4316850570716999
-simulation time 500 maxReciver 10 distance 414.58080484155084
-simulation time 500 maxReciver 10 loss 67822.44549502034
-simulation time 500 maxReciver 9 throughput 319.884977
-simulation time 500 maxReciver 9 consumption 0.005722855152045511
-simulation time 500 maxReciver 9 assignment 59.239
-simulation time 500 maxReciver 9 percent_assignment 0.7898533333333333
-simulation time 500 maxReciver 9 non_assignment 15.761000000000003
-simulation time 500 maxReciver 9 percent_nonsaaignment 0.2101466666666667
-simulation time 500 maxReciver 9 fairness 0.44765155471634493
-simulation time 500 maxReciver 9 distance 408.2896548356168
-simulation time 500 maxReciver 9 loss 68451.4605221545
-simulation time 500 maxReciver 8 throughput 327.840162
-simulation time 500 maxReciver 8 consumption 0.005853618769040565
-simulation time 500 maxReciver 8 assignment 60.114
-simulation time 500 maxReciver 8 percent_assignment 0.80152
-simulation time 500 maxReciver 8 non_assignment 14.886000000000003
-simulation time 500 maxReciver 8 percent_nonsaaignment 0.19848000000000005
-simulation time 500 maxReciver 8 fairness 0.45868440334280036
-simulation time 500 maxReciver 8 distance 405.31480592220817
-simulation time 500 maxReciver 8 loss 69090.01021310972
-simulation time 500 maxReciver 7 throughput 335.857286
-simulation time 500 maxReciver 7 consumption 0.006186111673895202
-simulation time 500 maxReciver 7 assignment 60.839
-simulation time 500 maxReciver 7 percent_assignment 0.8111866666666666
-simulation time 500 maxReciver 7 non_assignment 14.161000000000001
-simulation time 500 maxReciver 7 percent_nonsaaignment 0.18881333333333336
-simulation time 500 maxReciver 7 fairness 0.4713750209031725
-simulation time 500 maxReciver 7 distance 389.3989214676992
-simulation time 500 maxReciver 7 loss 69712.76019573172
-simulation time 500 maxReciver 6 throughput 348.88923
-simulation time 500 maxReciver 6 consumption 0.00643117760294185
-simulation time 500 maxReciver 6 assignment 61.814
-simulation time 500 maxReciver 6 percent_assignment 0.8241866666666666
-simulation time 500 maxReciver 6 non_assignment 13.186
-simulation time 500 maxReciver 6 percent_nonsaaignment 0.17581333333333332
-simulation time 500 maxReciver 6 fairness 0.4893234689165792
-simulation time 500 maxReciver 6 distance 380.33367124475245
-simulation time 500 maxReciver 6 loss 71318.51453272368
-simulation time 500 maxReciver 5 throughput 363.722145
-simulation time 500 maxReciver 5 consumption 0.006798341193824635
-simulation time 500 maxReciver 5 assignment 63.06
-simulation time 500 maxReciver 5 percent_assignment 0.8408
-simulation time 500 maxReciver 5 non_assignment 11.939999999999998
-simulation time 500 maxReciver 5 percent_nonsaaignment 0.15919999999999998
-simulation time 500 maxReciver 5 fairness 0.5103732391285195
-simulation time 500 maxReciver 5 distance 366.7207392603208
-simulation time 500 maxReciver 5 loss 72945.97264329268
-simulation time 500 maxReciver 4 throughput 379.699959
-simulation time 500 maxReciver 4 consumption 0.007393255050485283
-simulation time 500 maxReciver 4 assignment 64.243
-simulation time 500 maxReciver 4 percent_assignment 0.8565733333333333
-simulation time 500 maxReciver 4 non_assignment 10.757000000000005
-simulation time 500 maxReciver 4 percent_nonsaaignment 0.14342666666666673
-simulation time 500 maxReciver 4 fairness 0.5339326632738769
-simulation time 500 maxReciver 4 distance 346.4270131557574
-simulation time 500 maxReciver 4 loss 74124.72864867887
-simulation time 500 maxReciver 3 throughput 406.650677
-simulation time 500 maxReciver 3 consumption 0.008153538156257845
-simulation time 500 maxReciver 3 assignment 66.1
-simulation time 500 maxReciver 3 percent_assignment 0.8813333333333333
-simulation time 500 maxReciver 3 non_assignment 8.900000000000006
-simulation time 500 maxReciver 3 percent_nonsaaignment 0.11866666666666674
-simulation time 500 maxReciver 3 fairness 0.5674713824023343
-simulation time 500 maxReciver 3 distance 327.77230130717226
-simulation time 500 maxReciver 3 loss 76080.46279522365
-simulation time 500 numD2D 75 throughput 405.104674
-simulation time 500 numD2D 75 consumption 0.008162295542390355
-simulation time 500 numD2D 75 assignment 66.216
-simulation time 500 numD2D 75 percent_assignment 0.8828799999999999
-simulation time 500 numD2D 75 non_assignment 8.784000000000006
-simulation time 500 numD2D 75 percent_nonsaaignment 0.11712000000000009
-simulation time 500 numD2D 75 fairness 0.5710924542579712
-simulation time 500 numD2D 75 distance 324.1996540982841
-simulation time 500 numD2D 75 loss 76544.21886432928
-simulation time 500 maxReciver 2 throughput 433.447608
-simulation time 500 maxReciver 2 consumption 0.009468135085297818
-simulation time 500 maxReciver 2 assignment 68.498
-simulation time 500 maxReciver 2 percent_assignment 0.9133066666666667
-simulation time 500 maxReciver 2 non_assignment 6.501999999999995
-simulation time 500 maxReciver 2 percent_nonsaaignment 0.08669333333333328
-simulation time 500 maxReciver 2 fairness 0.6077282998778285
-simulation time 500 maxReciver 2 distance 288.56279771249115
-simulation time 500 maxReciver 2 loss 79323.49289075207
-simulation time 500 maxReciver 1 throughput 477.214904
-simulation time 500 maxReciver 1 consumption 0.012245366780513333
-simulation time 500 maxReciver 1 assignment 71.308
-simulation time 500 maxReciver 1 percent_assignment 0.9507733333333335
-simulation time 500 maxReciver 1 non_assignment 3.691999999999993
-simulation time 500 maxReciver 1 percent_nonsaaignment 0.04922666666666657
-simulation time 500 maxReciver 1 fairness 0.6691127460707259
-simulation time 500 maxReciver 1 distance 236.0705002122441
-simulation time 500 maxReciver 1 loss 82541.1442142276
+simulation time 500 gcrs numD2D 50 throughput 521.850318
+simulation time 500 gcrs numD2D 50 consumption_c 6.37931097268277
+simulation time 500 gcrs numD2D 50 consumption 6.3845377511822665
+simulation time 500 gcrs numD2D 50 assignment 45.405
+simulation time 500 gcrs numD2D 50 percent_assignment 0.9081
+simulation time 500 gcrs numD2D 50 non_assignment 4.594999999999999
+simulation time 500 gcrs numD2D 50 percent_nonsaaignment 0.09189999999999998
+simulation time 500 gcrs numD2D 50 fairness 0.5879896880268434
+simulation time 500 gcrs numD2D 50 non_fairness 0.32383952672079847
+simulation time 500 gcrs numD2D 50 distance 297.74979846213375
+simulation time 500 gcrs numD2D 50 loss 104008.89341199187
+simulation time 500 gcrs numD2D 55 throughput 562.113586
+simulation time 500 gcrs numD2D 55 consumption_c 7.389553231633605
+simulation time 500 gcrs numD2D 55 consumption 7.308773408806434
+simulation time 500 gcrs numD2D 55 assignment 49.624
+simulation time 500 gcrs numD2D 55 percent_assignment 0.9022545454545455
+simulation time 500 gcrs numD2D 55 non_assignment 5.375999999999998
+simulation time 500 gcrs numD2D 55 percent_nonsaaignment 0.0977454545454545
+simulation time 500 gcrs numD2D 55 fairness 0.5777035712688099
+simulation time 500 gcrs numD2D 55 non_fairness 0.3201989375414923
+simulation time 500 gcrs numD2D 55 distance 353.88328771244124
+simulation time 500 gcrs numD2D 55 loss 114015.39849674815
+simulation time 500 gcrs numD2D 60 throughput 600.838514
+simulation time 500 gcrs numD2D 60 consumption_c 8.892650941728983
+simulation time 500 gcrs numD2D 60 consumption 8.672607539595932
+simulation time 500 gcrs numD2D 60 assignment 53.332
+simulation time 500 gcrs numD2D 60 percent_assignment 0.8888666666666667
+simulation time 500 gcrs numD2D 60 non_assignment 6.667999999999999
+simulation time 500 gcrs numD2D 60 percent_nonsaaignment 0.11113333333333332
+simulation time 500 gcrs numD2D 60 fairness 0.5633690534529086
+simulation time 500 gcrs numD2D 60 non_fairness 0.3169210320996705
+simulation time 500 gcrs numD2D 60 distance 403.4692069329411
+simulation time 500 gcrs numD2D 60 loss 122056.76633394309
+simulation time 500 gcrs numD2D 65 throughput 633.653826
+simulation time 500 gcrs numD2D 65 consumption_c 10.108298591232039
+simulation time 500 gcrs numD2D 65 consumption 9.943559914165032
+simulation time 500 gcrs numD2D 65 assignment 57.731
+simulation time 500 gcrs numD2D 65 percent_assignment 0.8881692307692308
+simulation time 500 gcrs numD2D 65 non_assignment 7.268999999999998
+simulation time 500 gcrs numD2D 65 percent_nonsaaignment 0.1118307692307692
+simulation time 500 gcrs numD2D 65 fairness 0.5562171221204602
+simulation time 500 gcrs numD2D 65 non_fairness 0.3131947492916931
+simulation time 500 gcrs numD2D 65 distance 465.1494399468526
+simulation time 500 gcrs numD2D 65 loss 133149.2144461382
+simulation time 500 gcrs numD2D 70 throughput 680.192174
+simulation time 500 gcrs numD2D 70 consumption_c 11.656040198439692
+simulation time 500 gcrs numD2D 70 consumption 11.399462441146705
+simulation time 500 gcrs numD2D 70 assignment 61.446
+simulation time 500 gcrs numD2D 70 percent_assignment 0.8778
+simulation time 500 gcrs numD2D 70 non_assignment 8.554000000000002
+simulation time 500 gcrs numD2D 70 percent_nonsaaignment 0.12220000000000003
+simulation time 500 gcrs numD2D 70 fairness 0.5471417813509991
+simulation time 500 gcrs numD2D 70 non_fairness 0.31171463156337587
+simulation time 500 gcrs numD2D 70 distance 519.6118867691622
+simulation time 500 gcrs numD2D 70 loss 140121.93417052843
+simulation time 500 gcrs numD2D 75 throughput 722.767118
+simulation time 500 gcrs numD2D 75 consumption_c 13.035700444463412
+simulation time 500 gcrs numD2D 75 consumption 12.848200376706966
+simulation time 500 gcrs numD2D 75 assignment 65.421
+simulation time 500 gcrs numD2D 75 percent_assignment 0.87228
+simulation time 500 gcrs numD2D 75 non_assignment 9.578999999999994
+simulation time 500 gcrs numD2D 75 percent_nonsaaignment 0.12771999999999992
+simulation time 500 gcrs numD2D 75 fairness 0.5411374788144175
+simulation time 500 gcrs numD2D 75 non_fairness 0.310253081976411
+simulation time 500 gcrs numD2D 75 distance 571.7025248043165
+simulation time 500 gcrs numD2D 75 loss 149149.6706032521
+simulation time 500 gcrs numD2D 80 throughput 751.77295
+simulation time 500 gcrs numD2D 80 consumption_c 14.287078120156828
+simulation time 500 gcrs numD2D 80 consumption 13.895370045511852
+simulation time 500 gcrs numD2D 80 assignment 68.895
+simulation time 500 gcrs numD2D 80 percent_assignment 0.8611875
+simulation time 500 gcrs numD2D 80 non_assignment 11.105000000000004
+simulation time 500 gcrs numD2D 80 percent_nonsaaignment 0.13881250000000006
+simulation time 500 gcrs numD2D 80 fairness 0.5270026732460333
+simulation time 500 gcrs numD2D 80 non_fairness 0.3061133928341791
+simulation time 500 gcrs numD2D 80 distance 631.0291967962067
+simulation time 500 gcrs numD2D 80 loss 157450.42151951205
+simulation time 500 gcrs numD2D 85 throughput 788.199852
+simulation time 500 gcrs numD2D 85 consumption_c 16.143074457283955
+simulation time 500 gcrs numD2D 85 consumption 15.853781103193597
+simulation time 500 gcrs numD2D 85 assignment 72.879
+simulation time 500 gcrs numD2D 85 percent_assignment 0.8574
+simulation time 500 gcrs numD2D 85 non_assignment 12.120999999999995
+simulation time 500 gcrs numD2D 85 percent_nonsaaignment 0.14259999999999995
+simulation time 500 gcrs numD2D 85 fairness 0.5223928069710781
+simulation time 500 gcrs numD2D 85 non_fairness 0.3046578366220874
+simulation time 500 gcrs numD2D 85 distance 683.5211692879329
+simulation time 500 gcrs numD2D 85 loss 165891.84285000007
+simulation time 500 gcrs numD2D 90 throughput 839.285138
+simulation time 500 gcrs numD2D 90 consumption_c 18.316799104351574
+simulation time 500 gcrs numD2D 90 consumption 17.764799229558108
+simulation time 500 gcrs numD2D 90 assignment 76.65
+simulation time 500 gcrs numD2D 90 percent_assignment 0.8516666666666667
+simulation time 500 gcrs numD2D 90 non_assignment 13.349999999999994
+simulation time 500 gcrs numD2D 90 percent_nonsaaignment 0.14833333333333326
+simulation time 500 gcrs numD2D 90 fairness 0.5201884486102315
+simulation time 500 gcrs numD2D 90 non_fairness 0.30545546594851214
+simulation time 500 gcrs numD2D 90 distance 744.2638788738533
+simulation time 500 gcrs numD2D 90 loss 175159.33747479663
+simulation time 500 gcrs numD2D 95 throughput 858.416348
+simulation time 500 gcrs numD2D 95 consumption_c 19.661812111258858
+simulation time 500 gcrs numD2D 95 consumption 19.073981308529323
+simulation time 500 gcrs numD2D 95 assignment 80.185
+simulation time 500 gcrs numD2D 95 percent_assignment 0.8440526315789474
+simulation time 500 gcrs numD2D 95 non_assignment 14.814999999999998
+simulation time 500 gcrs numD2D 95 percent_nonsaaignment 0.1559473684210526
+simulation time 500 gcrs numD2D 95 fairness 0.5063239090649414
+simulation time 500 gcrs numD2D 95 non_fairness 0.30010822995194764
+simulation time 500 gcrs numD2D 95 distance 815.80594863075
+simulation time 500 gcrs numD2D 95 loss 181507.11573231695
+simulation time 500 gcrs maxReciver 10 throughput 530.1157240000001
+simulation time 500 gcrs maxReciver 10 consumption_c 8.54179659781515
+simulation time 500 gcrs maxReciver 10 consumption 8.13975044908512
+simulation time 500 gcrs maxReciver 10 assignment 56.523
+simulation time 500 gcrs maxReciver 10 percent_assignment 0.7536400000000001
+simulation time 500 gcrs maxReciver 10 non_assignment 18.476999999999997
+simulation time 500 gcrs maxReciver 10 percent_nonsaaignment 0.24635999999999997
+simulation time 500 gcrs maxReciver 10 fairness 0.44910243829235974
+simulation time 500 gcrs maxReciver 10 non_fairness 0.29816480217282065
+simulation time 500 gcrs maxReciver 10 distance 646.4479357998774
+simulation time 500 gcrs maxReciver 10 loss 129050.50978495924
+simulation time 500 gcrs maxReciver 9 throughput 547.442224
+simulation time 500 gcrs maxReciver 9 consumption_c 8.697889113797771
+simulation time 500 gcrs maxReciver 9 consumption 8.341166107115122
+simulation time 500 gcrs maxReciver 9 assignment 57.342
+simulation time 500 gcrs maxReciver 9 percent_assignment 0.76456
+simulation time 500 gcrs maxReciver 9 non_assignment 17.658
+simulation time 500 gcrs maxReciver 9 percent_nonsaaignment 0.23544
+simulation time 500 gcrs maxReciver 9 fairness 0.45826736180218447
+simulation time 500 gcrs maxReciver 9 non_fairness 0.299924156514456
+simulation time 500 gcrs maxReciver 9 distance 646.9502762285933
+simulation time 500 gcrs maxReciver 9 loss 132293.58791991867
+simulation time 500 gcrs maxReciver 8 throughput 567.86665
+simulation time 500 gcrs maxReciver 8 consumption_c 9.261151288612842
+simulation time 500 gcrs maxReciver 8 consumption 8.988515285666779
+simulation time 500 gcrs maxReciver 8 assignment 57.999
+simulation time 500 gcrs maxReciver 8 percent_assignment 0.77332
+simulation time 500 gcrs maxReciver 8 non_assignment 17.000999999999998
+simulation time 500 gcrs maxReciver 8 percent_nonsaaignment 0.22667999999999996
+simulation time 500 gcrs maxReciver 8 fairness 0.4653605633474882
+simulation time 500 gcrs maxReciver 8 non_fairness 0.3010335120024066
+simulation time 500 gcrs maxReciver 8 distance 632.218567715108
+simulation time 500 gcrs maxReciver 8 loss 132488.72326077233
+simulation time 500 gcrs maxReciver 7 throughput 582.017678
+simulation time 500 gcrs maxReciver 7 consumption_c 9.92539854523592
+simulation time 500 gcrs maxReciver 7 consumption 9.579766209035265
+simulation time 500 gcrs maxReciver 7 assignment 59.046
+simulation time 500 gcrs maxReciver 7 percent_assignment 0.78728
+simulation time 500 gcrs maxReciver 7 non_assignment 15.954
+simulation time 500 gcrs maxReciver 7 percent_nonsaaignment 0.21272000000000002
+simulation time 500 gcrs maxReciver 7 fairness 0.4773638901226296
+simulation time 500 gcrs maxReciver 7 non_fairness 0.30337940711083167
+simulation time 500 gcrs maxReciver 7 distance 621.3042882929116
+simulation time 500 gcrs maxReciver 7 loss 134661.5866410569
+simulation time 500 gcrs maxReciver 6 throughput 610.617574
+simulation time 500 gcrs maxReciver 6 consumption_c 9.769580969889915
+simulation time 500 gcrs maxReciver 6 consumption 9.653978567149752
+simulation time 500 gcrs maxReciver 6 assignment 60.358
+simulation time 500 gcrs maxReciver 6 percent_assignment 0.8047733333333333
+simulation time 500 gcrs maxReciver 6 non_assignment 14.642000000000003
+simulation time 500 gcrs maxReciver 6 percent_nonsaaignment 0.19522666666666671
+simulation time 500 gcrs maxReciver 6 fairness 0.48750699056576424
+simulation time 500 gcrs maxReciver 6 non_fairness 0.30302524872598136
+simulation time 500 gcrs maxReciver 6 distance 625.4875816387631
+simulation time 500 gcrs maxReciver 6 loss 138131.8295619919
+simulation time 500 gcrs maxReciver 5 throughput 629.269668
+simulation time 500 gcrs maxReciver 5 consumption_c 10.915666599361304
+simulation time 500 gcrs maxReciver 5 consumption 10.598098387090781
+simulation time 500 gcrs maxReciver 5 assignment 61.658
+simulation time 500 gcrs maxReciver 5 percent_assignment 0.8221066666666667
+simulation time 500 gcrs maxReciver 5 non_assignment 13.341999999999999
+simulation time 500 gcrs maxReciver 5 percent_nonsaaignment 0.17789333333333332
+simulation time 500 gcrs maxReciver 5 fairness 0.49979510934057403
+simulation time 500 gcrs maxReciver 5 non_fairness 0.3042352456131275
+simulation time 500 gcrs maxReciver 5 distance 620.8753249253635
+simulation time 500 gcrs maxReciver 5 loss 140607.81631890245
+simulation time 500 gcrs maxReciver 4 throughput 674.700454
+simulation time 500 gcrs maxReciver 4 consumption_c 11.961319828595466
+simulation time 500 gcrs maxReciver 4 consumption 11.663684097030377
+simulation time 500 gcrs maxReciver 4 assignment 63.27
+simulation time 500 gcrs maxReciver 4 percent_assignment 0.8436
+simulation time 500 gcrs maxReciver 4 non_assignment 11.729999999999997
+simulation time 500 gcrs maxReciver 4 percent_nonsaaignment 0.15639999999999996
+simulation time 500 gcrs maxReciver 4 fairness 0.5194694935537162
+simulation time 500 gcrs maxReciver 4 non_fairness 0.3080218116431501
+simulation time 500 gcrs maxReciver 4 distance 598.6780284088487
+simulation time 500 gcrs maxReciver 4 loss 144362.11807357718
+simulation time 500 gcrs maxReciver 3 throughput 723.16947
+simulation time 500 gcrs maxReciver 3 consumption_c 13.065203394290421
+simulation time 500 gcrs maxReciver 3 consumption 12.757719764383273
+simulation time 500 gcrs maxReciver 3 assignment 65.325
+simulation time 500 gcrs maxReciver 3 percent_assignment 0.871
+simulation time 500 gcrs maxReciver 3 non_assignment 9.674999999999997
+simulation time 500 gcrs maxReciver 3 percent_nonsaaignment 0.12899999999999998
+simulation time 500 gcrs maxReciver 3 fairness 0.5400080972000222
+simulation time 500 gcrs maxReciver 3 non_fairness 0.3100714940587953
+simulation time 500 gcrs maxReciver 3 distance 567.8310664100092
+simulation time 500 gcrs maxReciver 3 loss 149024.6892603658
+simulation time 500 gcrs maxReciver 2 throughput 774.86276
+simulation time 500 gcrs maxReciver 2 consumption_c 14.530361395955659
+simulation time 500 gcrs maxReciver 2 consumption 14.30398674027712
+simulation time 500 gcrs maxReciver 2 assignment 67.884
+simulation time 500 gcrs maxReciver 2 percent_assignment 0.90512
+simulation time 500 gcrs maxReciver 2 non_assignment 7.116
+simulation time 500 gcrs maxReciver 2 percent_nonsaaignment 0.09487999999999999
+simulation time 500 gcrs maxReciver 2 fairness 0.5618515547650402
+simulation time 500 gcrs maxReciver 2 non_fairness 0.3104715512505398
+simulation time 500 gcrs maxReciver 2 distance 531.7767570580437
+simulation time 500 gcrs maxReciver 2 loss 155275.59281565037
+simulation time 500 gcrs maxReciver 1 throughput 861.362012
+simulation time 500 gcrs maxReciver 1 consumption_c 16.579497465954354
+simulation time 500 gcrs maxReciver 1 consumption 16.47175223019111
+simulation time 500 gcrs maxReciver 1 assignment 71.121
+simulation time 500 gcrs maxReciver 1 percent_assignment 0.9482799999999999
+simulation time 500 gcrs maxReciver 1 non_assignment 3.879000000000005
+simulation time 500 gcrs maxReciver 1 percent_nonsaaignment 0.051720000000000065
+simulation time 500 gcrs maxReciver 1 fairness 0.604690269192347
+simulation time 500 gcrs maxReciver 1 non_fairness 0.3188504308606212
+simulation time 500 gcrs maxReciver 1 distance 449.26729838816544
+simulation time 500 gcrs maxReciver 1 loss 162852.98550426826
+simulation time 500 gcrs radius 460 throughput 704.043202
+simulation time 500 gcrs radius 460 consumption_c 13.120419049435283
+simulation time 500 gcrs radius 460 consumption 12.753592775612484
+simulation time 500 gcrs radius 460 assignment 64.788
+simulation time 500 gcrs radius 460 percent_assignment 0.8638399999999999
+simulation time 500 gcrs radius 460 non_assignment 10.212000000000003
+simulation time 500 gcrs radius 460 percent_nonsaaignment 0.13616000000000003
+simulation time 500 gcrs radius 460 fairness 0.5271302142336931
+simulation time 500 gcrs radius 460 non_fairness 0.3051594342996531
+simulation time 500 gcrs radius 460 distance 598.0704271924387
+simulation time 500 gcrs radius 460 loss 147887.29674593516
+simulation time 500 gcrs radius 340 throughput 678.914034
+simulation time 500 gcrs radius 340 consumption_c 12.628222407530748
+simulation time 500 gcrs radius 340 consumption 12.162914423115588
+simulation time 500 gcrs radius 340 assignment 62.307
+simulation time 500 gcrs radius 340 percent_assignment 0.83076
+simulation time 500 gcrs radius 340 non_assignment 12.692999999999998
+simulation time 500 gcrs radius 340 percent_nonsaaignment 0.16923999999999997
+simulation time 500 gcrs radius 340 fairness 0.493931754836424
+simulation time 500 gcrs radius 340 non_fairness 0.29736459645581254
+simulation time 500 gcrs radius 340 distance 691.9406748696524
+simulation time 500 gcrs radius 340 loss 137969.5826918698
+simulation time 500 gcrs radius 380 throughput 696.138876
+simulation time 500 gcrs radius 380 consumption_c 12.280930611788664
+simulation time 500 gcrs radius 380 consumption 11.968144987677995
+simulation time 500 gcrs radius 380 assignment 63.297
+simulation time 500 gcrs radius 380 percent_assignment 0.8439599999999999
+simulation time 500 gcrs radius 380 non_assignment 11.703000000000003
+simulation time 500 gcrs radius 380 percent_nonsaaignment 0.15604000000000004
+simulation time 500 gcrs radius 380 fairness 0.510751075256115
+simulation time 500 gcrs radius 380 non_fairness 0.3027048891468287
+simulation time 500 gcrs radius 380 distance 658.3268054459547
+simulation time 500 gcrs radius 380 loss 141323.56244329276
+simulation time 500 gcrs radius 500 throughput 723.857458
+simulation time 500 gcrs radius 500 consumption_c 12.866094642470017
+simulation time 500 gcrs radius 500 consumption 12.669380274262576
+simulation time 500 gcrs radius 500 assignment 65.088
+simulation time 500 gcrs radius 500 percent_assignment 0.86784
+simulation time 500 gcrs radius 500 non_assignment 9.912000000000006
+simulation time 500 gcrs radius 500 percent_nonsaaignment 0.13216000000000008
+simulation time 500 gcrs radius 500 fairness 0.5405592779319992
+simulation time 500 gcrs radius 500 non_fairness 0.31152868816754714
+simulation time 500 gcrs radius 500 distance 569.4535458125993
+simulation time 500 gcrs radius 500 loss 148097.52323150396
+simulation time 500 gcrs radius 540 throughput 717.020048
+simulation time 500 gcrs radius 540 consumption_c 12.563287332898947
+simulation time 500 gcrs radius 540 consumption 12.416068162060611
+simulation time 500 gcrs radius 540 assignment 65.499
+simulation time 500 gcrs radius 540 percent_assignment 0.87332
+simulation time 500 gcrs radius 540 non_assignment 9.501000000000005
+simulation time 500 gcrs radius 540 percent_nonsaaignment 0.12668000000000007
+simulation time 500 gcrs radius 540 fairness 0.5450038165854406
+simulation time 500 gcrs radius 540 non_fairness 0.31209169880681004
+simulation time 500 gcrs radius 540 distance 544.7156624344034
+simulation time 500 gcrs radius 540 loss 150750.57577581302
+simulation time 500 gcrs radius 420 throughput 697.974952
+simulation time 500 gcrs radius 420 consumption_c 13.050759719803283
+simulation time 500 gcrs radius 420 consumption 12.598412957507328
+simulation time 500 gcrs radius 420 assignment 64.127
+simulation time 500 gcrs radius 420 percent_assignment 0.8550266666666666
+simulation time 500 gcrs radius 420 non_assignment 10.873000000000005
+simulation time 500 gcrs radius 420 percent_nonsaaignment 0.1449733333333334
+simulation time 500 gcrs radius 420 fairness 0.5205506391027224
+simulation time 500 gcrs radius 420 non_fairness 0.30441101593398356
+simulation time 500 gcrs radius 420 distance 622.8561541535356
+simulation time 500 gcrs radius 420 loss 145362.55222113838
+simulation time 500 gcrs radius 620 throughput 729.375928
+simulation time 500 gcrs radius 620 consumption_c 13.170032957182991
+simulation time 500 gcrs radius 620 consumption 12.926250721051536
+simulation time 500 gcrs radius 620 assignment 66.088
+simulation time 500 gcrs radius 620 percent_assignment 0.8811733333333333
+simulation time 500 gcrs radius 620 non_assignment 8.912000000000006
+simulation time 500 gcrs radius 620 percent_nonsaaignment 0.11882666666666675
+simulation time 500 gcrs radius 620 fairness 0.5539661927252655
+simulation time 500 gcrs radius 620 non_fairness 0.3144632627104718
+simulation time 500 gcrs radius 620 distance 531.5570666344764
+simulation time 500 gcrs radius 620 loss 151870.2344371951
+simulation time 500 gcrs radius 580 throughput 727.05704
+simulation time 500 gcrs radius 580 consumption_c 13.33650656890037
+simulation time 500 gcrs radius 580 consumption 13.132746111957358
+simulation time 500 gcrs radius 580 assignment 65.874
+simulation time 500 gcrs radius 580 percent_assignment 0.87832
+simulation time 500 gcrs radius 580 non_assignment 9.126000000000005
+simulation time 500 gcrs radius 580 percent_nonsaaignment 0.12168000000000007
+simulation time 500 gcrs radius 580 fairness 0.5530321171625561
+simulation time 500 gcrs radius 580 non_fairness 0.3149041600738047
+simulation time 500 gcrs radius 580 distance 538.9884780105733
+simulation time 500 gcrs radius 580 loss 152137.8101579268
+simulation time 500 gcrs radius 700 throughput 740.862268
+simulation time 500 gcrs radius 700 consumption_c 13.293116714165233
+simulation time 500 gcrs radius 700 consumption 13.08960802124443
+simulation time 500 gcrs radius 700 assignment 66.59
+simulation time 500 gcrs radius 700 percent_assignment 0.8878666666666667
+simulation time 500 gcrs radius 700 non_assignment 8.409999999999997
+simulation time 500 gcrs radius 700 percent_nonsaaignment 0.1121333333333333
+simulation time 500 gcrs radius 700 fairness 0.5643548225797669
+simulation time 500 gcrs radius 700 non_fairness 0.31791079792312865
+simulation time 500 gcrs radius 700 distance 504.2009497294169
+simulation time 500 gcrs radius 700 loss 154267.03675447148
+simulation time 500 gcrs radius 660 throughput 731.276948
+simulation time 500 gcrs radius 660 consumption_c 12.968510143797445
+simulation time 500 gcrs radius 660 consumption 12.76498513028647
+simulation time 500 gcrs radius 660 assignment 66.375
+simulation time 500 gcrs radius 660 percent_assignment 0.885
+simulation time 500 gcrs radius 660 non_assignment 8.625
+simulation time 500 gcrs radius 660 percent_nonsaaignment 0.115
+simulation time 500 gcrs radius 660 fairness 0.556171905995269
+simulation time 500 gcrs radius 660 non_fairness 0.3142734512650838
+simulation time 500 gcrs radius 660 distance 522.5185586022073
+simulation time 500 gcrs radius 660 loss 152440.33576382115
+simulation time 500 gcrs d2dDistance 100 throughput 215.147248
+simulation time 500 gcrs d2dDistance 100 consumption_c 3.4529617844936564
+simulation time 500 gcrs d2dDistance 100 consumption 2.8766936904441884
+simulation time 500 gcrs d2dDistance 100 assignment 50.552
+simulation time 500 gcrs d2dDistance 100 percent_assignment 0.6740266666666667
+simulation time 500 gcrs d2dDistance 100 non_assignment 24.448
+simulation time 500 gcrs d2dDistance 100 percent_nonsaaignment 0.32597333333333334
+simulation time 500 gcrs d2dDistance 100 fairness 0.23093968103634538
+simulation time 500 gcrs d2dDistance 100 non_fairness 0.1718452012339682
+simulation time 500 gcrs d2dDistance 100 distance 4185.401570334325
+simulation time 500 gcrs d2dDistance 100 loss 105535.10510020329
+simulation time 500 gcrs d2dDistance 90 throughput 239.331908
+simulation time 500 gcrs d2dDistance 90 consumption_c 3.869829638204893
+simulation time 500 gcrs d2dDistance 90 consumption 3.364493655747639
+simulation time 500 gcrs d2dDistance 90 assignment 51.088
+simulation time 500 gcrs d2dDistance 90 percent_assignment 0.6811733333333333
+simulation time 500 gcrs d2dDistance 90 non_assignment 23.912
+simulation time 500 gcrs d2dDistance 90 percent_nonsaaignment 0.31882666666666665
+simulation time 500 gcrs d2dDistance 90 fairness 0.24560898227434186
+simulation time 500 gcrs d2dDistance 90 non_fairness 0.18085094233835197
+simulation time 500 gcrs d2dDistance 90 distance 3585.1207245974233
+simulation time 500 gcrs d2dDistance 90 loss 108378.18749471538
+simulation time 500 gcrs d2dDistance 80 throughput 263.817234
+simulation time 500 gcrs d2dDistance 80 consumption_c 4.692652773783721
+simulation time 500 gcrs d2dDistance 80 consumption 3.96358773566983
+simulation time 500 gcrs d2dDistance 80 assignment 52.056
+simulation time 500 gcrs d2dDistance 80 percent_assignment 0.6940799999999999
+simulation time 500 gcrs d2dDistance 80 non_assignment 22.944000000000003
+simulation time 500 gcrs d2dDistance 80 percent_nonsaaignment 0.30592
+simulation time 500 gcrs d2dDistance 80 fairness 0.26339873731697044
+simulation time 500 gcrs d2dDistance 80 non_fairness 0.1902364024292733
+simulation time 500 gcrs d2dDistance 80 distance 3046.7168831763615
+simulation time 500 gcrs d2dDistance 80 loss 111479.1910514227
+simulation time 500 gcrs d2dDistance 70 throughput 306.259582
+simulation time 500 gcrs d2dDistance 70 consumption_c 5.718401337161415
+simulation time 500 gcrs d2dDistance 70 consumption 4.8949317655288125
+simulation time 500 gcrs d2dDistance 70 assignment 53.531
+simulation time 500 gcrs d2dDistance 70 percent_assignment 0.7137466666666666
+simulation time 500 gcrs d2dDistance 70 non_assignment 21.469
+simulation time 500 gcrs d2dDistance 70 percent_nonsaaignment 0.28625333333333336
+simulation time 500 gcrs d2dDistance 70 fairness 0.29349092190934667
+simulation time 500 gcrs d2dDistance 70 non_fairness 0.2060196039080163
+simulation time 500 gcrs d2dDistance 70 distance 2493.019919166725
+simulation time 500 gcrs d2dDistance 70 loss 115685.46764247963
+simulation time 500 gcrs d2dDistance 60 throughput 356.581662
+simulation time 500 gcrs d2dDistance 60 consumption_c 6.68992201719166
+simulation time 500 gcrs d2dDistance 60 consumption 5.892114631123299
+simulation time 500 gcrs d2dDistance 60 assignment 55.236
+simulation time 500 gcrs d2dDistance 60 percent_assignment 0.7364799999999999
+simulation time 500 gcrs d2dDistance 60 non_assignment 19.764000000000003
+simulation time 500 gcrs d2dDistance 60 percent_nonsaaignment 0.26352000000000003
+simulation time 500 gcrs d2dDistance 60 fairness 0.3287357977659861
+simulation time 500 gcrs d2dDistance 60 non_fairness 0.22345675318076272
+simulation time 500 gcrs d2dDistance 60 distance 1940.7933892723936
+simulation time 500 gcrs d2dDistance 60 loss 121579.76111930891
+simulation time 500 gcrs d2dDistance 50 throughput 420.773448
+simulation time 500 gcrs d2dDistance 50 consumption_c 8.318481590887219
+simulation time 500 gcrs d2dDistance 50 consumption 7.433582372408743
+simulation time 500 gcrs d2dDistance 50 assignment 57.59
+simulation time 500 gcrs d2dDistance 50 percent_assignment 0.7678666666666667
+simulation time 500 gcrs d2dDistance 50 non_assignment 17.409999999999997
+simulation time 500 gcrs d2dDistance 50 percent_nonsaaignment 0.23213333333333327
+simulation time 500 gcrs d2dDistance 50 fairness 0.37942499478381164
+simulation time 500 gcrs d2dDistance 50 non_fairness 0.24729575894776096
+simulation time 500 gcrs d2dDistance 50 distance 1452.3503627893806
+simulation time 500 gcrs d2dDistance 50 loss 128746.75898170746
+simulation time 500 gcrs d2dDistance 40 throughput 534.62412
+simulation time 500 gcrs d2dDistance 40 consumption_c 10.592339845621705
+simulation time 500 gcrs d2dDistance 40 consumption 10.084957009373687
+simulation time 500 gcrs d2dDistance 40 assignment 61.052
+simulation time 500 gcrs d2dDistance 40 percent_assignment 0.8140266666666667
+simulation time 500 gcrs d2dDistance 40 non_assignment 13.948
+simulation time 500 gcrs d2dDistance 40 percent_nonsaaignment 0.18597333333333335
+simulation time 500 gcrs d2dDistance 40 fairness 0.4502003173443689
+simulation time 500 gcrs d2dDistance 40 non_fairness 0.2767084542321811
+simulation time 500 gcrs d2dDistance 40 distance 996.3647954742357
+simulation time 500 gcrs d2dDistance 40 loss 137954.02529126027
+simulation time 500 gcrs d2dDistance 30 throughput 715.642582
+simulation time 500 gcrs d2dDistance 30 consumption_c 13.067678956007656
+simulation time 500 gcrs d2dDistance 30 consumption 12.775121751087456
+simulation time 500 gcrs d2dDistance 30 assignment 65.318
+simulation time 500 gcrs d2dDistance 30 percent_assignment 0.8709066666666666
+simulation time 500 gcrs d2dDistance 30 non_assignment 9.682000000000002
+simulation time 500 gcrs d2dDistance 30 percent_nonsaaignment 0.12909333333333337
+simulation time 500 gcrs d2dDistance 30 fairness 0.5406425499905502
+simulation time 500 gcrs d2dDistance 30 non_fairness 0.31036573125945116
+simulation time 500 gcrs d2dDistance 30 distance 577.0414891415859
+simulation time 500 gcrs d2dDistance 30 loss 150015.58037378063
+simulation time 500 gcrs d2dDistance 20 throughput 992.206658
+simulation time 500 gcrs d2dDistance 20 consumption_c 16.8824824269917
+simulation time 500 gcrs d2dDistance 20 consumption 16.89583105368142
+simulation time 500 gcrs d2dDistance 20 assignment 69.91
+simulation time 500 gcrs d2dDistance 20 percent_assignment 0.9321333333333333
+simulation time 500 gcrs d2dDistance 20 non_assignment 5.090000000000003
+simulation time 500 gcrs d2dDistance 20 percent_nonsaaignment 0.06786666666666671
+simulation time 500 gcrs d2dDistance 20 fairness 0.6467172720357538
+simulation time 500 gcrs d2dDistance 20 non_fairness 0.3468883802744322
+simulation time 500 gcrs d2dDistance 20 distance 234.66465083862562
+simulation time 500 gcrs d2dDistance 20 loss 161120.68400995934
+simulation time 500 gcrs d2dDistance 10 throughput 1267.018974
+simulation time 500 gcrs d2dDistance 10 consumption_c 21.035328756861045
+simulation time 500 gcrs d2dDistance 10 consumption 21.124684793697405
+simulation time 500 gcrs d2dDistance 10 assignment 73.551
+simulation time 500 gcrs d2dDistance 10 percent_assignment 0.98068
+simulation time 500 gcrs d2dDistance 10 non_assignment 1.448999999999998
+simulation time 500 gcrs d2dDistance 10 percent_nonsaaignment 0.019319999999999973
+simulation time 500 gcrs d2dDistance 10 fairness 0.7418334655937523
+simulation time 500 gcrs d2dDistance 10 non_fairness 0.37822424748716277
+simulation time 500 gcrs d2dDistance 10 distance 37.516077565492694
+simulation time 500 gcrs d2dDistance 10 loss 172215.82175467486
+simulation time 500 gcrs numRB 25 throughput 712.684698
+simulation time 500 gcrs numRB 25 consumption_c 13.086305864230765
+simulation time 500 gcrs numRB 25 consumption 12.683772516129162
+simulation time 500 gcrs numRB 25 assignment 65.093
+simulation time 500 gcrs numRB 25 percent_assignment 0.8679066666666667
+simulation time 500 gcrs numRB 25 non_assignment 9.906999999999996
+simulation time 500 gcrs numRB 25 percent_nonsaaignment 0.13209333333333328
+simulation time 500 gcrs numRB 25 fairness 0.5364846464289798
+simulation time 500 gcrs numRB 25 non_fairness 0.30912060062894386
+simulation time 500 gcrs numRB 25 distance 568.6027575915851
+simulation time 500 gcrs numRB 25 loss 149032.22719390242
+simulation time 500 gcrs numRB 50 throughput 822.196862
+simulation time 500 gcrs numRB 50 consumption_c 16.32520162281445
+simulation time 500 gcrs numRB 50 consumption 15.918747822896897
+simulation time 500 gcrs numRB 50 assignment 65.778
+simulation time 500 gcrs numRB 50 percent_assignment 0.87704
+simulation time 500 gcrs numRB 50 non_assignment 9.221999999999994
+simulation time 500 gcrs numRB 50 percent_nonsaaignment 0.12295999999999992
+simulation time 500 gcrs numRB 50 fairness 0.5393703738680387
+simulation time 500 gcrs numRB 50 non_fairness 0.307670825144908
+simulation time 500 gcrs numRB 50 distance 602.2253707393477
+simulation time 500 gcrs numRB 50 loss 146054.27028373996
+simulation time 500 gcrs numRB 75 throughput 877.303856
+simulation time 500 gcrs numRB 75 consumption_c 18.446985428354015
+simulation time 500 gcrs numRB 75 consumption 17.836057496570856
+simulation time 500 gcrs numRB 75 assignment 66.169
+simulation time 500 gcrs numRB 75 percent_assignment 0.8822533333333333
+simulation time 500 gcrs numRB 75 non_assignment 8.831000000000003
+simulation time 500 gcrs numRB 75 percent_nonsaaignment 0.11774666666666671
+simulation time 500 gcrs numRB 75 fairness 0.5617304083637678
+simulation time 500 gcrs numRB 75 non_fairness 0.3184102701498535
+simulation time 500 gcrs numRB 75 distance 629.8452788647094
+simulation time 500 gcrs numRB 75 loss 144181.99964776426
+simulation time 500 gcrs numRB 100 throughput 931.032478
+simulation time 500 gcrs numRB 100 consumption_c 21.014540362327867
+simulation time 500 gcrs numRB 100 consumption 20.062680046037368
+simulation time 500 gcrs numRB 100 assignment 66.084
+simulation time 500 gcrs numRB 100 percent_assignment 0.88112
+simulation time 500 gcrs numRB 100 non_assignment 8.915999999999997
+simulation time 500 gcrs numRB 100 percent_nonsaaignment 0.11887999999999996
+simulation time 500 gcrs numRB 100 fairness 0.585864024343947
+simulation time 500 gcrs numRB 100 non_fairness 0.33251419525104403
+simulation time 500 gcrs numRB 100 distance 638.819049316832
+simulation time 500 gcrs numRB 100 loss 143846.61009451232
+simulation time 500 gcrs numD2DCluster 1 throughput 513.946928
+simulation time 500 gcrs numD2DCluster 1 consumption_c 8.461611178361185
+simulation time 500 gcrs numD2DCluster 1 consumption 7.654419151888139
+simulation time 500 gcrs numD2DCluster 1 assignment 54.113
+simulation time 500 gcrs numD2DCluster 1 percent_assignment 0.7215066666666666
+simulation time 500 gcrs numD2DCluster 1 non_assignment 20.887
+simulation time 500 gcrs numD2DCluster 1 percent_nonsaaignment 0.2784933333333333
+simulation time 500 gcrs numD2DCluster 1 fairness 0.402896996537485
+simulation time 500 gcrs numD2DCluster 1 non_fairness 0.2797707005615036
+simulation time 500 gcrs numD2DCluster 1 distance 730.7429629811725
+simulation time 500 gcrs numD2DCluster 1 loss 123559.86964085369
+simulation time 500 gcrs numD2DCluster 2 throughput 606.981752
+simulation time 500 gcrs numD2DCluster 2 consumption_c 10.384216478900875
+simulation time 500 gcrs numD2DCluster 2 consumption 9.776446590880171
+simulation time 500 gcrs numD2DCluster 2 assignment 59.377
+simulation time 500 gcrs numD2DCluster 2 percent_assignment 0.7916933333333334
+simulation time 500 gcrs numD2DCluster 2 non_assignment 15.622999999999998
+simulation time 500 gcrs numD2DCluster 2 percent_nonsaaignment 0.20830666666666664
+simulation time 500 gcrs numD2DCluster 2 fairness 0.4647221093258075
+simulation time 500 gcrs numD2DCluster 2 non_fairness 0.29377195548026785
+simulation time 500 gcrs numD2DCluster 2 distance 695.4454408606881
+simulation time 500 gcrs numD2DCluster 2 loss 134950.55325548787
+simulation time 500 gcrs numD2DCluster 3 throughput 661.010428
+simulation time 500 gcrs numD2DCluster 3 consumption_c 11.70405575813885
+simulation time 500 gcrs numD2DCluster 3 consumption 11.341846953442799
+simulation time 500 gcrs numD2DCluster 3 assignment 62.377
+simulation time 500 gcrs numD2DCluster 3 percent_assignment 0.8316933333333334
+simulation time 500 gcrs numD2DCluster 3 non_assignment 12.622999999999998
+simulation time 500 gcrs numD2DCluster 3 percent_nonsaaignment 0.16830666666666663
+simulation time 500 gcrs numD2DCluster 3 fairness 0.49896888898465047
+simulation time 500 gcrs numD2DCluster 3 non_fairness 0.3000759480765524
+simulation time 500 gcrs numD2DCluster 3 distance 646.3725977430132
+simulation time 500 gcrs numD2DCluster 3 loss 142828.6451162602
+simulation time 500 gcrs numD2DCluster 4 throughput 685.108366
+simulation time 500 gcrs numD2DCluster 4 consumption_c 12.11333310796558
+simulation time 500 gcrs numD2DCluster 4 consumption 11.841171856161266
+simulation time 500 gcrs numD2DCluster 4 assignment 64.259
+simulation time 500 gcrs numD2DCluster 4 percent_assignment 0.8567866666666667
+simulation time 500 gcrs numD2DCluster 4 non_assignment 10.741
+simulation time 500 gcrs numD2DCluster 4 percent_nonsaaignment 0.14321333333333333
+simulation time 500 gcrs numD2DCluster 4 fairness 0.5230234017905392
+simulation time 500 gcrs numD2DCluster 4 non_fairness 0.30534820872940394
+simulation time 500 gcrs numD2DCluster 4 distance 610.3504420712922
+simulation time 500 gcrs numD2DCluster 4 loss 146678.95313394308
+simulation time 500 gcrs numD2DCluster 5 throughput 716.549054
+simulation time 500 gcrs numD2DCluster 5 consumption_c 13.166145575523185
+simulation time 500 gcrs numD2DCluster 5 consumption 12.842178022311046
+simulation time 500 gcrs numD2DCluster 5 assignment 65.222
+simulation time 500 gcrs numD2DCluster 5 percent_assignment 0.8696266666666665
+simulation time 500 gcrs numD2DCluster 5 non_assignment 9.778000000000006
+simulation time 500 gcrs numD2DCluster 5 percent_nonsaaignment 0.13037333333333342
+simulation time 500 gcrs numD2DCluster 5 fairness 0.5380325553582875
+simulation time 500 gcrs numD2DCluster 5 non_fairness 0.3094896627564357
+simulation time 500 gcrs numD2DCluster 5 distance 571.4055465328843
+simulation time 500 gcrs numD2DCluster 5 loss 148880.89061097562
+simulation time 500 gcrs numD2DCluster 6 throughput 734.963174
+simulation time 500 gcrs numD2DCluster 6 consumption_c 13.31508319880603
+simulation time 500 gcrs numD2DCluster 6 consumption 13.198700839325573
+simulation time 500 gcrs numD2DCluster 6 assignment 66.288
+simulation time 500 gcrs numD2DCluster 6 percent_assignment 0.88384
+simulation time 500 gcrs numD2DCluster 6 non_assignment 8.712000000000003
+simulation time 500 gcrs numD2DCluster 6 percent_nonsaaignment 0.11616000000000004
+simulation time 500 gcrs numD2DCluster 6 fairness 0.5499330248269542
+simulation time 500 gcrs numD2DCluster 6 non_fairness 0.3111738570825162
+simulation time 500 gcrs numD2DCluster 6 distance 541.5543857794357
+simulation time 500 gcrs numD2DCluster 6 loss 150461.94904695125
+simulation time 500 gcrs numD2DCluster 7 throughput 743.685684
+simulation time 500 gcrs numD2DCluster 7 consumption_c 13.59615649600808
+simulation time 500 gcrs numD2DCluster 7 consumption 13.49365054687229
+simulation time 500 gcrs numD2DCluster 7 assignment 66.684
+simulation time 500 gcrs numD2DCluster 7 percent_assignment 0.88912
+simulation time 500 gcrs numD2DCluster 7 non_assignment 8.316000000000003
+simulation time 500 gcrs numD2DCluster 7 percent_nonsaaignment 0.11088000000000003
+simulation time 500 gcrs numD2DCluster 7 fairness 0.557553975175065
+simulation time 500 gcrs numD2DCluster 7 non_fairness 0.3136629525910564
+simulation time 500 gcrs numD2DCluster 7 distance 518.4976484962255
+simulation time 500 gcrs numD2DCluster 7 loss 151892.93772113835
+simulation time 500 gcrs numD2DCluster 8 throughput 751.145758
+simulation time 500 gcrs numD2DCluster 8 consumption_c 13.749289626749688
+simulation time 500 gcrs numD2DCluster 8 consumption 13.60009627603823
+simulation time 500 gcrs numD2DCluster 8 assignment 67.236
+simulation time 500 gcrs numD2DCluster 8 percent_assignment 0.89648
+simulation time 500 gcrs numD2DCluster 8 non_assignment 7.763999999999996
+simulation time 500 gcrs numD2DCluster 8 percent_nonsaaignment 0.10351999999999995
+simulation time 500 gcrs numD2DCluster 8 fairness 0.5619367059162346
+simulation time 500 gcrs numD2DCluster 8 non_fairness 0.31352807239392605
+simulation time 500 gcrs numD2DCluster 8 distance 518.2756639957936
+simulation time 500 gcrs numD2DCluster 8 loss 155210.6173388211
+simulation time 500 gcrs numD2DCluster 9 throughput 771.555442
+simulation time 500 gcrs numD2DCluster 9 consumption_c 14.269993336535086
+simulation time 500 gcrs numD2DCluster 9 consumption 14.055679163615542
+simulation time 500 gcrs numD2DCluster 9 assignment 67.609
+simulation time 500 gcrs numD2DCluster 9 percent_assignment 0.9014533333333332
+simulation time 500 gcrs numD2DCluster 9 non_assignment 7.391000000000005
+simulation time 500 gcrs numD2DCluster 9 percent_nonsaaignment 0.09854666666666674
+simulation time 500 gcrs numD2DCluster 9 fairness 0.5722718380814575
+simulation time 500 gcrs numD2DCluster 9 non_fairness 0.3174788762836649
+simulation time 500 gcrs numD2DCluster 9 distance 482.6297903387694
+simulation time 500 gcrs numD2DCluster 9 loss 154164.92738516277
+simulation time 500 gcrs numD2DCluster 10 throughput 783.275558
+simulation time 500 gcrs numD2DCluster 10 consumption_c 14.534711551466387
+simulation time 500 gcrs numD2DCluster 10 consumption 14.363138371663526
+simulation time 500 gcrs numD2DCluster 10 assignment 67.788
+simulation time 500 gcrs numD2DCluster 10 percent_assignment 0.90384
+simulation time 500 gcrs numD2DCluster 10 non_assignment 7.212000000000003
+simulation time 500 gcrs numD2DCluster 10 percent_nonsaaignment 0.09616000000000004
+simulation time 500 gcrs numD2DCluster 10 fairness 0.5792545649666266
+simulation time 500 gcrs numD2DCluster 10 non_fairness 0.32053808224557767
+simulation time 500 gcrs numD2DCluster 10 distance 483.105566466441
+simulation time 500 gcrs numD2DCluster 10 loss 154340.6931099593
+simulation time 500 gcrs numDensity 100 throughput 603.917316
+simulation time 500 gcrs numDensity 100 consumption_c 11.89244329018665
+simulation time 500 gcrs numDensity 100 consumption 11.290904349714674
+simulation time 500 gcrs numDensity 100 assignment 59.889
+simulation time 500 gcrs numDensity 100 percent_assignment 0.79852
+simulation time 500 gcrs numDensity 100 non_assignment 15.110999999999997
+simulation time 500 gcrs numDensity 100 percent_nonsaaignment 0.20147999999999996
+simulation time 500 gcrs numDensity 100 fairness 0.46307836568602956
+simulation time 500 gcrs numDensity 100 non_fairness 0.29005225368337173
+simulation time 500 gcrs numDensity 100 distance 780.5936346679415
+simulation time 500 gcrs numDensity 100 loss 137328.21524126016
+simulation time 500 gcrs numDensity 90 throughput 636.807324
+simulation time 500 gcrs numDensity 90 consumption_c 12.419574248932093
+simulation time 500 gcrs numDensity 90 consumption 11.76122825019866
+simulation time 500 gcrs numDensity 90 assignment 61.756
+simulation time 500 gcrs numDensity 90 percent_assignment 0.8234133333333333
+simulation time 500 gcrs numDensity 90 non_assignment 13.244
+simulation time 500 gcrs numDensity 90 percent_nonsaaignment 0.17658666666666667
+simulation time 500 gcrs numDensity 90 fairness 0.48988296585711716
+simulation time 500 gcrs numDensity 90 non_fairness 0.2976047960585658
+simulation time 500 gcrs numDensity 90 distance 704.6317287007387
+simulation time 500 gcrs numDensity 90 loss 140922.69644085364
+simulation time 500 gcrs numDensity 80 throughput 675.81774
+simulation time 500 gcrs numDensity 80 consumption_c 11.794287228781098
+simulation time 500 gcrs numDensity 80 consumption 11.56315544885313
+simulation time 500 gcrs numDensity 80 assignment 63.496
+simulation time 500 gcrs numDensity 80 percent_assignment 0.8466133333333333
+simulation time 500 gcrs numDensity 80 non_assignment 11.503999999999998
+simulation time 500 gcrs numDensity 80 percent_nonsaaignment 0.15338666666666664
+simulation time 500 gcrs numDensity 80 fairness 0.5142819130279849
+simulation time 500 gcrs numDensity 80 non_fairness 0.30378324475311647
+simulation time 500 gcrs numDensity 80 distance 637.6656019565243
+simulation time 500 gcrs numDensity 80 loss 145611.06229573183
+simulation time 500 gcrs numDensity 70 throughput 716.497168
+simulation time 500 gcrs numDensity 70 consumption_c 12.905580717929876
+simulation time 500 gcrs numDensity 70 consumption 12.688234036847005
+simulation time 500 gcrs numDensity 70 assignment 65.277
+simulation time 500 gcrs numDensity 70 percent_assignment 0.87036
+simulation time 500 gcrs numDensity 70 non_assignment 9.722999999999999
+simulation time 500 gcrs numDensity 70 percent_nonsaaignment 0.12963999999999998
+simulation time 500 gcrs numDensity 70 fairness 0.5361156085859703
+simulation time 500 gcrs numDensity 70 non_fairness 0.3080547622790858
+simulation time 500 gcrs numDensity 70 distance 568.6469013315633
+simulation time 500 gcrs numDensity 70 loss 149389.68124817085
+simulation time 500 gcrs numDensity 60 throughput 758.680072
+simulation time 500 gcrs numDensity 60 consumption_c 13.764607824906205
+simulation time 500 gcrs numDensity 60 consumption 13.606983576640484
+simulation time 500 gcrs numDensity 60 assignment 66.614
+simulation time 500 gcrs numDensity 60 percent_assignment 0.8881866666666667
+simulation time 500 gcrs numDensity 60 non_assignment 8.385999999999996
+simulation time 500 gcrs numDensity 60 percent_nonsaaignment 0.11181333333333328
+simulation time 500 gcrs numDensity 60 fairness 0.5627518575120777
+simulation time 500 gcrs numDensity 60 non_fairness 0.31685447487882806
+simulation time 500 gcrs numDensity 60 distance 513.5382494689088
+simulation time 500 gcrs numDensity 60 loss 150890.68542621963
+simulation time 500 gcrs numDensity 50 throughput 780.108378
+simulation time 500 gcrs numDensity 50 consumption_c 14.02332881947769
+simulation time 500 gcrs numDensity 50 consumption 14.027707554516171
+simulation time 500 gcrs numDensity 50 assignment 68.18
+simulation time 500 gcrs numDensity 50 percent_assignment 0.9090666666666668
+simulation time 500 gcrs numDensity 50 non_assignment 6.819999999999993
+simulation time 500 gcrs numDensity 50 percent_nonsaaignment 0.09093333333333324
+simulation time 500 gcrs numDensity 50 fairness 0.5754666824981629
+simulation time 500 gcrs numDensity 50 non_fairness 0.3166041585347571
+simulation time 500 gcrs numDensity 50 distance 464.4476004978177
+simulation time 500 gcrs numDensity 50 loss 155102.7933878048
+simulation time 500 gcrs numDensity 40 throughput 806.219174
+simulation time 500 gcrs numDensity 40 consumption_c 14.703642084828243
+simulation time 500 gcrs numDensity 40 consumption 14.746611157932
+simulation time 500 gcrs numDensity 40 assignment 69.029
+simulation time 500 gcrs numDensity 40 percent_assignment 0.9203866666666666
+simulation time 500 gcrs numDensity 40 non_assignment 5.971000000000004
+simulation time 500 gcrs numDensity 40 percent_nonsaaignment 0.07961333333333338
+simulation time 500 gcrs numDensity 40 fairness 0.595959582749819
+simulation time 500 gcrs numDensity 40 non_fairness 0.32377711158107536
+simulation time 500 gcrs numDensity 40 distance 416.8157175395562
+simulation time 500 gcrs numDensity 40 loss 156987.57610101634
+simulation time 500 gcrs numDensity 30 throughput 840.212996
+simulation time 500 gcrs numDensity 30 consumption_c 15.591264186394858
+simulation time 500 gcrs numDensity 30 consumption 15.534610290651333
+simulation time 500 gcrs numDensity 30 assignment 69.898
+simulation time 500 gcrs numDensity 30 percent_assignment 0.9319733333333333
+simulation time 500 gcrs numDensity 30 non_assignment 5.102000000000004
+simulation time 500 gcrs numDensity 30 percent_nonsaaignment 0.06802666666666672
+simulation time 500 gcrs numDensity 30 fairness 0.6108448660343543
+simulation time 500 gcrs numDensity 30 non_fairness 0.3277596323952566
+simulation time 500 gcrs numDensity 30 distance 377.2374302034618
+simulation time 500 gcrs numDensity 30 loss 157434.3108739837
+simulation time 500 gcrs numDensity 20 throughput 853.57461
+simulation time 500 gcrs numDensity 20 consumption_c 15.220216640416789
+simulation time 500 gcrs numDensity 20 consumption 15.319385067038674
+simulation time 500 gcrs numDensity 20 assignment 70.541
+simulation time 500 gcrs numDensity 20 percent_assignment 0.9405466666666666
+simulation time 500 gcrs numDensity 20 non_assignment 4.459000000000003
+simulation time 500 gcrs numDensity 20 percent_nonsaaignment 0.05945333333333338
+simulation time 500 gcrs numDensity 20 fairness 0.61897237782157
+simulation time 500 gcrs numDensity 20 non_fairness 0.3290711732663413
+simulation time 500 gcrs numDensity 20 distance 347.1517054291442
+simulation time 500 gcrs numDensity 20 loss 159397.40366361802
+simulation time 500 gcrs numDensity 10 throughput 861.472702
+simulation time 500 gcrs numDensity 10 consumption_c 15.531270646941838
+simulation time 500 gcrs numDensity 10 consumption 15.652297792853453
+simulation time 500 gcrs numDensity 10 assignment 70.857
+simulation time 500 gcrs numDensity 10 percent_assignment 0.94476
+simulation time 500 gcrs numDensity 10 non_assignment 4.143000000000001
+simulation time 500 gcrs numDensity 10 percent_nonsaaignment 0.05524000000000001
+simulation time 500 gcrs numDensity 10 fairness 0.6278425573533806
+simulation time 500 gcrs numDensity 10 non_fairness 0.33228499777966464
+simulation time 500 gcrs numDensity 10 distance 321.0892481310266
+simulation time 500 gcrs numDensity 10 loss 159497.42834227637

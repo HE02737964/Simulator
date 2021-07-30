@@ -50,6 +50,7 @@ class Initial:
             'dataCUEMin' : config['dataCUEMin'],
             'dataD2DMax' : config['dataD2DMax'],
             'dataD2DMin' : config['dataD2DMin'],
+            'spreading'  : config['spreading'],
             '%s'%self.x_label_name : self.x_label,
         }
 

@@ -28,5 +28,7 @@
 	"dataCUEMin" : 16,
 	"dataD2DMax" : 18336,
 	"dataD2DMin" : 680,
-	"beamWide" : 50
+	"beamWide" : 50,
+
+	"spreading" : 25
 }
